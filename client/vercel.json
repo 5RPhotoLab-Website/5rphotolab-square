@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/pricing",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}

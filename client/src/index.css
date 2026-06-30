@@ -1,0 +1,42 @@
+@font-face {
+  font-family: AtkinsonBold;
+  src: url(./assets/fonts/AtkinsonHyperlegible-Bold.ttf);
+}
+
+@font-face {
+  font-family: AtkinsonRegular;
+  src: url(./assets/fonts/AtkinsonHyperlegible-Regular.ttf);
+}
+
+@font-face {
+  font-family: Bubblicious;
+  src: url(./assets/fonts/Bubblicious.ttf);
+}
+
+@import "tailwindcss";
+
+@theme {
+  --font-atkinson-bold: AtkinsonBold, "sans-serif";
+  --font-atkinson-regular: AtkinsonREgular, "sans-serif";
+  --font-bubblicious: Bubblicious, "sans-serif";
+  --color-orange: #FF5C2C;
+  --color-blue: #1493FF;
+  --color-yellow: #FFD101;
+  --color-purple: #A95AF1;
+  --color-green: #29DF63;
+  --color-green-footer: #7FFF00;
+  --color-red: #EF3D3A;
+  --color-pink: #FF1493;
+  --color-dark-gray: #211F22;
+}
+
+
+a[href^="tel"] {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+
+:root {
+  background-color: #F5F5F5;
+}
