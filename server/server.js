@@ -32,7 +32,7 @@ app.use('/api/webhooks', webhookRouter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://www.5rphotolab.com", "https://5rphotolab.com", "https://fiverphotolab-square.onrender.com"], // your frontend URL
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://www.5rphotolab.com", "https://5rphotolab.com", "https://5rphotolab-square.vercel.app"], // your frontend URL
   credentials: true
 }));
 
