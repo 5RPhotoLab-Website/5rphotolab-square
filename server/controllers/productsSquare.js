@@ -50,9 +50,8 @@ export const getProductById = async (req, res) => {
         if (!response.ok) return res.status(response.status).json({ error: data });
 
         const item = data.object;
-        // console.log("data object from productSquare:", data.object);
-        // console.log("expanded: ",data.object.item_data.variations[0]);
         const related = data.related_objects || [];
+
 
         // Create lookup for modifiers/taxes
         const lookup = related.reduce((acc, obj) => {
@@ -63,13 +62,18 @@ export const getProductById = async (req, res) => {
         const itemData = item.item_data || {};
         const variation = itemData.variations?.[0]?.item_variation_data || {};
 
+        const imageId = itemData.image_ids?.[0];
+
+        const imageUrl =
+            lookup[imageId]?.image_data?.url || "";
+
         // Format the single product exactly like your list items
         const formattedProduct = {
             id: item.id,
             name: itemData.name,
             description: itemData.description_plaintext,
             price: variation.price_money ? (variation.price_money.amount / 100).toFixed(2) : 0,
-            imageUrl: itemData.ecom_image_uris?.[0] || "",
+            imageUrl,
             taxes: (itemData.tax_ids || []).map(taxId => {
                 const taxObj = lookup[taxId];
                 const taxData = taxObj?.tax_data || {};
@@ -125,6 +129,12 @@ const formatItem = (item, lookup) => {
         };
     });
 
+    const imageId = itemData.image_ids?.[0];
+
+    const imageUrl =
+        lookup[imageId]?.image_data?.url || "";
+
+
     return {
         id: item.id,
         name: itemData.name,
@@ -132,7 +142,7 @@ const formatItem = (item, lookup) => {
             ? (variation.price_money.amount / 100).toFixed(2)
             : "0.00",
         description: itemData.description_plaintext,
-        imageUrl: itemData.ecom_image_uris?.[0] || "",
+        imageUrl,
         taxes,
         modifiers
     };
@@ -169,6 +179,7 @@ export const getAllProducts = async (req, res) => {
 
             const allObjects = data.objects || [];
             const related = data.related_objects || [];
+
 
             const lookup = [...allObjects, ...related].reduce((acc, obj) => {
                 acc[obj.id] = obj;
