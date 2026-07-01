@@ -23,7 +23,7 @@ const MailInPageNew = () => {
                             </div>
                         ))
                         :
-                        <h3 className="py-10">{'Loading...'}</h3>
+                        <h3 className="py-10">{'Loading....'}</h3>
                     }
                 </div>
                 <div className="inline-flex px-10 py-4 border-4 rounded-[10px] tracking-wider text-[0.781vw] font-atkinson-bold bg-[var(--color-green)] cursor-pointer"
