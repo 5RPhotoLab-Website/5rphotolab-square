@@ -93,6 +93,8 @@ export const handleSquareWebhook = async (req, res) => {
 
     const event = JSON.parse(body);
 
+    console.log(JSON.stringify(event, null, 2));
+
     if (event.type === "payment.updated") {
         const payment = event.data.object.payment;
         if (payment.status !== "COMPLETED") return res.status(200).json({ received: true });
@@ -116,6 +118,11 @@ export const handleSquareWebhook = async (req, res) => {
         );
 
         const order = result.rows[0];
+
+
+        console.log("Expected URL:", url);
+console.log("Signature:", signature);
+console.log("Expected:", expected);
 
         if (order) {
             // Clear the cart
