@@ -2,9 +2,9 @@ import OrderTemplate from '../assets/Order Template 5R.pdf';
 
 const HowToMailInPage = () => {
     return (
-        <div className="bg-[#F5F5F5] min-h-screen">
+        <div className="bg-[#F5F5F5]">
             {/* Desktop */}
-            <div className="hidden md:flex flex-col items-center max-w-[76vw] mx-auto">
+            <div className="hidden md:flex flex-col items-center max-w-[76vw] mx-auto min-h-screen">
                 <div className="border-4 w-full rounded-[10px]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                     <div className='bg-[var(--color-green)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.938vw] tracking-wider py-5 mt-5' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                         All of our great lab services are available by mail, and <br /> getting your film and disposables to us is super easy.
@@ -57,7 +57,7 @@ const HowToMailInPage = () => {
 
 
             {/* Mobile */}
-            <div className="md:hidden flex flex-col items-center p-2">
+            <div className="md:hidden flex flex-col items-center p-2 mb-10">
                 <div className="relative w-[396px]">
                     {/* Floating header */}
                     <div
@@ -74,18 +74,8 @@ const HowToMailInPage = () => {
                         className="border-4 w-full rounded-[10px] flex flex-col relative items-center pt-20"
                         style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     >
-                        <div className="flex-shrink-0 mt-8">
-                            <iframe
-                                width="350"
-                                height="620"
-                                src="https://www.youtube.com/embed/FLoB1xzZcsc"
-                                title="YouTube video player"
-                                frameBorder="0"
-                                allowFullScreen
-                            />
-                        </div>
 
-                        <div className="p-4.5 tracking-wider mt-3">
+                        <div className="p-4.5 tracking-wider mt-10">
                             <p className="font-atkinson-regular text-[17px]"><span className="font-atkinson-bold">1.</span> Write us a little note about your order, including the order number, or fill out the form below. <br /></p>
                             <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">2.</span> Place your film in a ziploc. <br /></p>
                             <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">3.</span> Place the bag in a padded envelope or a box with padding along with the form. <br /></p>
@@ -102,7 +92,7 @@ const HowToMailInPage = () => {
                         </div>
 
                         <button
-                            className="border-4 border-black bg-[var(--color-blue)] px-3 py-2 font-atkinson-regular text-[17px] text-white rounded-[10px] mt-5 mb-10 tracking-wider"
+                            className="border-4 border-black bg-[var(--color-blue)] px-3 py-2 font-atkinson-regular text-[17px] text-black rounded-[10px] mt-5 mb-10 tracking-wider"
                             style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                             onClick={() => window.open(OrderTemplate)}
                         >

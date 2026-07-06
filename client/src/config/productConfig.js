@@ -78,7 +78,7 @@ export const OPTION_LABEL_DATA = {
     scanSize: [
         { id: "medium", label: "Medium 3130x2075 px", price: 0 },
         { id: "large", label: "Large 6774x4492 px", price: 7 },
-        { id: "sprocket", label: "Sprocket Camera Scan 4700x4200 px", price: 10 },
+        { id: "sprocket", label: "Sprocket Camera Scan 4700x4200 px", price: 15 },
         { id: "largeTiff", label: "Large + 16-Bit Tiff", price: 15 },
     ],
     physicalCopies: [
