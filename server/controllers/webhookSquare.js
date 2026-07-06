@@ -76,6 +76,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // `;
 
 export const handleSquareWebhook = async (req, res) => {
+    console.log("=== WEBHOOK RECEIVED ===");
     // Verify the webhook is actually from Square
     const signature = req.headers["x-square-hmacsha256-signature"];
     const body = req.rawBody; // needs rawBody middleware (see routes below)
