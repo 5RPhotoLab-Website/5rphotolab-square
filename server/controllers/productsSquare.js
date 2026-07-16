@@ -60,7 +60,9 @@ export const getProductById = async (req, res) => {
         }, {});
 
         const itemData = item.item_data || {};
-        const variation = itemData.variations?.[0]?.item_variation_data || {};
+        const variationObject = itemData.variations?.[0];
+
+        const variation = variationObject?.item_variation_data || {};
 
         const imageId = itemData.image_ids?.[0];
 
@@ -70,6 +72,7 @@ export const getProductById = async (req, res) => {
         // Format the single product exactly like your list items
         const formattedProduct = {
             id: item.id,
+            variationId: variationObject?.id,
             name: itemData.name,
             description: itemData.description_plaintext,
             price: variation.price_money ? (variation.price_money.amount / 100).toFixed(2) : 0,
