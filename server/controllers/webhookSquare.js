@@ -12,7 +12,7 @@ const emailHtml = `
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+<body style="margin: 0; padding: 0; background-color: #ffffff; font-family: Arial, sans-serif;">
     <div>
         <!-- Body -->
         <div>
@@ -82,7 +82,12 @@ export const handleSquareWebhook = async (req, res) => {
     hmac.update(url + body);
     const expected = hmac.digest("base64");
 
-    if (signature !== expected) {
+    const valid = crypto.timingSafeEqual(
+        Buffer.from(signature),
+        Buffer.from(expected)
+    );
+
+    if (!valid) {
         return res.status(403).json({ error: "Invalid signature" });
     }
 
@@ -106,6 +111,7 @@ export const handleSquareWebhook = async (req, res) => {
                  email = $3,
                  updated_at = NOW()
              WHERE square_order_id = $4
+                AND payment_status <> 'COMPLETED'
              RETURNING *`,
             [squarePaymentId, receiptUrl, email, squareOrderId]
         );
@@ -126,6 +132,24 @@ export const handleSquareWebhook = async (req, res) => {
                     to: order.email,
                     subject: `Thank you for your mail-in order!`,
                     html: emailHtml
+                });
+                await resend.emails.send({
+                    from: "5R Photo Lab <info@5rphotolab.com>",
+                    to: "info@5rphotolab.com",
+                    subject: `Order #${order.id} placed at 5R Photo Lab by ${payment.billing_address.first_name} ${payment.billing_address.last_name}`,
+                    html: `
+                        <h2>New Order</h2>
+
+                        <p><b>Customer:</b> ${payment.billing_address.first_name} ${payment.billing_address.last_name}</p>
+                        <p><b>Email:</b> ${order.email}</p>
+                        <p><b>Amount:</b> $${(payment.total_money.amount / 100).toFixed(2)}</p>
+
+                        <p>
+                            <a href="${receiptUrl}">
+                                View Square Receipt
+                            </a>
+                        </p>
+                    `
                 });
             }
         }

@@ -22,14 +22,6 @@ const createCheckout = async (req, res) => {
         const cart = cartResult.rows[0];
         const products = cart.cart_data.products;
 
-        // const lineItems = products.map((p) => ({
-        //     name: p.name,
-        //     quantity: String(p.quantity),
-        //     basePriceMoney: {
-        //         amount: BigInt(Math.round(p.unitPrice * 100)),
-        //         currency: "USD"
-        //     }
-        // }));
         const lineItems = products.map((p) => ({
             catalogObjectId: p.variation_id,
             quantity: String(p.quantity),
@@ -68,7 +60,7 @@ const createCheckout = async (req, res) => {
                 lineItems,
             },
             checkoutOptions: {
-                redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,
+                redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?dbOrderId=${order.id}`,
                 askForShippingAddress: false
             },
         });
