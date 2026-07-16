@@ -58,35 +58,60 @@ const createCheckout = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
+                metadata: {
+                    dbOrderId: String(order.id),
+                    ...(notes ? { notes } : {}),
+                },
             },
             checkoutOptions: {
                 redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?dbOrderId=${order.id}`,
-                askForShippingAddress: false
+                askForShippingAddress: true,
+                shippingAddress: {
+                    ...(shipping?.address_line1 && {
+                        addressLine1: shipping.address_line1
+                    }),
+                    ...(shipping?.address_line2 && {
+                        addressLine2: shipping.address_line2
+                    }),
+                    ...(shipping?.city && {
+                        locality: shipping.city
+                    }),
+                    ...(shipping?.state && {
+                        administrativeDistrictLevel1: shipping.state
+                    }),
+                    ...(shipping?.zip && {
+                        postalCode: shipping.zip
+                    }),
+                    country: shipping?.country || "US",
+                },
             },
         });
 
+        if (!response.paymentLink) {
+            return res.status(500).json({ error: "Failed to create checkout link" });
+        }
 
         await pool.query(
             `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
             [response.paymentLink.orderId, order.id]
         );
 
-        res.status(201).json({ checkoutUrl: response.paymentLink.url, orderId: order.id });
+        res.status(201).json({ checkoutUrl: response.paymentLink.url, dbOrderId: order.id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
 
-// GET /orders/:orderId
+// GET /orders/:dbOrderId
 const getOrderById = async (req, res) => {
     try {
-        const { orderId } = req.params;
+        const { dbOrderId } = req.params;
         const session_id = req.headers["x-session-id"];
 
         const result = await pool.query(
             `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
-            [orderId, session_id]
+            [dbOrderId, session_id]
         );
 
         if (result.rows.length === 0) {
@@ -99,16 +124,16 @@ const getOrderById = async (req, res) => {
     }
 };
 
-// GET /orders/:orderId/items
+// GET /orders/:dbOrderId/items
 const getOrderItems = async (req, res) => {
     try {
-        const { orderId } = req.params;
+        const { dbOrderId } = req.params;
         const session_id = req.headers["x-session-id"];
 
         // First get your DB order to verify session and get square_order_id
         const result = await pool.query(
             `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
-            [orderId, session_id]
+            [dbOrderId, session_id]
         );
 
         if (result.rows.length === 0) {

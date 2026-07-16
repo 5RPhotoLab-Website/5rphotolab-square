@@ -7,21 +7,21 @@ const OrderConfirmationPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { sessionId, refreshCart } = useCart();
-    const orderId = searchParams.get("orderId");
+    const dbOrderId = searchParams.get("dbOrderId");
     const [items, setItems] = useState([]);
     const [squareTotal, setSquareTotal] = useState(null);
     const [order, setOrder] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!orderId || !sessionId) return;
+        if (!dbOrderId || !sessionId) return;
 
         let attempts = 0;
         const maxAttempts = 20; // poll for up to ~40 seconds
 
         const poll = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${dbOrderId}`, {
                     headers: { "x-session-id": sessionId }
                 });
 
@@ -37,7 +37,7 @@ const OrderConfirmationPage = () => {
                 if (data.payment_status === "COMPLETED") {
                     refreshCart();
                     // fetch line items
-                    const itemsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/items`, {
+                    const itemsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${dbOrderId}/items`, {
                         headers: { "x-session-id": sessionId }
                     });
                     if (itemsRes.ok) {
@@ -59,7 +59,7 @@ const OrderConfirmationPage = () => {
         };
 
         poll();
-    }, [orderId, sessionId]);
+    }, [dbOrderId, sessionId]);
 
     if (error) return (
         <div className="p-4 mt-10 text-center pt-[25vh] pb-[25vh]">
