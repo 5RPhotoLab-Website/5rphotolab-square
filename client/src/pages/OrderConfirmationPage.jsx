@@ -7,30 +7,25 @@ const OrderConfirmationPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { sessionId, refreshCart } = useCart();
-    const dbOrderId = searchParams.get("dbOrderId");
+    const orderId = searchParams.get("orderId");
     const [items, setItems] = useState([]);
     const [squareTotal, setSquareTotal] = useState(null);
     const [order, setOrder] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!dbOrderId || !sessionId) return;
+        if (!orderId || !sessionId) return;
 
         let attempts = 0;
         const maxAttempts = 20; // poll for up to ~40 seconds
 
         const poll = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${dbOrderId}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}`, {
                     headers: { "x-session-id": sessionId }
                 });
 
                 if (!res.ok) {
-                    if (attempts < maxAttempts) {
-                        attempts++;
-                        setTimeout(poll, 2000);
-                        return;
-                    }
                     setError("Order not found.");
                     return;
                 }
@@ -42,7 +37,7 @@ const OrderConfirmationPage = () => {
                 if (data.payment_status === "COMPLETED") {
                     refreshCart();
                     // fetch line items
-                    const itemsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${dbOrderId}/items`, {
+                    const itemsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/items`, {
                         headers: { "x-session-id": sessionId }
                     });
                     if (itemsRes.ok) {
@@ -64,7 +59,7 @@ const OrderConfirmationPage = () => {
         };
 
         poll();
-    }, [dbOrderId, sessionId]);
+    }, [orderId, sessionId]);
 
     if (error) return (
         <div className="p-4 mt-10 text-center pt-[25vh] pb-[25vh]">

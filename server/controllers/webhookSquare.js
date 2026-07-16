@@ -143,6 +143,7 @@ export const handleSquareWebhook = async (req, res) => {
                         <p><b>Customer:</b> ${payment.billing_address.first_name} ${payment.billing_address.last_name}</p>
                         <p><b>Email:</b> ${order.email}</p>
                         <p><b>Amount:</b> $${(payment.total_money.amount / 100).toFixed(2)}</p>
+                        <p><b>Notes:</b> ${order.notes || "None"}</p>
 
                         <p>
                             <a href="${receiptUrl}">

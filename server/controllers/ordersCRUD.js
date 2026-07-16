@@ -53,43 +53,23 @@ const createCheckout = async (req, res) => {
         const order = orderResult.rows[0];
 
 
-        // const response = await squareClient.checkout.paymentLinks.create({
-        //     idempotencyKey: randomUUID(),
-        //     order: {
-        //         locationId: squareEnv.locationId,
-        //         lineItems,
-        //         metadata: {
-        //             dbOrderId: String(order.id),
-        //             ...(notes ? { notes } : {}),
-        //         },
-        //     },
-        //     checkoutOptions: {
-        //         redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?dbOrderId=${order.id}`,
-        //         askForShippingAddress: true,
-        //     },
-        // });
-        const squareOrder = await squareClient.orders.create({
-            order: {
-                locationId: squareEnv.locationId,
-                lineItems,
-                metadata: {
-                    dbOrderId: String(order.id),
-                    ...(notes ? { notes } : {}),
-                },
-            },
-        });
 
         const response = await squareClient.checkout.paymentLinks.create({
             idempotencyKey: randomUUID(),
             order: {
                 locationId: squareEnv.locationId,
-                orderId: squareOrder.order.id,
+                lineItems,
             },
             checkoutOptions: {
-                redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?dbOrderId=${order.id}`,
-                askForShippingAddress: false,
+                redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,
+                askForShippingAddress: true,
             },
         });
+
+        console.log(response.paymentLink.url);
+        console.log(
+            `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`
+        );
 
         if (!response.paymentLink) {
             return res.status(500).json({ error: "Failed to create checkout link" });
@@ -97,25 +77,25 @@ const createCheckout = async (req, res) => {
 
         await pool.query(
             `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
-            [squareOrder.order.id, order.id]
+            [response.paymentLink.id, order.id]
         );
 
-        res.status(201).json({ checkoutUrl: response.paymentLink.url, dbOrderId: order.id });
+        res.status(201).json({ checkoutUrl: response.paymentLink.url, orderId: order.id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
 
-// GET /orders/:dbOrderId
+// GET /orders/:orderId
 const getOrderById = async (req, res) => {
     try {
-        const { dbOrderId } = req.params;
+        const { orderId } = req.params;
         const session_id = req.headers["x-session-id"];
 
         const result = await pool.query(
             `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
-            [dbOrderId, session_id]
+            [orderId, session_id]
         );
 
         if (result.rows.length === 0) {
@@ -128,16 +108,16 @@ const getOrderById = async (req, res) => {
     }
 };
 
-// GET /orders/:dbOrderId/items
+// GET /orders/:orderId/items
 const getOrderItems = async (req, res) => {
     try {
-        const { dbOrderId } = req.params;
+        const { orderId } = req.params;
         const session_id = req.headers["x-session-id"];
 
         // First get your DB order to verify session and get square_order_id
         const result = await pool.query(
             `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
-            [dbOrderId, session_id]
+            [orderId, session_id]
         );
 
         if (result.rows.length === 0) {
