@@ -77,7 +77,7 @@ const createCheckout = async (req, res) => {
 
         await pool.query(
             `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
-            [response.paymentLink.id, order.id]
+            [response.paymentLink.orderId, order.id]
         );
 
         res.status(201).json({ checkoutUrl: response.paymentLink.url, orderId: order.id });
