@@ -160,7 +160,8 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                                         unitPrice: parseFloat(calculateUnitPriceAfterModifiers()),
                                         imageUrl: product.imageUrl,
                                         quantity: quantity,
-                                        modifiers
+                                        modifiers,
+                                        variation_id: product.variationId
                                     });
 
                                     setIsAdded(true);
@@ -266,7 +267,8 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                                 unitPrice: parseFloat(calculateUnitPriceAfterModifiers()),
                                 imageUrl: product.imageUrl,
                                 quantity: quantity,
-                                modifiers
+                                modifiers,
+                                variation_id: product.variationId
                             });
 
                             setIsAdded(true);

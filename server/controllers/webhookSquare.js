@@ -5,78 +5,73 @@ import crypto from "crypto";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// const emailHtml = `
-// <!DOCTYPE html>
-// <html lang="en-US">
-// <head>
-//     <meta charset="utf-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-// </head>
-// <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
-//     <div style="max-width: 500px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 0px rgba(33, 31, 34, 1); border: 2px solid #CECECE;">
-        
-//         <!-- Header -->
-//         <div style="background-color: #ffffff; padding: 32px 32px 16px 32px; border-bottom: 2px solid #CECECE;">
-//             <h1 style="margin: 0; font-size: 28px; color: var(--color-orange); letter-spacing: 0.1em;">Thank you for your mail-in order!</h1>
-//             <p style="margin: 8px 0 0 0; font-size: 12px; color: #9C9C9C; letter-spacing: 0.1em;">ORDER CONFIRMED</p>
-//         </div>
+const emailHtml = `
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+    <div>
+        <!-- Body -->
+        <div>
+            <p style="font-size: 14px; color: #000000;">
+                Greetings!
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+                We’re writing to confirm that you placed a mail-in order with us and share a few tidbits of info on what comes next.
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+                1. Ship your film to us
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+            Please download, print, and fill out our ORDER FORM. (If you prefer, write your name on a piece of paper with your order number.) Put the form and your film in a zip-loc bag, then put the bag in a padded mailer or a box with ample packing material. Address your shipment to:
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+                5R Photo Lab<br>
+                31 Washington Square West<br>
+                Suite 3R-C<br>
+                New York, NY 10011
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+                You can use any carrier you like, but please choose a service that provides a tracking number—it’s worth the peace of mind. Most of your fellow mail-in customers choose USPS Ground Advantage, but that’s not always the best fit for everyone. For our own shipping, we use Pirate Ship, which makes it easy to compare different options and offers discounts. 
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+                Pro tip for dispo users: you can remove the film from your camera, which reduces the weight, bulk, and sometimes the cost of your shipment. Just ask us how! </p>
+            <p style="font-size: 14px; color: #000000;">
+                2. Once your shipment reaches us, we get straight to work! C-41 (color and Ilford XP2) film is typically processed the day or the day after we receive it, scanned, and sent to you the following day. Black and white film takes a little longer—normally about five days after we receive it. </p>
+            <p style="font-size: 14px; color: #000000;">
+                3. Look out for an email from WeTransfer! You’ll see a link to download your scans—the link lasts a year from the date we send it to you. WeTransfer offers a mobile app, but we recommend using a desktop browser. It’s also nice to have your photos in a more permanent place than your phone! </p>
+            <p style="font-size: 14px; color: #000000;">
+                4. If you ordered prints or requested negatives, we’ll box them up and send you an invoice for the cost of shipping only. Please confirm your address once you receive the scans. Once you pay the invoice, we take your shipment to the post office. We normally ship your prints and negatives within a week of sending your scans. </p>
+            <p style="font-size: 14px; color: #000000;">
+                5. If your roll is blank, you’ll receive a $10 credit towards your next order. 5R Photo Lab does not offer refunds. </p>
+            <p style="font-size: 14px; color: #000000;">
+                6. Call or text us at (646) 319-4106 or email  <a href="mailto:info@5rphotolab.com">info@5rphotolab.com</a> if we can be of any assistance, or just to tell us how much you love your scans and prints :)
+            </p>
+            <p style="font-size: 14px; color: #000000;">
+                Can’t wait to meet your film! </p>
+            <p style="font-size: 14px; color: #000000;">
+                -5R
+            </p>
+        </div>
 
-//         <!-- Body -->
-//         <div style="padding: 32px;">
-//             <p style="font-size: 14px; color: #211F22; letter-spacing: 0.05em; margin-top: 0;">
-//                 We’re writing to confirm that you placed a mail-in order with us and share a few tidbits of info on what comes next.
-//             </p>
-
-//             <!-- Order Details -->
-//             <div style="border: 2px solid #CECECE; border-radius: 10px; padding: 16px; margin: 24px 0; box-shadow: 0px 4px 0px rgba(206, 206, 206, 1);">
-//                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-//                     <span style="font-size: 13px; color: #9C9C9C; letter-spacing: 0.05em;">Order #</span>
-//                     <span style="font-size: 13px; color: #211F22; letter-spacing: 0.05em;">${order.id}</span>
-//                 </div>
-//                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-//                     <span style="font-size: 13px; color: #9C9C9C; letter-spacing: 0.05em;">Email</span>
-//                     <span style="font-size: 13px; color: #211F22; letter-spacing: 0.05em;">${order.email}</span>
-//                 </div>
-//                 <div style="display: flex; justify-content: space-between;">
-//                     <span style="font-size: 13px; color: #9C9C9C; letter-spacing: 0.05em;">Total</span>
-//                     <span style="font-size: 13px; color: #211F22; letter-spacing: 0.05em;">$${parseFloat(order.total_amount).toFixed(2)}</span>
-//                 </div>
-//             </div>
-
-//             ${order.shipping_requested ? `
-//             <!-- Shipping Address -->
-//             <div style="border: 2px solid #CECECE; border-radius: 10px; padding: 16px; margin: 24px 0; box-shadow: 0px 4px 0px rgba(206, 206, 206, 1);">
-//                 <p style="margin: 0 0 8px 0; font-size: 12px; color: #9C9C9C; letter-spacing: 0.1em;">MAILING ADDRESS</p>
-//                 <p style="margin: 0; font-size: 13px; color: #211F22; letter-spacing: 0.05em; line-height: 1.6;">
-//                     ${order.shipping_address_line1}<br>
-//                     ${order.shipping_address_line2 ? order.shipping_address_line2 + '<br>' : ''}
-//                     ${order.shipping_city}, ${order.shipping_state} ${order.shipping_zip}
-//                 </p>
-//             </div>
-//             ` : ''}
-
-//             ${order.square_receipt_url ? `
-//             <!-- Receipt Link -->
-//             <a href="${order.square_receipt_url}" 
-//                style="display: block; text-align: center; background-color: #211F22; color: #ffffff; text-decoration: none; padding: 10px; border-radius: 10px; font-size: 12px; letter-spacing: 0.1em; margin-top: 8px; border: 4px solid #211F22; box-shadow: 0px 4px 0px rgba(33, 31, 34, 0.3);">
-//                 View Receipt
-//             </a>
-//             ` : ''}
-//         </div>
-
-//         <!-- Footer -->
-//         <div style="padding: 16px 32px 32px 32px; border-top: 2px solid #CECECE;">
-//             <p style="margin: 0; font-size: 11px; color: #9C9C9C; letter-spacing: 0.05em; text-align: center;">
-//                 Questions? Reply to this email or reach us at hello@5rphotolab.com
-//             </p>
-//         </div>
-//     </div>
-// </body>
-// </html>
-// `;
+        <!-- Footer -->
+        <div style="text-align: left;">
+            <p style="font-size: 12px; text-align: left;">
+                --
+            </p>
+            <img src="https://ci3.googleusercontent.com/mail-sig/AIorK4zQR9e8Y82YsnsSkbGVSliaE9knLsIO_DyNDC4BlBhLx4MYb5enJ8uHE0ieuWPqXSJpNrK-IKw6CZzs" alt="5R Photo Lab Logo" style="display: block; width: 100px; height: auto;">
+            <a href="https://www.5rphotolab.com" style="font-size: 12px;">www.5rphotolab.com</a><br/>
+            <a href="https://5rphotolab.square.site/" style="font-size: 12px;">Place Your Mail-In Order</a>
+        </div>
+    </div>
+</body>
+</html>
+`;
 
 export const handleSquareWebhook = async (req, res) => {
-    console.log("=== WEBHOOK RECEIVED ===");
     // Verify the webhook is actually from Square
     const signature = req.headers["x-square-hmacsha256-signature"];
     const body = req.rawBody; // needs rawBody middleware (see routes below)
@@ -93,8 +88,6 @@ export const handleSquareWebhook = async (req, res) => {
 
     const event = JSON.parse(body);
 
-    console.log(JSON.stringify(event, null, 2));
-
     if (event.type === "payment.updated") {
         const payment = event.data.object.payment;
         if (payment.status !== "COMPLETED") return res.status(200).json({ received: true });
@@ -102,7 +95,7 @@ export const handleSquareWebhook = async (req, res) => {
         const squareOrderId = payment.order_id;
         const squarePaymentId = payment.id;
         const receiptUrl = payment.receipt_url;
-        const email = payment.buyer_email_address || null; 
+        const email = payment.buyer_email_address || null;
 
         // Find and update your order
         const result = await pool.query(
@@ -119,11 +112,6 @@ export const handleSquareWebhook = async (req, res) => {
 
         const order = result.rows[0];
 
-
-        console.log("Expected URL:", url);
-console.log("Signature:", signature);
-console.log("Expected:", expected);
-
         if (order) {
             // Clear the cart
             await pool.query(
@@ -136,15 +124,8 @@ console.log("Expected:", expected);
                 await resend.emails.send({
                     from: "5R Photo Lab <info@5rphotolab.com>",
                     to: order.email,
-                    subject: `Order #${order.id} Confirmed — 5R Photo Lab`,
-                    html: `
-                        <h2>Thanks for your order!</h2>
-                        <p>Order #${order.id} has been received.</p>
-                        <p>Total: $${order.total_amount}</p>
-                        ${order.square_receipt_url ? `<p><a href="${order.square_receipt_url}">View receipt</a></p>` : ""}
-                        ${order.shipping_requested ? `<p>We'll mail your prints/negatives to the address you provided.</p>` : ""}
-                    `
-                    // html: emailHtml
+                    subject: `Thank you for your mail-in order!`,
+                    html: emailHtml
                 });
             }
         }

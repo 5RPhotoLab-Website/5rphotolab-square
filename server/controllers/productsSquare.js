@@ -101,7 +101,9 @@ const CATEGORY_MAP = {
 
 const formatItem = (item, lookup) => {
     const itemData = item.item_data || {};
-    const variation = itemData.variations?.[0]?.item_variation_data || {};
+    const variationObject = itemData.variations?.[0];
+
+    const variation = variationObject?.item_variation_data || {};
 
     // Taxes
     const taxes = (itemData.tax_ids || []).map(taxId => {
@@ -137,6 +139,7 @@ const formatItem = (item, lookup) => {
 
     return {
         id: item.id,
+        variationId: variationObject?.id,
         name: itemData.name,
         price: variation.price_money
             ? (variation.price_money.amount / 100).toFixed(2)

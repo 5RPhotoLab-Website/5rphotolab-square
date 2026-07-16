@@ -31,7 +31,7 @@ const OrderConfirmationPage = () => {
                 }
 
                 const data = await res.json();
-                console.log("Order data:", data);
+                // console.log("Order data:", data);
                 setOrder(data);
 
                 if (data.payment_status === "COMPLETED") {
@@ -42,7 +42,7 @@ const OrderConfirmationPage = () => {
                     });
                     if (itemsRes.ok) {
                         const itemsData = await itemsRes.json();
-                        console.log("Order items data:", itemsData);
+                        // console.log("Order items data:", itemsData);
                         setItems(itemsData.items);
                         setSquareTotal(itemsData.squareTotal);
                     }

@@ -10,7 +10,6 @@ const TAX_RATE = 0.08875;
 const YourCartPage = () => {
     const navigate = useNavigate();
     const { cart, removeProduct, addProduct, sessionId } = useCart();
-    // const [email, setEmail] = useState("");
     const [shippingRequested, setShippingRequested] = useState(false);
     const [shipping, setShipping] = useState({
         address_line1: "",
@@ -37,7 +36,6 @@ const YourCartPage = () => {
         }`;
 
     const handleCheckout = async () => {
-        // if (!email) return setError("Email is required");
         if (shippingRequested) {
             setSubmitted(true);
             if (!shipping.address_line1 || !shipping.city || !shipping.state || !shipping.zip) {
@@ -55,7 +53,6 @@ const YourCartPage = () => {
                     "x-session-id": sessionId
                 },
                 body: JSON.stringify({
-                    // email,
                     notes,
                     shipping: {
                         requested: shippingRequested,
@@ -211,19 +208,6 @@ const YourCartPage = () => {
                         <p className="text-[var(--color-pink)] text-[0.521vw] tracking-wider">
                             Additional taxes and fees will be calculated at checkout
                         </p>
-
-
-                        {/* Email */}
-                        {/* <div className="mt-8">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full border-2 border-[#CECECE] rounded-[10px] px-3 py-2 text-[13px] font-atkinson-regular tracking-wider outline-none focus:border-[var(--color-orange)]"
-                            />
-                            {error && <p className="text-red-500 text-[12px] mt-2 tracking-wider">{error}</p>}
-                        </div> */}
 
                         {/* Checkout Actions */}
                         <div className="mt-14 flex justify-between mb-8">

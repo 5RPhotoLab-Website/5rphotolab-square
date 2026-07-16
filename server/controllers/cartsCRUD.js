@@ -51,8 +51,8 @@ const addProductToCart = async (req, res) => {
 
     const cart = await getOrCreateCart(session_id);
 
-    const { product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers } = req.body;
-    if (!product_id || !quantity || !catalogPrice || !name || !unitPrice || !imageUrl || !modifiers) {
+    const { product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers, variation_id } = req.body;
+    if (!product_id || !quantity || !catalogPrice || !name || !unitPrice || !imageUrl || !modifiers || !variation_id) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -71,7 +71,7 @@ const addProductToCart = async (req, res) => {
         products.splice(existingIndex, 1);
       }
     } else {
-      products.push({ product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers });
+      products.push({ product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers, variation_id });
     }
 
     const updatedCart = await pool.query(
