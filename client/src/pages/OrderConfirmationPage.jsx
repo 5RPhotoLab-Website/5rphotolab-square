@@ -26,6 +26,11 @@ const OrderConfirmationPage = () => {
                 });
 
                 if (!res.ok) {
+                    if (attempts < maxAttempts) {
+                        attempts++;
+                        setTimeout(poll, 2000);
+                        return;
+                    }
                     setError("Order not found.");
                     return;
                 }

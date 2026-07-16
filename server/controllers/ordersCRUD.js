@@ -53,8 +53,22 @@ const createCheckout = async (req, res) => {
         const order = orderResult.rows[0];
 
 
-        const response = await squareClient.checkout.paymentLinks.create({
-            idempotencyKey: randomUUID(),
+        // const response = await squareClient.checkout.paymentLinks.create({
+        //     idempotencyKey: randomUUID(),
+        //     order: {
+        //         locationId: squareEnv.locationId,
+        //         lineItems,
+        //         metadata: {
+        //             dbOrderId: String(order.id),
+        //             ...(notes ? { notes } : {}),
+        //         },
+        //     },
+        //     checkoutOptions: {
+        //         redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?dbOrderId=${order.id}`,
+        //         askForShippingAddress: true,
+        //     },
+        // });
+        const squareOrder = await squareClient.orders.create({
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
@@ -63,27 +77,17 @@ const createCheckout = async (req, res) => {
                     ...(notes ? { notes } : {}),
                 },
             },
+        });
+
+        const response = await squareClient.checkout.paymentLinks.create({
+            idempotencyKey: randomUUID(),
+            order: {
+                locationId: squareEnv.locationId,
+                orderId: squareOrder.order.id,
+            },
             checkoutOptions: {
                 redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?dbOrderId=${order.id}`,
-                askForShippingAddress: true,
-                shippingAddress: {
-                    ...(shipping?.address_line1 && {
-                        addressLine1: shipping.address_line1
-                    }),
-                    ...(shipping?.address_line2 && {
-                        addressLine2: shipping.address_line2
-                    }),
-                    ...(shipping?.city && {
-                        locality: shipping.city
-                    }),
-                    ...(shipping?.state && {
-                        administrativeDistrictLevel1: shipping.state
-                    }),
-                    ...(shipping?.zip && {
-                        postalCode: shipping.zip
-                    }),
-                    country: shipping?.country || "US",
-                },
+                askForShippingAddress: false,
             },
         });
 
@@ -93,7 +97,7 @@ const createCheckout = async (req, res) => {
 
         await pool.query(
             `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
-            [response.paymentLink.orderId, order.id]
+            [squareOrder.order.id, order.id]
         );
 
         res.status(201).json({ checkoutUrl: response.paymentLink.url, dbOrderId: order.id });

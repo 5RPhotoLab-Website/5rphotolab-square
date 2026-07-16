@@ -134,7 +134,7 @@ const YourCartPage = () => {
                         </div>
 
                         {/* Shipping Address Toggle */}
-                        <button
+                        {/* <button
                             className={`w-full h-[3.5vh] border-4 rounded-[10px] tracking-wider text-[0.625vw] font-atkinson-regular mt-7 cursor-pointer ${shippingRequested
                                 ? "bg-[var(--color-green)] border-[var(--color-green)] text-black"
                                 : "bg-[#F5F5F5] border-[#CECECE] text-[#9C9C9C]"
@@ -190,7 +190,7 @@ const YourCartPage = () => {
                                 </div>
                                 {error && <p className="text-red-500 text-[0.625vw] mt-4 tracking-wider">{error}</p>}
                             </div>
-                        )}
+                        )} */}
 
                         {/* Summary */}
                         <div className="flex justify-between mt-14 tracking-wider font-atkinson-regular text-[0.729vw]">
@@ -286,7 +286,7 @@ const YourCartPage = () => {
                 </div>
 
                 {/* Shipping Address Toggle */}
-                <button
+                {/* <button
                     className={`w-full h-[35px] border-4 rounded-[10px] tracking-wider text-[12px] font-atkinson-regular mt-7 ${shippingRequested
                         ? "bg-[var(--color-green)] border-[var(--color-green)] text-black"
                         : "bg-[#F5F5F5] border-[#CECECE] text-[#9C9C9C]"
@@ -342,7 +342,7 @@ const YourCartPage = () => {
                         </div>
                         {error && <p className="text-red-500 text-[12px] mt-4 tracking-wider">{error}</p>}
                     </div>
-                )}
+                )} */}
 
                 {/* Summary */}
                 <div className="flex justify-between mt-14 tracking-wider font-atkinson-regular text-[14px]">
@@ -363,18 +363,6 @@ const YourCartPage = () => {
 
                 <HelpfulInformation />
 
-
-                {/* Email */}
-                {/* <div className="mt-8">
-                 <input
-                     type="email"
-                     placeholder="Enter your email"
-                     value={email}
-                     onChange={(e) => setEmail(e.target.value)}
-                     className="w-full border-2 border-[#CECECE] rounded-[10px] px-3 py-2 text-[13px] font-atkinson-regular tracking-wider outline-none focus:border-[var(--color-orange)]"
-                 />
-                 {error && <p className="text-red-500 text-[12px] mt-2 tracking-wider">{error}</p>}
-                </div> */}
 
                 {/* Checkout Actions */}
                 <div className="mt-4 flex justify-between mb-8">
