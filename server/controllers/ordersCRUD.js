@@ -66,7 +66,8 @@ const createCheckout = async (req, res) => {
             },
         });
 
-        console.log(response.paymentLink.url);
+        console.log("response payment link url:", response.paymentLink.url);
+        console.log("json response payment link:", JSON.stringify(response.paymentLink, null, 2));
         console.log(
             `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`
         );
