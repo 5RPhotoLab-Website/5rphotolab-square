@@ -113,6 +113,7 @@ export const handleSquareWebhook = async (req, res) => {
         const squarePaymentId = payment.id;
         const receiptUrl = payment.receipt_url;
         const email = payment.buyer_email_address || null;
+        const shipping = payment.shipping_address || {};
 
         // Find and update your order
         const result = await pool.query(
@@ -121,11 +122,18 @@ export const handleSquareWebhook = async (req, res) => {
                  square_receipt_url = $2,
                  payment_status = 'COMPLETED',
                  email = $3,
+                 shipping_name = $4,
+                 shipping_address_line1 = $5,
+                 shipping_address_line2 = $6,
+                 shipping_city = $7,
+                 shipping_state = $8,
+                 shipping_zip = $9,
+                 shipping_country = $10,
                  updated_at = NOW()
-             WHERE square_order_id = $4
+             WHERE square_order_id = $11
                 AND payment_status <> 'COMPLETED'
              RETURNING *`,
-            [squarePaymentId, receiptUrl, email, squareOrderId]
+            [squarePaymentId, receiptUrl, email, `${shipping.first_name || ""} ${shipping.last_name || ""}`.trim(), shipping.address_line_1 || null, shipping.address_line_2 || null, shipping.locality || null, shipping.administrative_district_level_1 || null, shipping.postal_code || null, shipping.country || "US", squareOrderId]
         );
 
         console.log("Updated rows:", result.rowCount);
@@ -167,7 +175,7 @@ export const handleSquareWebhook = async (req, res) => {
                                 View Square Receipt
                             </a>
                         </p>
-                    `
+                    `,
                 });
             }
         }

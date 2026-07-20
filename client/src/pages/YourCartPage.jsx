@@ -10,17 +10,17 @@ const TAX_RATE = 0.08875;
 const YourCartPage = () => {
     const navigate = useNavigate();
     const { cart, removeProduct, addProduct, sessionId } = useCart();
-    const [shippingRequested, setShippingRequested] = useState(false);
-    const [shipping, setShipping] = useState({
-        address_line1: "",
-        address_line2: "",
-        city: "",
-        state: "",
-        zip: "",
-        country: "US"
-    });
+    // const [shippingRequested, setShippingRequested] = useState(false);
+    // const [shipping, setShipping] = useState({
+    //     address_line1: "",
+    //     address_line2: "",
+    //     city: "",
+    //     state: "",
+    //     zip: "",
+    //     country: "US"
+    // });
     const [notes, setNotes] = useState("");
-    const [submitted, setSubmitted] = useState(false);
+    // const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -29,19 +29,19 @@ const YourCartPage = () => {
     const taxes = (subtotal * TAX_RATE).toFixed(2);
     const orderTotal = (subtotal + parseFloat(taxes)).toFixed(2);
 
-    const fieldClass = (value, extra = "") =>
-        `border-2 rounded-[10px] px-3 py-2 font-atkinson-regular tracking-wider outline-none ${extra} ${submitted && !value
-            ? "border-red-400 focus:border-red-400"
-            : "border-[#CECECE] focus:border-[var(--color-orange)]"
-        }`;
+    // const fieldClass = (value, extra = "") =>
+    //     `border-2 rounded-[10px] px-3 py-2 font-atkinson-regular tracking-wider outline-none ${extra} ${submitted && !value
+    //         ? "border-red-400 focus:border-red-400"
+    //         : "border-[#CECECE] focus:border-[var(--color-orange)]"
+    //     }`;
 
     const handleCheckout = async () => {
-        if (shippingRequested) {
-            setSubmitted(true);
-            if (!shipping.address_line1 || !shipping.city || !shipping.state || !shipping.zip) {
-                return setError("Please fill out all required address fields");
-            }
-        }
+        // if (shippingRequested) {
+        //     setSubmitted(true);
+        //     if (!shipping.address_line1 || !shipping.city || !shipping.state || !shipping.zip) {
+        //         return setError("Please fill out all required address fields");
+        //     }
+        // }
         setLoading(true);
         setError(null);
 
@@ -54,10 +54,10 @@ const YourCartPage = () => {
                 },
                 body: JSON.stringify({
                     notes,
-                    shipping: {
-                        requested: shippingRequested,
-                        ...(shippingRequested && shipping)
-                    }
+                    // shipping: {
+                    //     requested: shippingRequested,
+                    //     ...(shippingRequested && shipping)
+                    // }
                 })
             });
 

@@ -8,7 +8,7 @@ const createCheckout = async (req, res) => {
         const session_id = req.headers["x-session-id"];
         if (!session_id) return res.status(400).json({ error: "Missing session" });
 
-        const { shipping, notes } = req.body;
+        const { notes } = req.body;
 
         // Pull cart
         const cartResult = await pool.query(
@@ -31,21 +31,12 @@ const createCheckout = async (req, res) => {
 
         const orderResult = await pool.query(
             `INSERT INTO orders 
-                (session_id, total_amount, payment_status,
-                 shipping_requested, shipping_address_line1, shipping_address_line2,
-                 shipping_city, shipping_state, shipping_zip, shipping_country, notes)
-             VALUES ($1,$2,'PENDING',$3,$4,$5,$6,$7,$8,$9,$10)
+                (session_id, total_amount, payment_status, notes)
+             VALUES ($1,$2,'PENDING',$3)
              RETURNING *`,
             [
                 session_id,
                 totalAmount,
-                shipping?.requested || false,
-                shipping?.address_line1 || null,
-                shipping?.address_line2 || null,
-                shipping?.city || null,
-                shipping?.state || null,
-                shipping?.zip || null,
-                shipping?.country || 'US',
                 notes || null
             ]
         );
@@ -53,12 +44,12 @@ const createCheckout = async (req, res) => {
         const order = orderResult.rows[0];
 
 
-
         const response = await squareClient.checkout.paymentLinks.create({
             idempotencyKey: randomUUID(),
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
+                note: notes || "",
             },
             checkoutOptions: {
                 redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,

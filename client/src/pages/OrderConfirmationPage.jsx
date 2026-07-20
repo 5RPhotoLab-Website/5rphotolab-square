@@ -17,7 +17,7 @@ const OrderConfirmationPage = () => {
         if (!orderId || !sessionId) return;
 
         let attempts = 0;
-        const maxAttempts = 20; // poll for up to ~40 seconds
+        const maxAttempts = 30; // poll for up to ~60 seconds
 
         const poll = async () => {
             try {
@@ -31,7 +31,6 @@ const OrderConfirmationPage = () => {
                 }
 
                 const data = await res.json();
-                // console.log("Order data:", data);
                 setOrder(data);
 
                 if (data.payment_status === "COMPLETED") {
@@ -42,16 +41,20 @@ const OrderConfirmationPage = () => {
                     });
                     if (itemsRes.ok) {
                         const itemsData = await itemsRes.json();
-                        // console.log("Order items data:", itemsData);
                         setItems(itemsData.items);
                         setSquareTotal(itemsData.squareTotal);
                     }
                     return;
                 }
 
+                attempts++;
+
                 if (attempts < maxAttempts) {
-                    attempts++;
                     setTimeout(poll, 2000);
+                } else {
+                    setError(
+                        "Your payment is still processing. Please refresh this page in a minute."
+                    );
                 }
             } catch (err) {
                 setError("Something went wrong loading your order.");
