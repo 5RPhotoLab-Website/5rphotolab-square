@@ -95,6 +95,18 @@ export const handleSquareWebhook = async (req, res) => {
 
     if (event.type === "payment.updated") {
         const payment = event.data.object.payment;
+
+        console.log("Webhook payment.order_id:", payment.order_id);
+        console.log("Webhook payment.id:", payment.id);
+        console.log("Webhook status:", payment.status);
+        const check = await pool.query(
+            `SELECT id, square_order_id, payment_status
+     FROM orders
+     WHERE square_order_id = $1`,
+            [payment.order_id]
+        );
+
+        console.log("Matching DB rows:", check.rows);
         if (payment.status !== "COMPLETED") return res.status(200).json({ received: true });
 
         const squareOrderId = payment.order_id;
@@ -116,7 +128,12 @@ export const handleSquareWebhook = async (req, res) => {
             [squarePaymentId, receiptUrl, email, squareOrderId]
         );
 
+        console.log("Updated rows:", result.rowCount);
+        console.log(result.rows);
+
         const order = result.rows[0];
+
+
 
         if (order) {
             // Clear the cart
