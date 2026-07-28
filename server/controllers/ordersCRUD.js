@@ -49,7 +49,6 @@ const createCheckout = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
-                note: notes || "",
             },
             checkoutOptions: {
                 redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,
