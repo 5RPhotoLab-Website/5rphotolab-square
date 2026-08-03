@@ -198,7 +198,7 @@ const payOrder = async (req, res) => {
         await client.query("BEGIN");
 
         const session_id = req.headers["x-session-id"];
-        const { sourceId, email, shipping  } = req.body;
+        const { sourceId, email, shipping } = req.body;
         if (!email?.trim()) {
             await client.query("ROLLBACK");
             return res.status(400).json({
@@ -248,7 +248,67 @@ const payOrder = async (req, res) => {
         );
 
         //
-        // Charge Square
+        // Charge Square - before including the below code to create square order before charging
+        //
+        // const paymentResponse = await squareClient.payments.create({
+
+        //     sourceId,
+
+        //     idempotencyKey: randomUUID(),
+
+        //     amountMoney: {
+        //         amount: BigInt(Math.round(totalAmount * 100)),
+        //         currency: "USD"
+        //     }
+
+        // });
+
+        // const payment = paymentResponse.payment;
+
+        //
+        // Build Square line items
+        //
+        const lineItems = products.map(product => ({
+            catalogObjectId: product.variation_id,
+            quantity: String(product.quantity)
+        }));
+
+        //
+        // Create Square Order
+        //
+        const orderResponse = await squareClient.orders.create({
+
+            idempotencyKey: randomUUID(),
+
+            order: {
+                locationId: squareEnv.locationId,
+                lineItems,
+                fulfillments: shipping?.requested
+                    ? [{
+                        type: "SHIPMENT",
+                        shipmentDetails: {
+                            recipient: {
+                                emailAddress: email,
+                                address: {
+                                    addressLine1: shipping.address_line1,
+                                    addressLine2: shipping.address_line2 || undefined,
+                                    locality: shipping.city,
+                                    administrativeDistrictLevel1: shipping.state,
+                                    postalCode: shipping.zip,
+                                    country: shipping.country || "US"
+                                }
+                            }
+                        }
+                    }]
+                    : undefined
+            }
+
+        });
+
+        const squareOrder = orderResponse.order;
+
+        //
+        // Charge the Square Order
         //
         const paymentResponse = await squareClient.payments.create({
 
@@ -256,10 +316,9 @@ const payOrder = async (req, res) => {
 
             idempotencyKey: randomUUID(),
 
-            amountMoney: {
-                amount: BigInt(Math.round(totalAmount * 100)),
-                currency: "USD"
-            }
+            orderId: squareOrder.id,
+
+            amountMoney: squareOrder.totalMoney
 
         });
 
@@ -283,11 +342,12 @@ const payOrder = async (req, res) => {
                 shipping_country,
                 total_amount,
                 payment_status,
+                square_order_id,
                 square_payment_id,
                 square_receipt_url
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'PAID',$11,$12 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'PAID',$11,$12,$13 )
             RETURNING *
             `,
             [
@@ -301,6 +361,7 @@ const payOrder = async (req, res) => {
                 shipping?.zip ?? null,
                 shipping?.country ?? "US",
                 totalAmount,
+                squareOrder.id,
                 payment.id,
                 payment.receiptUrl
             ]
