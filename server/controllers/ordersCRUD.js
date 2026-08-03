@@ -238,6 +238,7 @@ const payOrder = async (req, res) => {
         }
 
         const products = cartResult.rows[0].cart_data.products;
+        console.log(JSON.stringify(products, null, 2));
 
         //
         // Recalculate total
@@ -268,6 +269,13 @@ const payOrder = async (req, res) => {
         //
         // Build Square line items
         //
+        console.log(
+    products.map(p => ({
+        name: p.name,
+        variation: p.variation_id,
+        product: p.product_id
+    }))
+);
         const lineItems = products.map(product => ({
             catalogObjectId: product.variation_id,
             quantity: String(product.quantity)
@@ -311,6 +319,8 @@ const payOrder = async (req, res) => {
         //
         // Charge the Square Order
         //
+        console.log(squareOrder);
+console.log(squareOrder.totalMoney);
         const paymentResponse = await squareClient.payments.create({
 
             sourceId,
@@ -328,6 +338,11 @@ const payOrder = async (req, res) => {
         //
         // Create order
         //
+        console.log({
+  squareOrderId: squareOrder.id,
+  paymentId: payment.id,
+  receiptUrl: payment.receiptUrl,
+});
         const orderResult = await client.query(
             `
             INSERT INTO orders
@@ -435,6 +450,7 @@ const payOrder = async (req, res) => {
         await client.query("ROLLBACK");
 
         console.error(err);
+        console.error(err.stack);
 
         res.status(500).json({
             success: false,
