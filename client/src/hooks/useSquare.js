@@ -11,8 +11,8 @@ export default function useSquare() {
     }
 
     const script = document.createElement("script");
-    // script.src = "https://web.squarecdn.com/v1/square.js";
-    script.src = "https://sandbox.web.squarecdn.com/v1/square.js"; // Use sandbox for testing
+    script.src = "https://web.squarecdn.com/v1/square.js";
+    // script.src = "https://sandbox.web.squarecdn.com/v1/square.js"; // Use sandbox for testing
     script.async = true;
     script.onload = () => setLoaded(true);
 
