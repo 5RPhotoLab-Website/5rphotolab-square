@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const appId = import.meta.env.VITE_SQUARE_SANDBOX_APP_ID;
-const locationId = import.meta.env.VITE_SQUARE_SANDBOX_LOCATION_ID;
+const appId = import.meta.env.VITE_SQUARE_PROD_APP_ID;
+const locationId = import.meta.env.VITE_SQUARE_PROD_LOCATION_ID;
 
 export default function CheckoutPage() {
     const { cart, sessionId } = useCart();
