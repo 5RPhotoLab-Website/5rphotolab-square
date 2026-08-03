@@ -19,7 +19,7 @@ Sentry.init({
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <BrowserRouter>
       <PageViewTracker />
       <CartProvider>
@@ -27,5 +27,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <App />
       </CartProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  // </React.StrictMode>
 )

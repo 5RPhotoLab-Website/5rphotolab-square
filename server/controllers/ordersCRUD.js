@@ -2,83 +2,78 @@ import { pool } from "../config/database.js";
 import { squareClient, squareEnv } from "../config/square.js";
 import { randomUUID } from "crypto";
 
-// POST /orders/checkout
-const createCheckout = async (req, res) => {
-    try {
-        const session_id = req.headers["x-session-id"];
-        if (!session_id) return res.status(400).json({ error: "Missing session" });
+// POST /orders/checkout PAYMENTS LINK API
+// const createCheckout = async (req, res) => {
+//     try {
+//         const session_id = req.headers["x-session-id"];
+//         if (!session_id) return res.status(400).json({ error: "Missing session" });
 
-        const { notes } = req.body;
+//         const { notes } = req.body;
 
-        // Pull cart
-        const cartResult = await pool.query(
-            `SELECT * FROM carts WHERE session_id = $1 LIMIT 1`,
-            [session_id]
-        );
-        if (cartResult.rows.length === 0 || cartResult.rows[0].cart_data.products.length === 0) {
-            return res.status(400).json({ error: "Cart is empty" });
-        }
+//         // Pull cart
+//         const cartResult = await pool.query(
+//             `SELECT * FROM carts WHERE session_id = $1 LIMIT 1`,
+//             [session_id]
+//         );
+//         if (cartResult.rows.length === 0 || cartResult.rows[0].cart_data.products.length === 0) {
+//             return res.status(400).json({ error: "Cart is empty" });
+//         }
 
-        const cart = cartResult.rows[0];
-        const products = cart.cart_data.products;
+//         const cart = cartResult.rows[0];
+//         const products = cart.cart_data.products;
 
-        const lineItems = products.map((p) => ({
-            catalogObjectId: p.variation_id,
-            quantity: String(p.quantity),
-        }));
+//         const lineItems = products.map((p) => ({
+//             catalogObjectId: p.variation_id,
+//             quantity: String(p.quantity),
+//         }));
 
-        const totalAmount = products.reduce((sum, p) => sum + p.unitPrice * p.quantity, 0);
+//         const totalAmount = products.reduce((sum, p) => sum + p.unitPrice * p.quantity, 0);
 
-        const orderResult = await pool.query(
-            `INSERT INTO orders 
-                (session_id, total_amount, payment_status, notes)
-             VALUES ($1,$2,'PENDING',$3)
-             RETURNING *`,
-            [
-                session_id,
-                totalAmount,
-                notes || null
-            ]
-        );
+//         const orderResult = await pool.query(
+//             `INSERT INTO orders 
+//                 (session_id, total_amount, payment_status, notes)
+//              VALUES ($1,$2,'PENDING',$3)
+//              RETURNING *`,
+//             [
+//                 session_id,
+//                 totalAmount,
+//                 notes || null
+//             ]
+//         );
 
-        const order = orderResult.rows[0];
+//         const order = orderResult.rows[0];
 
 
-        const response = await squareClient.checkout.paymentLinks.create({
-            idempotencyKey: randomUUID(),
-            order: {
-                locationId: squareEnv.locationId,
-                lineItems,
-            },
-            checkoutOptions: {
-                redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,
-                askForShippingAddress: true,
-            },
-        });
+//         const response = await squareClient.checkout.paymentLinks.create({
+//             idempotencyKey: randomUUID(),
+//             order: {
+//                 locationId: squareEnv.locationId,
+//                 lineItems,
+//             },
+//             checkoutOptions: {
+//                 redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,
+//                 askForShippingAddress: true,
+//             },
+//         });
 
-        console.log("response payment link url:", response.paymentLink.url);
-        console.log("json response payment link:", JSON.stringify(response.paymentLink, null, 2));
-        console.log(
-            `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`
-        );
+//         if (!response.paymentLink) {
+//             return res.status(500).json({ error: "Failed to create checkout link" });
+//         }
 
-        if (!response.paymentLink) {
-            return res.status(500).json({ error: "Failed to create checkout link" });
-        }
+//         await pool.query(
+//             `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
+//             [response.paymentLink.orderId, order.id]
+//         );
 
-        await pool.query(
-            `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
-            [response.paymentLink.orderId, order.id]
-        );
+//         res.status(201).json({ checkoutUrl: response.paymentLink.url, orderId: order.id });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
-        res.status(201).json({ checkoutUrl: response.paymentLink.url, orderId: order.id });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    }
-};
 
-// GET /orders/:orderId
+// GET /orders/:orderId PAYMENTS API
 const getOrderById = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -99,48 +94,296 @@ const getOrderById = async (req, res) => {
     }
 };
 
-// GET /orders/:orderId/items
+// GET /orders/:orderId/items PAYMENTS API
+// const getOrderItems = async (req, res) => {
+//     try {
+//         const { orderId } = req.params;
+//         const session_id = req.headers["x-session-id"];
+
+//         // First get your DB order to verify session and get square_order_id
+//         const result = await pool.query(
+//             `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
+//             [orderId, session_id]
+//         );
+
+//         if (result.rows.length === 0) {
+//             return res.status(404).json({ error: "Order not found" });
+//         }
+
+//         const order = result.rows[0];
+//         if (!order.square_order_id) {
+//             return res.status(404).json({ error: "No Square order found" });
+//         }
+
+//         // Fetch from Square Orders API
+//         const response = await squareClient.orders.get({ orderId: order.square_order_id });
+
+//         const lineItems = response.order.lineItems || [];
+
+//         const items = lineItems.map(item => ({
+//             name: item.name,
+//             quantity: item.quantity,
+//             unitPrice: item.basePriceMoney ? (Number(item.basePriceMoney.amount) / 100).toFixed(2) : "0.00",
+//             totalPrice: item.totalMoney ? (Number(item.totalMoney.amount) / 100).toFixed(2) : "0.00"
+//         }));
+
+//         const squareTotal = response.order.totalMoney
+//             ? (Number(response.order.totalMoney.amount) / 100).toFixed(2)
+//             : null;
+
+//         res.status(200).json({ items, squareTotal });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: error.message });
+//     }
+// };
+
+// GET /orders/:orderId/items WEB PAYMENTS SDK
 const getOrderItems = async (req, res) => {
     try {
         const { orderId } = req.params;
         const session_id = req.headers["x-session-id"];
 
-        // First get your DB order to verify session and get square_order_id
-        const result = await pool.query(
-            `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
+        const orderResult = await pool.query(
+            `
+            SELECT id, total_amount
+            FROM orders
+            WHERE id = $1
+            AND session_id = $2
+            `,
             [orderId, session_id]
         );
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Order not found" });
+        if (orderResult.rows.length === 0) {
+            return res.status(404).json({
+                error: "Order not found"
+            });
         }
 
-        const order = result.rows[0];
-        if (!order.square_order_id) {
-            return res.status(404).json({ error: "No Square order found" });
-        }
+        const itemsResult = await pool.query(
+            `
+            SELECT
+                id,
+                product_name,
+                unit_price,
+                quantity,
+                line_total,
+                modifiers
+            FROM order_items
+            WHERE order_id = $1
+            ORDER BY id
+            `,
+            [orderId]
+        );
 
-        // Fetch from Square Orders API
-        const response = await squareClient.orders.get({ orderId: order.square_order_id });
+        res.json({
+            items: itemsResult.rows,
+            total: orderResult.rows[0].total_amount
+        });
 
-        const lineItems = response.order.lineItems || [];
+    } catch (err) {
+        console.error(err);
 
-        const items = lineItems.map(item => ({
-            name: item.name,
-            quantity: item.quantity,
-            unitPrice: item.basePriceMoney ? (Number(item.basePriceMoney.amount) / 100).toFixed(2) : "0.00",
-            totalPrice: item.totalMoney ? (Number(item.totalMoney.amount) / 100).toFixed(2) : "0.00"
-        }));
-
-        const squareTotal = response.order.totalMoney
-            ? (Number(response.order.totalMoney.amount) / 100).toFixed(2)
-            : null;
-
-        res.status(200).json({ items, squareTotal });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            error: err.message
+        });
     }
 };
 
-export default { createCheckout, getOrderById, getOrderItems };
+// POST /orders/pay
+const payOrder = async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        const session_id = req.headers["x-session-id"];
+        const { sourceId, email, shipping  } = req.body;
+        if (!email?.trim()) {
+            await client.query("ROLLBACK");
+            return res.status(400).json({
+                error: "Email is required."
+            });
+        }
+
+        if (!session_id) {
+            return res.status(400).json({ error: "Missing session" });
+        }
+
+        if (!sourceId) {
+            return res.status(400).json({ error: "Missing sourceId" });
+        }
+
+        //
+        // Get cart
+        //
+        const cartResult = await client.query(
+            `
+            SELECT cart_data
+            FROM carts
+            WHERE session_id = $1
+            LIMIT 1
+            `,
+            [session_id]
+        );
+
+        if (
+            cartResult.rows.length === 0 ||
+            !cartResult.rows[0].cart_data.products.length
+        ) {
+            await client.query("ROLLBACK");
+            return res.status(400).json({
+                error: "Cart is empty"
+            });
+        }
+
+        const products = cartResult.rows[0].cart_data.products;
+
+        //
+        // Recalculate total
+        //
+        const totalAmount = products.reduce(
+            (sum, item) => sum + item.unitPrice * item.quantity,
+            0
+        );
+
+        //
+        // Charge Square
+        //
+        const paymentResponse = await squareClient.payments.create({
+
+            sourceId,
+
+            idempotencyKey: randomUUID(),
+
+            amountMoney: {
+                amount: BigInt(Math.round(totalAmount * 100)),
+                currency: "USD"
+            }
+
+        });
+
+        const payment = paymentResponse.payment;
+
+        //
+        // Create order
+        //
+        const orderResult = await client.query(
+            `
+            INSERT INTO orders
+            (
+                session_id,
+                email,
+                shipping_requested,
+                shipping_address_line1,
+                shipping_address_line2,
+                shipping_city,
+                shipping_state,
+                shipping_zip,
+                shipping_country,
+                total_amount,
+                payment_status,
+                square_payment_id,
+                square_receipt_url
+            )
+            VALUES
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'PAID',$11,$12 )
+            RETURNING *
+            `,
+            [
+                session_id,
+                email,
+                shipping?.requested ?? false,
+                shipping?.address_line1 ?? null,
+                shipping?.address_line2 ?? null,
+                shipping?.city ?? null,
+                shipping?.state ?? null,
+                shipping?.zip ?? null,
+                shipping?.country ?? "US",
+                totalAmount,
+                payment.id,
+                payment.receiptUrl
+            ]
+        );
+
+        const order = orderResult.rows[0];
+
+        //
+        // Snapshot every purchased item
+        //
+        for (const product of products) {
+
+            const lineTotal = product.unitPrice * product.quantity;
+
+            await client.query(
+                `
+        INSERT INTO order_items
+        (
+            order_id,
+            catalog_item_id,
+            variation_id,
+            product_name,
+            unit_price,
+            quantity,
+            line_total,
+            modifiers
+        )
+        VALUES
+        (
+            $1,$2,$3,$4,$5,$6,$7,$8
+        )
+        `,
+                [
+                    order.id,
+                    product.product_id,
+                    product.variation_id,
+                    product.name,
+                    product.unitPrice,
+                    product.quantity,
+                    lineTotal,
+                    JSON.stringify(product.modifiers ?? {})
+                ]
+            );
+        }
+
+        //
+        // Empty cart
+        //
+        await client.query(
+            `
+    DELETE FROM carts
+    WHERE session_id = $1
+    `,
+            [session_id]
+        );
+
+        await client.query("COMMIT");
+
+        res.status(200).json({
+            success: true,
+            orderId: order.id,
+            paymentId: payment.id,
+            receiptUrl: payment.receiptUrl
+        });
+
+    } catch (err) {
+
+        await client.query("ROLLBACK");
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+
+    } finally {
+
+        client.release();
+
+    }
+};
+
+
+
+export default { getOrderById, getOrderItems, payOrder };

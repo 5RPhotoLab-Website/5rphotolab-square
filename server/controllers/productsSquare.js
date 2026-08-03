@@ -202,7 +202,15 @@ export const getAllProducts = async (req, res) => {
         res.status(200).json(results);
 
     } catch (error) {
-        console.error("Square Error:", error);
-        res.status(500).json({ error: "Failed to fetch all products" });
+        console.error("Square Error:");
+        console.error(error);
+
+        if (error.response) {
+            console.error(await error.response.text());
+        }
+
+        res.status(500).json({
+            error: error.message
+        });
     }
 };

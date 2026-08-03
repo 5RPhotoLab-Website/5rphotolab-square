@@ -46,7 +46,6 @@ const HomePageNew = () => {
                     </div>
                     {/* <img src={mapDesktop} alt="Map" className="absolute top-55 transform -translate-y-1/2 right-60 z-0" /> */}
                     <img src={Labmap} alt="Map" className="relative justify-center items-center" />
-
                 </div>
             </div>
 
