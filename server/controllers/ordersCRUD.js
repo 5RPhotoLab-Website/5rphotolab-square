@@ -289,6 +289,7 @@ const payOrder = async (req, res) => {
                         shipmentDetails: {
                             recipient: {
                                 emailAddress: email,
+                                displayName: shipping.name,
                                 address: {
                                     addressLine1: shipping.address_line1,
                                     addressLine2: shipping.address_line2 || undefined,
@@ -334,6 +335,7 @@ const payOrder = async (req, res) => {
                 session_id,
                 email,
                 shipping_requested,
+                shipping_name,
                 shipping_address_line1,
                 shipping_address_line2,
                 shipping_city,
@@ -347,13 +349,14 @@ const payOrder = async (req, res) => {
                 square_receipt_url
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'PAID',$11,$12,$13 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'PAID',$11,$12,$13,$14 )
             RETURNING *
             `,
             [
                 session_id,
                 email,
                 shipping?.requested ?? false,
+                shipping?.name ?? null,
                 shipping?.address_line1 ?? null,
                 shipping?.address_line2 ?? null,
                 shipping?.city ?? null,

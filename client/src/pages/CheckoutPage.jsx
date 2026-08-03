@@ -21,6 +21,7 @@ export default function CheckoutPage() {
     const [email, setEmail] = useState("");
     const [shippingRequested, setShippingRequested] = useState(false);
     const [shipping, setShipping] = useState({
+        name: "",
         address_line1: "",
         address_line2: "",
         city: "",
@@ -69,10 +70,10 @@ export default function CheckoutPage() {
             setLoading(false);
             return;
         }
-
         if (
             shippingRequested &&
             (
+                !shipping.name ||
                 !shipping.address_line1 ||
                 !shipping.city ||
                 !shipping.state ||
@@ -240,6 +241,17 @@ export default function CheckoutPage() {
                             </label>
                             {shippingRequested && (
                                 <div className="space-y-3 mt-4">
+                                    <input
+                                        placeholder="Full Name"
+                                        value={shipping.name}
+                                        onChange={(e) =>
+                                            setShipping({
+                                                ...shipping,
+                                                name: e.target.value
+                                            })
+                                        }
+                                        className={fieldClass(shipping.name)}
+                                    />
 
                                     <input
                                         placeholder="Address line 1"
