@@ -116,10 +116,6 @@ const createOrdersTable = async () => {
     //         updated_at TIMESTAMP DEFAULT NOW()
     //     );
     // `
-    const createOrdersTableQuery = `
-        DROP TABLE IF EXISTS items CASCADE;
-        DROP TABLE IF EXISTS cart_items CASCADE;
-    `
     try {
         const res = await pool.query(createOrdersTableQuery)
         console.log('🎉 orders table created successfully')
@@ -129,3 +125,33 @@ const createOrdersTable = async () => {
 }
 
 // createOrdersTable();
+
+
+const createOrderItemsTable = async () => {
+    const createOrderItemsTableQuery = `
+        DROP TABLE IF EXISTS order_items CASCADE;
+        CREATE TABLE IF NOT EXISTS order_items (
+            id SERIAL PRIMARY KEY,
+            order_id INTEGER NOT NULL
+                REFERENCES orders(id)
+                ON DELETE CASCADE,
+
+            catalog_item_id TEXT,
+            variation_id TEXT,
+            product_name TEXT NOT NULL,
+            unit_price NUMERIC(10,2) NOT NULL,
+            quantity INTEGER NOT NULL,
+            line_total NUMERIC(10,2) NOT NULL,
+            modifiers JSONB DEFAULT '{}'::jsonb,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
+    `
+    try {
+        const res = await pool.query(createOrderItemsTableQuery)
+        console.log('🎉 order_items table created successfully')
+    } catch (error) {
+        console.error('⚠️ error creating order_items table', error)
+    }
+}
+
+// createOrderItemsTable();

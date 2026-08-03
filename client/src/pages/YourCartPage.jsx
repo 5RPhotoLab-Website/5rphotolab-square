@@ -44,31 +44,32 @@ const YourCartPage = () => {
         // }
         setLoading(true);
         setError(null);
+        navigate("/checkout");
 
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/checkout`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-session-id": sessionId
-                },
-                body: JSON.stringify({
-                    notes,
-                    // shipping: {
-                    //     requested: shippingRequested,
-                    //     ...(shippingRequested && shipping)
-                    // }
-                })
-            });
+        // try {
+        //     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/checkout`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             "x-session-id": sessionId
+        //         },
+        //         body: JSON.stringify({
+        //             notes,
+        //             shipping: {
+        //                 requested: shippingRequested,
+        //                 ...(shippingRequested && shipping)
+        //             }
+        //         })
+        //     });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
+        //     const data = await res.json();
+        //     if (!res.ok) throw new Error(data.error);
 
-            window.location.href = data.checkoutUrl;
-        } catch (err) {
-            setError(err.message);
-            setLoading(false);
-        }
+        //     window.location.href = data.checkoutUrl;
+        // } catch (err) {
+        //     setError(err.message);
+        //     setLoading(false);
+        // }
     };
 
     const shouldScroll = cart.length > 2;

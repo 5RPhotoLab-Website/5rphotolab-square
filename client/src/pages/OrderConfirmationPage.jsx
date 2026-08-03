@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { OPTION_LABEL_DATA, TITLE_MAP } from "../config/productConfig";
 
 const OrderConfirmationPage = () => {
     const [searchParams] = useSearchParams();
@@ -33,7 +34,7 @@ const OrderConfirmationPage = () => {
                 const data = await res.json();
                 setOrder(data);
 
-                if (data.payment_status === "COMPLETED") {
+                if (data.payment_status === "PAID" || data.payment_status === "COMPLETED") {
                     refreshCart();
                     // fetch line items
                     const itemsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/items`, {
@@ -84,7 +85,7 @@ const OrderConfirmationPage = () => {
             {/* Desktop */}
             <div className="hidden md:block items-center justify-center max-w-[76vw] mx-auto pb-[35vh]">
                 <div className="mt-5">
-                    {order.payment_status === "COMPLETED" ? (
+                    {(order.payment_status === "PAID" || order.payment_status === "COMPLETED") ? (
                         <h1 className="text-[1.641vw] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
                             Order Confirmed!
                         </h1>
@@ -112,9 +113,51 @@ const OrderConfirmationPage = () => {
                         <div className="mb-2">
                             <p className="text-[var(--color-orange)] mb-2">Items ordered</p>
                             {items.map((item, i) => (
-                                <div key={i} className="flex justify-between text-[0.7vw] font-atkinson-regular tracking-wider mb-1">
-                                    <span>{item.name} × {item.quantity}</span>
-                                    <span>${item.totalPrice}</span>
+                                <div key={i} className="text-[0.7vw] font-atkinson-regular tracking-wider mb-1">
+                                    <div className="flex justify-between">
+                                        <span>{item.product_name} × {item.quantity}</span>
+                                        <span>${item.line_total}</span>
+                                    </div>
+                                    <div className="ml-4">
+                                        <div className="flex flex-col mb-4">
+                                            {Object.keys(TITLE_MAP)
+                                                .filter(
+                                                    key =>
+                                                        item.modifiers?.[key] !== undefined &&
+                                                        item.modifiers?.[key] !== null &&
+                                                        key !== "type"
+                                                )
+                                                .map((key) => {
+                                                    const selectedId = item.modifiers[key];
+
+                                                    const optionData = OPTION_LABEL_DATA[key]?.find(
+                                                        opt => opt.id === selectedId
+                                                    );
+
+                                                    let title = TITLE_MAP[key] || key;
+                                                    title = title.replace(" FOR SHIPPING", "");
+
+                                                    const isMerch = selectedId === "merch";
+
+                                                    return (
+                                                        <div key={key} className="mt-1 font-atkinson-bold tracking-wider">
+                                                            <p className="text-[0.7vw] text-[var(--color-pink)] ">
+                                                                {isMerch ? null : title}
+                                                            </p>
+
+                                                            <p className="text-[0.7vw] font-atkinson-regular tracking-wider">
+                                                                {optionData
+                                                                    ? `${optionData.label}${optionData.price > 0
+                                                                        ? ` (+$${optionData.price.toFixed(2)})`
+                                                                        : ""
+                                                                    }`
+                                                                    : selectedId}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -164,7 +207,7 @@ const OrderConfirmationPage = () => {
             {/* Mobile */}
             <div className="md:hidden p-4">
                 <div className="mt-5">
-                    {order.payment_status === "COMPLETED" ? (
+                    {(order.payment_status === "PAID" || order.payment_status === "COMPLETED") ? (
                         <h1 className="text-[31.5px] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
                             Order Confirmed!
                         </h1>
@@ -193,8 +236,8 @@ const OrderConfirmationPage = () => {
                             <p className="text-[var(--color-orange)] mb-2">Items ordered</p>
                             {items.map((item, i) => (
                                 <div key={i} className="flex justify-between text-[13px] font-atkinson-regular tracking-wider mb-1">
-                                    <span>{item.name} × {item.quantity}</span>
-                                    <span>${item.totalPrice}</span>
+                                    <span>{item.product_name} × {item.quantity}</span>
+                                    <span>${item.line_total}</span>
                                 </div>
                             ))}
                         </div>
