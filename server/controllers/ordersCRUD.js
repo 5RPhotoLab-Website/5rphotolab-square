@@ -239,7 +239,6 @@ const payOrder = async (req, res) => {
         }
 
         const products = cartResult.rows[0].cart_data.products;
-        console.log(JSON.stringify(products, null, 2));
 
         //
         // Recalculate total
@@ -270,13 +269,6 @@ const payOrder = async (req, res) => {
         //
         // Build Square line items
         //
-        console.log(
-            products.map(p => ({
-                name: p.name,
-                variation: p.variation_id,
-                product: p.product_id
-            }))
-        );
         const lineItems = products.map(product => ({
             catalogObjectId: product.variation_id,
             quantity: String(product.quantity)
@@ -436,16 +428,16 @@ const payOrder = async (req, res) => {
         //
         await client.query(
             `
-    DELETE FROM carts
-    WHERE session_id = $1
-    `,
+            UPDATE carts
+            SET
+                cart_data = '{"products":[]}'::jsonb,
+                updated_at = NOW()
+            WHERE session_id = $1;  
+            `,
             [session_id]
         );
 
         await client.query("COMMIT");
-
-        await sendOrderConfirmation(order);
-        await sendAdminNotification(order, products, payment, payment.receiptUrl);
 
         res.status(200).json({
             success: true,
@@ -453,6 +445,11 @@ const payOrder = async (req, res) => {
             paymentId: payment.id,
             receiptUrl: payment.receiptUrl
         });
+
+        // fire-and-forget emails
+        void sendOrderConfirmation(order).catch(console.error);
+
+        void sendAdminNotification({ order, receiptUrl: payment.receiptUrl }).catch(console.error);
 
     } catch (err) {
 
