@@ -1,181 +1,274 @@
 // controllers/webhookSquare.js
 // DEPRECATED CODE
-import { pool } from "../config/database.js";
-import { Resend } from "resend";
+// import { pool } from "../config/database.js";
+// import { Resend } from "resend";
+// import crypto from "crypto";
+
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// const emailHtml = `
+// <!DOCTYPE html>
+// <html lang="en-US">
+// <head>
+//     <meta charset="utf-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+// </head>
+// <body style="margin: 0; padding: 0; background-color: #ffffff; font-family: Arial, sans-serif;">
+//     <div>
+//         <!-- Body -->
+//         <div>
+//             <p style="font-size: 14px; color: #000000;">
+//                 Greetings!
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 We’re writing to confirm that you placed a mail-in order with us and share a few tidbits of info on what comes next.
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 1. Ship your film to us
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//             Please download, print, and fill out our ORDER FORM. (If you prefer, write your name on a piece of paper with your order number.) Put the form and your film in a zip-loc bag, then put the bag in a padded mailer or a box with ample packing material. Address your shipment to:
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 5R Photo Lab<br>
+//                 31 Washington Square West<br>
+//                 Suite 3R-C<br>
+//                 New York, NY 10011
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 You can use any carrier you like, but please choose a service that provides a tracking number—it’s worth the peace of mind. Most of your fellow mail-in customers choose USPS Ground Advantage, but that’s not always the best fit for everyone. For our own shipping, we use Pirate Ship, which makes it easy to compare different options and offers discounts. 
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 Pro tip for dispo users: you can remove the film from your camera, which reduces the weight, bulk, and sometimes the cost of your shipment. Just ask us how! </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 2. Once your shipment reaches us, we get straight to work! C-41 (color and Ilford XP2) film is typically processed the day or the day after we receive it, scanned, and sent to you the following day. Black and white film takes a little longer—normally about five days after we receive it. </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 3. Look out for an email from WeTransfer! You’ll see a link to download your scans—the link lasts a year from the date we send it to you. WeTransfer offers a mobile app, but we recommend using a desktop browser. It’s also nice to have your photos in a more permanent place than your phone! </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 4. If you ordered prints or requested negatives, we’ll box them up and send you an invoice for the cost of shipping only. Please confirm your address once you receive the scans. Once you pay the invoice, we take your shipment to the post office. We normally ship your prints and negatives within a week of sending your scans. </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 5. If your roll is blank, you’ll receive a $10 credit towards your next order. 5R Photo Lab does not offer refunds. </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 6. Call or text us at (646) 319-4106 or email  <a href="mailto:info@5rphotolab.com">info@5rphotolab.com</a> if we can be of any assistance, or just to tell us how much you love your scans and prints :)
+//             </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 Can’t wait to meet your film! </p>
+//             <p style="font-size: 14px; color: #000000;">
+//                 -5R
+//             </p>
+//         </div>
+
+//         <!-- Footer -->
+//         <div style="text-align: left;">
+//             <p style="font-size: 12px; text-align: left;">
+//                 --
+//             </p>
+//             <img src="https://ci3.googleusercontent.com/mail-sig/AIorK4zQR9e8Y82YsnsSkbGVSliaE9knLsIO_DyNDC4BlBhLx4MYb5enJ8uHE0ieuWPqXSJpNrK-IKw6CZzs" alt="5R Photo Lab Logo" style="display: block; width: 100px; height: auto;">
+//             <a href="https://www.5rphotolab.com" style="font-size: 12px;">www.5rphotolab.com</a><br/>
+//             <a href="https://5rphotolab.square.site/" style="font-size: 12px;">Place Your Mail-In Order</a>
+//         </div>
+//     </div>
+// </body>
+// </html>
+// `;
+
+// export const handleSquareWebhook = async (req, res) => {
+//     // Verify the webhook is actually from Square
+//     const signature = req.headers["x-square-hmacsha256-signature"];
+//     const body = req.rawBody; // needs rawBody middleware (see routes below)
+//     const key = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
+//     const url = `${process.env.SERVER_URL}/api/webhooks/square`;
+
+//     const hmac = crypto.createHmac("sha256", key);
+//     hmac.update(url + body);
+//     const expected = hmac.digest("base64");
+
+//     const valid = crypto.timingSafeEqual(
+//         Buffer.from(signature),
+//         Buffer.from(expected)
+//     );
+
+//     if (!valid) {
+//         return res.status(403).json({ error: "Invalid signature" });
+//     }
+
+//     const event = JSON.parse(body);
+
+//     if (event.type === "payment.updated") {
+//         const payment = event.data.object.payment;
+
+//         const check = await pool.query(
+//             `SELECT id, square_order_id, payment_status
+//      FROM orders
+//      WHERE square_order_id = $1`,
+//             [payment.order_id]
+//         );
+
+//         console.log("Matching DB rows:", check.rows);
+//         if (payment.status !== "COMPLETED") return res.status(200).json({ received: true });
+
+//         const squareOrderId = payment.order_id;
+//         const squarePaymentId = payment.id;
+//         const receiptUrl = payment.receipt_url;
+//         const email = payment.buyer_email_address || null;
+//         const shipping = payment.shipping_address || {};
+
+//         // Find and update your order
+//         const result = await pool.query(
+//             `UPDATE orders
+//              SET square_payment_id = $1,
+//                  square_receipt_url = $2,
+//                  payment_status = 'COMPLETED',
+//                  email = $3,
+//                  shipping_name = $4,
+//                  shipping_address_line1 = $5,
+//                  shipping_address_line2 = $6,
+//                  shipping_city = $7,
+//                  shipping_state = $8,
+//                  shipping_zip = $9,
+//                  shipping_country = $10,
+//                  updated_at = NOW()
+//              WHERE square_order_id = $11
+//                 AND payment_status <> 'COMPLETED'
+//              RETURNING *`,
+//             [squarePaymentId, receiptUrl, email, `${shipping.first_name || ""} ${shipping.last_name || ""}`.trim(), shipping.address_line_1 || null, shipping.address_line_2 || null, shipping.locality || null, shipping.administrative_district_level_1 || null, shipping.postal_code || null, shipping.country || "US", squareOrderId]
+//         );
+
+
+//         const order = result.rows[0];
+
+
+
+//         if (order) {
+//             // Clear the cart
+//             await pool.query(
+//                 `UPDATE carts SET cart_data = $1, updated_at = NOW() WHERE session_id = $2`,
+//                 [{ products: [] }, order.session_id]
+//             );
+
+//             // Send confirmation email
+//             if (order.email) {
+//                 await resend.emails.send({
+//                     from: "5R Photo Lab <info@5rphotolab.com>",
+//                     to: order.email,
+//                     subject: `Thank you for your mail-in order!`,
+//                     html: emailHtml
+//                 });
+//                 await resend.emails.send({
+//                     from: "5R Photo Lab <info@5rphotolab.com>",
+//                     to: "info@5rphotolab.com",
+//                     subject: `Order #${order.id} placed at 5R Photo Lab by ${payment.billing_address.first_name} ${payment.billing_address.last_name}`,
+//                     html: `
+//                         <h2>New Order</h2>
+
+//                         <p><b>Customer:</b> ${payment.billing_address.first_name} ${payment.billing_address.last_name}</p>
+//                         <p><b>Email:</b> ${order.email}</p>
+//                         <p><b>Amount:</b> $${(payment.total_money.amount / 100).toFixed(2)}</p>
+//                         <p><b>Notes:</b> ${order.notes || "None"}</p>
+
+//                         <p>
+//                             <a href="${receiptUrl}">
+//                                 View Square Receipt
+//                             </a>
+//                         </p>
+//                     `,
+//                 });
+//             }
+//         }
+//     }
+
+//     res.status(200).json({ received: true });
+// };
+
 import crypto from "crypto";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const emailHtml = `
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin: 0; padding: 0; background-color: #ffffff; font-family: Arial, sans-serif;">
-    <div>
-        <!-- Body -->
-        <div>
-            <p style="font-size: 14px; color: #000000;">
-                Greetings!
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-                We’re writing to confirm that you placed a mail-in order with us and share a few tidbits of info on what comes next.
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-                1. Ship your film to us
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-            Please download, print, and fill out our ORDER FORM. (If you prefer, write your name on a piece of paper with your order number.) Put the form and your film in a zip-loc bag, then put the bag in a padded mailer or a box with ample packing material. Address your shipment to:
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-                5R Photo Lab<br>
-                31 Washington Square West<br>
-                Suite 3R-C<br>
-                New York, NY 10011
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-                You can use any carrier you like, but please choose a service that provides a tracking number—it’s worth the peace of mind. Most of your fellow mail-in customers choose USPS Ground Advantage, but that’s not always the best fit for everyone. For our own shipping, we use Pirate Ship, which makes it easy to compare different options and offers discounts. 
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-                Pro tip for dispo users: you can remove the film from your camera, which reduces the weight, bulk, and sometimes the cost of your shipment. Just ask us how! </p>
-            <p style="font-size: 14px; color: #000000;">
-                2. Once your shipment reaches us, we get straight to work! C-41 (color and Ilford XP2) film is typically processed the day or the day after we receive it, scanned, and sent to you the following day. Black and white film takes a little longer—normally about five days after we receive it. </p>
-            <p style="font-size: 14px; color: #000000;">
-                3. Look out for an email from WeTransfer! You’ll see a link to download your scans—the link lasts a year from the date we send it to you. WeTransfer offers a mobile app, but we recommend using a desktop browser. It’s also nice to have your photos in a more permanent place than your phone! </p>
-            <p style="font-size: 14px; color: #000000;">
-                4. If you ordered prints or requested negatives, we’ll box them up and send you an invoice for the cost of shipping only. Please confirm your address once you receive the scans. Once you pay the invoice, we take your shipment to the post office. We normally ship your prints and negatives within a week of sending your scans. </p>
-            <p style="font-size: 14px; color: #000000;">
-                5. If your roll is blank, you’ll receive a $10 credit towards your next order. 5R Photo Lab does not offer refunds. </p>
-            <p style="font-size: 14px; color: #000000;">
-                6. Call or text us at (646) 319-4106 or email  <a href="mailto:info@5rphotolab.com">info@5rphotolab.com</a> if we can be of any assistance, or just to tell us how much you love your scans and prints :)
-            </p>
-            <p style="font-size: 14px; color: #000000;">
-                Can’t wait to meet your film! </p>
-            <p style="font-size: 14px; color: #000000;">
-                -5R
-            </p>
-        </div>
-
-        <!-- Footer -->
-        <div style="text-align: left;">
-            <p style="font-size: 12px; text-align: left;">
-                --
-            </p>
-            <img src="https://ci3.googleusercontent.com/mail-sig/AIorK4zQR9e8Y82YsnsSkbGVSliaE9knLsIO_DyNDC4BlBhLx4MYb5enJ8uHE0ieuWPqXSJpNrK-IKw6CZzs" alt="5R Photo Lab Logo" style="display: block; width: 100px; height: auto;">
-            <a href="https://www.5rphotolab.com" style="font-size: 12px;">www.5rphotolab.com</a><br/>
-            <a href="https://5rphotolab.square.site/" style="font-size: 12px;">Place Your Mail-In Order</a>
-        </div>
-    </div>
-</body>
-</html>
-`;
+import { pool } from "../config/database.js";
 
 export const handleSquareWebhook = async (req, res) => {
-    // Verify the webhook is actually from Square
-    const signature = req.headers["x-square-hmacsha256-signature"];
-    const body = req.rawBody; // needs rawBody middleware (see routes below)
-    const key = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
-    const url = `${process.env.SERVER_URL}/api/webhooks/square`;
+    try {
+        const signature = req.headers["x-square-hmacsha256-signature"];
+        const body = req.rawBody;
 
-    const hmac = crypto.createHmac("sha256", key);
-    hmac.update(url + body);
-    const expected = hmac.digest("base64");
-
-    const valid = crypto.timingSafeEqual(
-        Buffer.from(signature),
-        Buffer.from(expected)
-    );
-
-    if (!valid) {
-        return res.status(403).json({ error: "Invalid signature" });
-    }
-
-    const event = JSON.parse(body);
-
-    if (event.type === "payment.updated") {
-        const payment = event.data.object.payment;
-
-        const check = await pool.query(
-            `SELECT id, square_order_id, payment_status
-     FROM orders
-     WHERE square_order_id = $1`,
-            [payment.order_id]
+        const hmac = crypto.createHmac(
+            "sha256",
+            process.env.SQUARE_WEBHOOK_SIGNATURE_KEY
         );
 
-        console.log("Matching DB rows:", check.rows);
-        if (payment.status !== "COMPLETED") return res.status(200).json({ received: true });
-
-        const squareOrderId = payment.order_id;
-        const squarePaymentId = payment.id;
-        const receiptUrl = payment.receipt_url;
-        const email = payment.buyer_email_address || null;
-        const shipping = payment.shipping_address || {};
-
-        // Find and update your order
-        const result = await pool.query(
-            `UPDATE orders
-             SET square_payment_id = $1,
-                 square_receipt_url = $2,
-                 payment_status = 'COMPLETED',
-                 email = $3,
-                 shipping_name = $4,
-                 shipping_address_line1 = $5,
-                 shipping_address_line2 = $6,
-                 shipping_city = $7,
-                 shipping_state = $8,
-                 shipping_zip = $9,
-                 shipping_country = $10,
-                 updated_at = NOW()
-             WHERE square_order_id = $11
-                AND payment_status <> 'COMPLETED'
-             RETURNING *`,
-            [squarePaymentId, receiptUrl, email, `${shipping.first_name || ""} ${shipping.last_name || ""}`.trim(), shipping.address_line_1 || null, shipping.address_line_2 || null, shipping.locality || null, shipping.administrative_district_level_1 || null, shipping.postal_code || null, shipping.country || "US", squareOrderId]
+        hmac.update(
+            `${process.env.SERVER_URL}/api/webhooks/square${body}`
         );
 
+        const expected = hmac.digest("base64");
 
-        const order = result.rows[0];
-
-
-
-        if (order) {
-            // Clear the cart
-            await pool.query(
-                `UPDATE carts SET cart_data = $1, updated_at = NOW() WHERE session_id = $2`,
-                [{ products: [] }, order.session_id]
-            );
-
-            // Send confirmation email
-            if (order.email) {
-                await resend.emails.send({
-                    from: "5R Photo Lab <info@5rphotolab.com>",
-                    to: order.email,
-                    subject: `Thank you for your mail-in order!`,
-                    html: emailHtml
-                });
-                await resend.emails.send({
-                    from: "5R Photo Lab <info@5rphotolab.com>",
-                    to: "info@5rphotolab.com",
-                    subject: `Order #${order.id} placed at 5R Photo Lab by ${payment.billing_address.first_name} ${payment.billing_address.last_name}`,
-                    html: `
-                        <h2>New Order</h2>
-
-                        <p><b>Customer:</b> ${payment.billing_address.first_name} ${payment.billing_address.last_name}</p>
-                        <p><b>Email:</b> ${order.email}</p>
-                        <p><b>Amount:</b> $${(payment.total_money.amount / 100).toFixed(2)}</p>
-                        <p><b>Notes:</b> ${order.notes || "None"}</p>
-
-                        <p>
-                            <a href="${receiptUrl}">
-                                View Square Receipt
-                            </a>
-                        </p>
-                    `,
-                });
-            }
+        if (
+            !crypto.timingSafeEqual(
+                Buffer.from(signature),
+                Buffer.from(expected)
+            )
+        ) {
+            return res.status(403).json({
+                error: "Invalid signature"
+            });
         }
-    }
 
-    res.status(200).json({ received: true });
+        const event = JSON.parse(body);
+
+        switch (event.type) {
+
+            case "payment.updated": {
+
+                const payment = event.data.object.payment;
+
+                await pool.query(
+                    `
+                    UPDATE orders
+                    SET
+                        payment_status = $1,
+                        updated_at = NOW()
+                    WHERE square_payment_id = $2
+                    `,
+                    [
+                        payment.status,
+                        payment.id
+                    ]
+                );
+
+                break;
+            }
+
+            case "refund.updated": {
+
+                const refund = event.data.object.refund;
+
+                await pool.query(
+                    `
+                    UPDATE orders
+                    SET
+                        payment_status = 'REFUNDED',
+                        updated_at = NOW()
+                    WHERE square_payment_id = $1
+                    `,
+                    [
+                        refund.payment_id
+                    ]
+                );
+
+                break;
+            }
+
+            default:
+                break;
+        }
+
+        return res.json({
+            received: true
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+            error: err.message
+        });
+    }
 };

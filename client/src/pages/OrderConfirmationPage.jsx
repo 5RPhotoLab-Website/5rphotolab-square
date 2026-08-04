@@ -106,6 +106,10 @@ const OrderConfirmationPage = () => {
                         <span>{order.payment_status}</span>
                     </div>
                     <div className="flex justify-between mb-2">
+                        <span className="text-[var(--color-orange)]">Phone Number</span>
+                        <span>{order.phone_number || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between mb-2">
                         <span className="text-[var(--color-orange)]">Email</span>
                         <span>{order.email || 'N/A'}</span>
                     </div>
@@ -175,6 +179,13 @@ const OrderConfirmationPage = () => {
                             <p>{order.shipping_address_line1}</p>
                             {order.shipping_address_line2 && <p>{order.shipping_address_line2}</p>}
                             <p>{order.shipping_city}, {order.shipping_state} {order.shipping_zip}</p>
+                        </div>
+                    )}
+
+                    {order.notes && (
+                        <div className="mt-4">
+                            <p className="text-[var(--color-orange)] mb-1">Notes</p>
+                            <p>{order.notes}</p>
                         </div>
                     )}
 
