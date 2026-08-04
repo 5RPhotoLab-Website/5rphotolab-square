@@ -116,6 +116,10 @@ const createOrdersTable = async () => {
     //         updated_at TIMESTAMP DEFAULT NOW()
     //     );
     // `
+    const createOrdersTableQuery = `
+        ALTER TABLE orders
+        ADD column IF NOT EXISTS phone_number VARCHAR(30);
+    `
     try {
         const res = await pool.query(createOrdersTableQuery)
         console.log('🎉 orders table created successfully')

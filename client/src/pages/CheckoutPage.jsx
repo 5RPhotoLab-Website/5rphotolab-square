@@ -20,6 +20,9 @@ export default function CheckoutPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const total = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    const [notes, setNotes] = useState("");
+
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
     const [shippingRequested, setShippingRequested] = useState(false);
     const [shipping, setShipping] = useState({
@@ -69,6 +72,11 @@ export default function CheckoutPage() {
         setLoading(true);
         setSubmitted(true);
         setError("");
+        if (!phoneNumber.trim()) {
+            setError("Phone number is required.");
+            setLoading(false);
+            return;
+        }
         if (!email.trim()) {
             setError("Email is required.");
             setLoading(false);
@@ -113,11 +121,13 @@ export default function CheckoutPage() {
 
                 body: JSON.stringify({
                     sourceId: result.token,
+                    phone_number: phoneNumber,
                     email,
                     shipping: {
                         requested: shippingRequested,
                         ...(shippingRequested ? shipping : {})
-                    }
+                    },
+                    notes
                 })
             });
 
@@ -204,6 +214,14 @@ export default function CheckoutPage() {
                                 <span>${total.toFixed(2)}</span>
 
                             </div>
+                            <input
+                                type="text"
+                                placeholder="Any notes?"
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                className='w-[9.844vw] h-[3.5vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-wider text-[0.625vw] font-atkinson-regular text-[#9C9C9C] tracking-wider outline-none pl-3'
+                                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                            />
                         </div>
 
                         {/* Payment */}
@@ -224,6 +242,13 @@ export default function CheckoutPage() {
                             <h3 className="font-semibold mb-3">
                                 Contact
                             </h3>
+                            <input
+                                type="phoneNumber"
+                                placeholder="Phone Number"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                className={fieldClass(phoneNumber)}
+                            />
 
                             <input
                                 type="email"

@@ -124,14 +124,14 @@ const YourCartPage = () => {
                             >
                                 Add more items
                             </button>
-                            <input
+                            {/* <input
                                 type="text"
                                 placeholder="Any notes?"
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 className='w-[9.844vw] h-[3.5vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-wider text-[0.625vw] font-atkinson-regular text-[#9C9C9C] tracking-wider outline-none pl-3'
                                 style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
-                            />
+                            /> */}
                         </div>
 
                         {/* Shipping Address Toggle */}

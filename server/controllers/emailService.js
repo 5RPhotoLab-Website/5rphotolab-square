@@ -1,5 +1,3 @@
-// controllers/webhookSquare.js
-// DEPRECATED CODE
 import { pool } from "../config/database.js";
 import { Resend } from "resend";
 import crypto from "crypto";
@@ -72,110 +70,90 @@ const emailHtml = `
 </html>
 `;
 
-export const handleSquareWebhook = async (req, res) => {
-    // Verify the webhook is actually from Square
-    const signature = req.headers["x-square-hmacsha256-signature"];
-    const body = req.rawBody; // needs rawBody middleware (see routes below)
-    const key = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
-    const url = `${process.env.SERVER_URL}/api/webhooks/square`;
+export async function sendOrderConfirmation(order) {
+    if (!order.email) return;
 
-    const hmac = crypto.createHmac("sha256", key);
-    hmac.update(url + body);
-    const expected = hmac.digest("base64");
+    await resend.emails.send({
+        from: "5R Photo Lab <info@5rphotolab.com>",
+        to: order.email,
+        subject: "Thank you for your mail-in order!",
+        html: emailHtml,
+    });
+}
 
-    const valid = crypto.timingSafeEqual(
-        Buffer.from(signature),
-        Buffer.from(expected)
-    );
+export async function sendAdminNotification({
+    order,
+    items,
+    payment,
+    receiptUrl
+}) {
 
-    if (!valid) {
-        return res.status(403).json({ error: "Invalid signature" });
-    }
+    const itemsHtml = items.map(item => `
+        <tr>
+            <td>${item.quantity}×</td>
+            <td>${item.product_name}</td>
+            <td style="text-align:right">
+                $${Number(item.line_total).toFixed(2)}
+            </td>
+        </tr>
+    `).join("");
 
-    const event = JSON.parse(body);
+    await resend.emails.send({
+        from: "5R Photo Lab <info@5rphotolab.com>",
+        to: "info@5rphotolab.com",
+        subject: `New Order #${order.id}`,
 
-    if (event.type === "payment.updated") {
-        const payment = event.data.object.payment;
+        html: `
+<h2>New Order #${order.id}</h2>
 
-        const check = await pool.query(
-            `SELECT id, square_order_id, payment_status
-     FROM orders
-     WHERE square_order_id = $1`,
-            [payment.order_id]
-        );
+<h3>Customer</h3>
 
-        console.log("Matching DB rows:", check.rows);
-        if (payment.status !== "COMPLETED") return res.status(200).json({ received: true });
+<p>
+<b>Name:</b> ${order.shipping_name || "Not provided"}<br>
+<b>Email:</b> ${order.email}<br>
+<b>Total:</b> $${Number(order.total_amount).toFixed(2)}<br>
+<b>Payment:</b> ${payment.status}<br>
+</p>
 
-        const squareOrderId = payment.order_id;
-        const squarePaymentId = payment.id;
-        const receiptUrl = payment.receipt_url;
-        const email = payment.buyer_email_address || null;
-        const shipping = payment.shipping_address || {};
+<h3>Items</h3>
 
-        // Find and update your order
-        const result = await pool.query(
-            `UPDATE orders
-             SET square_payment_id = $1,
-                 square_receipt_url = $2,
-                 payment_status = 'COMPLETED',
-                 email = $3,
-                 shipping_name = $4,
-                 shipping_address_line1 = $5,
-                 shipping_address_line2 = $6,
-                 shipping_city = $7,
-                 shipping_state = $8,
-                 shipping_zip = $9,
-                 shipping_country = $10,
-                 updated_at = NOW()
-             WHERE square_order_id = $11
-                AND payment_status <> 'COMPLETED'
-             RETURNING *`,
-            [squarePaymentId, receiptUrl, email, `${shipping.first_name || ""} ${shipping.last_name || ""}`.trim(), shipping.address_line_1 || null, shipping.address_line_2 || null, shipping.locality || null, shipping.administrative_district_level_1 || null, shipping.postal_code || null, shipping.country || "US", squareOrderId]
-        );
+<table cellpadding="6" cellspacing="0" border="1">
+<tr>
+<th>Qty</th>
+<th>Item</th>
+<th>Total</th>
+</tr>
 
+${itemsHtml}
 
-        const order = result.rows[0];
+</table>
 
+<h3>Shipping</h3>
 
+<p>
+${order.shipping_name || ""}<br>
+${order.shipping_address_line1 || ""}<br>
+${order.shipping_address_line2 || ""}<br>
+${order.shipping_city || ""}, ${order.shipping_state || ""} ${order.shipping_zip || ""}<br>
+${order.shipping_country || ""}
+</p>
 
-        if (order) {
-            // Clear the cart
-            await pool.query(
-                `UPDATE carts SET cart_data = $1, updated_at = NOW() WHERE session_id = $2`,
-                [{ products: [] }, order.session_id]
-            );
+<p>
+<b>Receipt:</b><br>
+<a href="${receiptUrl}">
+${receiptUrl}
+</a>
+</p>
 
-            // Send confirmation email
-            if (order.email) {
-                await resend.emails.send({
-                    from: "5R Photo Lab <info@5rphotolab.com>",
-                    to: order.email,
-                    subject: `Thank you for your mail-in order!`,
-                    html: emailHtml
-                });
-                await resend.emails.send({
-                    from: "5R Photo Lab <info@5rphotolab.com>",
-                    to: "info@5rphotolab.com",
-                    subject: `Order #${order.id} placed at 5R Photo Lab by ${payment.billing_address.first_name} ${payment.billing_address.last_name}`,
-                    html: `
-                        <h2>New Order</h2>
+<p>
+<b>Square Order:</b> ${order.square_order_id}<br>
+<b>Square Payment:</b> ${order.square_payment_id}
+</p>
 
-                        <p><b>Customer:</b> ${payment.billing_address.first_name} ${payment.billing_address.last_name}</p>
-                        <p><b>Email:</b> ${order.email}</p>
-                        <p><b>Amount:</b> $${(payment.total_money.amount / 100).toFixed(2)}</p>
-                        <p><b>Notes:</b> ${order.notes || "None"}</p>
-
-                        <p>
-                            <a href="${receiptUrl}">
-                                View Square Receipt
-                            </a>
-                        </p>
-                    `,
-                });
+${order.notes
+                ? `<p><b>Notes:</b><br>${order.notes}</p>`
+                : ""
             }
-        }
-    }
-
-    res.status(200).json({ received: true });
-};
+`
+    });
+}

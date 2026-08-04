@@ -198,7 +198,7 @@ const payOrder = async (req, res) => {
         await client.query("BEGIN");
 
         const session_id = req.headers["x-session-id"];
-        const { sourceId, email, shipping } = req.body;
+        const { sourceId, email, shipping, phone_number, notes } = req.body;
         if (!email?.trim()) {
             await client.query("ROLLBACK");
             return res.status(400).json({
@@ -270,12 +270,12 @@ const payOrder = async (req, res) => {
         // Build Square line items
         //
         console.log(
-    products.map(p => ({
-        name: p.name,
-        variation: p.variation_id,
-        product: p.product_id
-    }))
-);
+            products.map(p => ({
+                name: p.name,
+                variation: p.variation_id,
+                product: p.product_id
+            }))
+        );
         const lineItems = products.map(product => ({
             catalogObjectId: product.variation_id,
             quantity: String(product.quantity)
@@ -291,12 +291,14 @@ const payOrder = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
+                note: notes || undefined,
                 fulfillments: shipping?.requested
                     ? [{
                         type: "SHIPMENT",
                         shipmentDetails: {
                             recipient: {
                                 emailAddress: email,
+                                phoneNumber: phone_number || undefined,
                                 displayName: shipping.name,
                                 address: {
                                     addressLine1: shipping.address_line1,
@@ -319,8 +321,6 @@ const payOrder = async (req, res) => {
         //
         // Charge the Square Order
         //
-        console.log(squareOrder);
-console.log(squareOrder.totalMoney);
         const paymentResponse = await squareClient.payments.create({
 
             sourceId,
@@ -338,11 +338,6 @@ console.log(squareOrder.totalMoney);
         //
         // Create order
         //
-        console.log({
-  squareOrderId: squareOrder.id,
-  paymentId: payment.id,
-  receiptUrl: payment.receiptUrl,
-});
         const orderResult = await client.query(
             `
             INSERT INTO orders
@@ -361,10 +356,12 @@ console.log(squareOrder.totalMoney);
                 payment_status,
                 square_order_id,
                 square_payment_id,
-                square_receipt_url
+                square_receipt_url,
+                phone_number,
+                notes
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'PAID',$12,$13,$14 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'PAID',$12,$13,$14,$15,$16 )
             RETURNING *
             `,
             [
@@ -381,7 +378,9 @@ console.log(squareOrder.totalMoney);
                 totalAmount,
                 squareOrder.id,
                 payment.id,
-                payment.receiptUrl
+                payment.receiptUrl,
+                phone_number,
+                notes
             ]
         );
 
