@@ -1,6 +1,7 @@
 import { pool } from "../config/database.js";
 import { squareClient, squareEnv } from "../config/square.js";
 import { randomUUID } from "crypto";
+import { sendOrderConfirmation, sendAdminNotification } from "./emailService.js";
 
 // POST /orders/checkout PAYMENTS LINK API
 // const createCheckout = async (req, res) => {
@@ -436,6 +437,9 @@ const payOrder = async (req, res) => {
         );
 
         await client.query("COMMIT");
+
+        await sendOrderConfirmation(order);
+        await sendAdminNotification(order, products, payment, payment.receiptUrl);
 
         res.status(200).json({
             success: true,
