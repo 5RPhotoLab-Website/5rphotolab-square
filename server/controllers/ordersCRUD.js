@@ -292,10 +292,15 @@ const payOrder = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
-                note: notes || undefined,
+                metadata: notes
+                    ? {
+                        customer_notes: notes
+                    }
+                    : undefined,
                 fulfillments: shipping?.requested
                     ? [{
                         type: "SHIPMENT",
+                        note: notes || undefined,
                         shipmentDetails: {
                             recipient: {
                                 emailAddress: email,
@@ -362,7 +367,7 @@ const payOrder = async (req, res) => {
                 notes
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'PAID',$12,$13,$14,$15,$16 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17 )
             RETURNING *
             `,
             [
@@ -377,6 +382,7 @@ const payOrder = async (req, res) => {
                 shipping?.zip ?? null,
                 shipping?.country ?? "US",
                 totalAmount,
+                payment.status,
                 squareOrder.id,
                 payment.id,
                 payment.receiptUrl,
