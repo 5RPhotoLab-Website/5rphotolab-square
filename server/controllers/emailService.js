@@ -81,79 +81,25 @@ export async function sendOrderConfirmation(order) {
     });
 }
 
-export async function sendAdminNotification({
-    order,
-    items,
-    payment,
-    receiptUrl
-}) {
 
-    const itemsHtml = items.map(item => `
-        <tr>
-            <td>${item.quantity}×</td>
-            <td>${item.product_name}</td>
-            <td style="text-align:right">
-                $${Number(item.line_total).toFixed(2)}
-            </td>
-        </tr>
-    `).join("");
-
+export async function sendAdminNotification(order, receiptUrl) {
     await resend.emails.send({
         from: "5R Photo Lab <info@5rphotolab.com>",
         to: "info@5rphotolab.com",
-        subject: `New Order #${order.id}`,
-
+        subject: `Order #${order.id} placed at 5R Photo Lab by ${order.shipping_name || order.email}`,
         html: `
-<h2>New Order #${order.id}</h2>
+                        <h2>New Order</h2>
 
-<h3>Customer</h3>
+                        <p><b>Customer:</b> ${order.shipping_name}</p>
+                        <p><b>Email:</b> ${order.email}</p>
+                        <p><b>Amount:</b> $${Number(order.total_amount).toFixed(2)}</p>
+                        <p><b>Notes:</b> ${order.notes || "None"}</p>
 
-<p>
-<b>Name:</b> ${order.shipping_name || "Not provided"}<br>
-<b>Email:</b> ${order.email}<br>
-<b>Total:</b> $${Number(order.total_amount).toFixed(2)}<br>
-<b>Payment:</b> ${payment.status}<br>
-</p>
-
-<h3>Items</h3>
-
-<table cellpadding="6" cellspacing="0" border="1">
-<tr>
-<th>Qty</th>
-<th>Item</th>
-<th>Total</th>
-</tr>
-
-${itemsHtml}
-
-</table>
-
-<h3>Shipping</h3>
-
-<p>
-${order.shipping_name || ""}<br>
-${order.shipping_address_line1 || ""}<br>
-${order.shipping_address_line2 || ""}<br>
-${order.shipping_city || ""}, ${order.shipping_state || ""} ${order.shipping_zip || ""}<br>
-${order.shipping_country || ""}
-</p>
-
-<p>
-<b>Receipt:</b><br>
-<a href="${receiptUrl}">
-${receiptUrl}
-</a>
-</p>
-
-<p>
-<b>Square Order:</b> ${order.square_order_id}<br>
-<b>Square Payment:</b> ${order.square_payment_id}
-</p>
-
-${order.notes
-                ? `<p><b>Notes:</b><br>${order.notes}</p>`
-                : ""
-            }
-`
+                        <p>
+                            <a href="${receiptUrl}">
+                                View Square Receipt
+                            </a>
+                        </p>
+                    `,
     });
 }
