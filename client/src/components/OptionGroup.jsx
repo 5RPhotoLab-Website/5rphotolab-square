@@ -65,20 +65,21 @@ const OptionGroup = ({ title, groupKey, optionData, selected, setSelected, confi
                         <div
                             key={option.id}
                             onClick={() => {
-                                if (groupKey === "saveNegatives") {
-                                    setSelected(prev => ({
-                                        ...prev,
-                                        [groupKey]:
-                                            prev[groupKey] === option.id
-                                                ? null
-                                                : option.id
-                                    }));
-                                } else {
+                                // this code allows users to unselect yes or no
+                                // if (groupKey === "saveNegatives") {
+                                //     setSelected(prev => ({
+                                //         ...prev,
+                                //         [groupKey]:
+                                //             prev[groupKey] === option.id
+                                //                 ? null
+                                //                 : option.id
+                                //     }));
+                                // } else {
                                     setSelected(prev => ({
                                         ...prev,
                                         [groupKey]: option.id
                                     }));
-                                }
+                                // }
                             }}
                             className={`border-4 rounded-[10px] text-center py-1 px-3 cursor-pointer transition
                             ${selected[groupKey] === option.id

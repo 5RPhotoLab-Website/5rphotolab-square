@@ -66,7 +66,7 @@ const OrderConfirmationPage = () => {
     }, [orderId, sessionId]);
 
     if (error) return (
-        <div className="p-4 mt-10 text-center pt-[25vh] pb-[25vh]">
+        <div className="p-4 mt-10 text-center pt-[25vh] pb-[30vh]">
             <p className="text-black">{error}</p>
             <button onClick={() => navigate('/')} className="mt-5 underline text-[var(--color-orange)] cursor-pointer">
                 GO HOME
@@ -75,25 +75,33 @@ const OrderConfirmationPage = () => {
     );
 
     if (!order) return (
-        <div className="p-4 mt-10 text-center tracking-wider font-atkinson-regular pb-[35vh]">
+        <div className="p-4 mt-10 text-center tracking-wider font-atkinson-regular pt-[25vh] pb-[35vh]">
             <p>Loading your order...</p>
         </div>
     );
+
+    let heading = "Confirming your order...";
+
+    if (order.payment_status === "REFUNDED") {
+        heading = "Your order has been refunded.";
+    } else if (order.payment_status === "PENDING") {
+        heading = "Your payment is still processing. Please refresh this page in a minute.";
+    } else if (order.payment_status === "FAILED") {
+        heading = "Your payment failed. Please try again.";
+    } else if (order.payment_status === "CANCELED") {
+        heading = "Your order has been canceled.";
+    } else if (order.payment_status === "PAID" || order.payment_status === "COMPLETED") {
+        heading = "Order Confirmed!";
+    }
 
     return (
         <>
             {/* Desktop */}
             <div className="hidden md:block items-center justify-center max-w-[76vw] mx-auto pb-[35vh]">
                 <div className="mt-5">
-                    {(order.payment_status === "PAID" || order.payment_status === "COMPLETED") ? (
-                        <h1 className="text-[1.641vw] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
-                            Order Confirmed!
-                        </h1>
-                    ) : (
-                        <h1 className="text-[1.641vw] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
-                            Confirming your order...
-                        </h1>
-                    )}
+                    <h1 className="text-[1.641vw] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
+                        {heading}
+                    </h1>
                 </div>
 
                 <div className="mt-8 font-atkinson-regular tracking-wider text-[0.9vw] max-w-[40vw] mx-auto">
@@ -218,15 +226,9 @@ const OrderConfirmationPage = () => {
             {/* Mobile */}
             <div className="md:hidden p-4">
                 <div className="mt-5">
-                    {(order.payment_status === "PAID" || order.payment_status === "COMPLETED") ? (
-                        <h1 className="text-[31.5px] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
-                            Order Confirmed!
-                        </h1>
-                    ) : (
-                        <h1 className="text-[31.5px] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
-                            Confirming your order...
-                        </h1>
-                    )}
+                    <h1 className="text-[1.641vw] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
+                        {heading}
+                    </h1>
                 </div>
 
                 <div className="mt-8 font-atkinson-regular tracking-wider text-[14px]">

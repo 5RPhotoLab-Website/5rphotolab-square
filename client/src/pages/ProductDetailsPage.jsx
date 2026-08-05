@@ -22,7 +22,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
         scanSize: OPTION_LABEL_DATA.scanSize[0].id,
         physicalCopies: OPTION_LABEL_DATA.physicalCopies[0].id,
         physicalCopies35mm: OPTION_LABEL_DATA.physicalCopies35mm[0].id,
-        saveNegatives: null,
+        saveNegatives: OPTION_LABEL_DATA.saveNegatives[0].id,
         addOns: OPTION_LABEL_DATA.addOns[0].id,
         pullPush: OPTION_LABEL_DATA.pullPush[0].id,
     });
@@ -107,7 +107,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
 
 
-    if (!product) return <div className="text-center">Loading...</div>;
+    if (!product) return <div className="text-center p-30">Loading...</div>;
     const isMerch = merchandiseProducts?.some(m => m.id === product.id);
 
 
@@ -277,8 +277,8 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                         }}
 
                     >
-                        <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-white'}`}>{isAdded ? "ADDED TO CART" : "ADD TO CART"}</span>
-                        <span className={`${isAdded ? 'text-[var(--color-blue)]' : 'text-white'}`}>${calculateLineTotal().toFixed(2)}</span>
+                        <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>{isAdded ? "ADDED TO CART" : "ADD TO CART"}</span>
+                        <span className={`${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>${calculateLineTotal().toFixed(2)}</span>
                     </button>
                     <button className='w-[146px] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}

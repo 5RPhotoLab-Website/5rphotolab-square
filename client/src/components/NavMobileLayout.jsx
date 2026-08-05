@@ -23,7 +23,7 @@ const NavMobileLayout = ({ products, colorProducts, merchandiseProducts }) => {
       <div className="p-2">
         <div className='relative flex justify-center p-2'>
           <img
-            src={isHome ? navTitleNoFilmy : navTitle}
+            src={navTitle}
             className={isHome ? "pt-2" : ""}
             alt="5R Photo Lab"
           />

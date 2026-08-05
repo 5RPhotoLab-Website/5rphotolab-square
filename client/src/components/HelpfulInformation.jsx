@@ -18,85 +18,33 @@ const HelpfulInformation = ({ page, product }) => {
 
     return (
         <>
-        {/* Desktop */}
-        <div className="hidden md:block">
-            {page === "product-details" ? (
-                <>
-                    <h1 className='font-atkinson-bold text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+            {/* Desktop */}
+            <div className="hidden md:block">
+                {page === "product-details" ? (
+                    <>
+                        <h1 className='font-atkinson-bold text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
 
-                    <h2 className='font-atkinson-bold text-[0.729vw] text-[var(--color-orange)] tracking-wider'>
-                        Description
-                    </h2>
+                        <h2 className='font-atkinson-bold text-[0.729vw] text-[var(--color-orange)] tracking-wider'>
+                            Description
+                        </h2>
 
-                    <p className='font-atkinson-regular text-[0.625vw] tracking-wider'>
-                        {product.description || "No description available for this product."}
-                    </p>
-                </>
-            ) : (
-                <>
-                    <h1 className='font-atkinson-regular text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
-                </>
-            )}
-
-
-            <div className={`${page === "product-details" ? "mt-5" : "mt-2"}`}>
-                <AccordionItem
-                    index={0}
-                    item={{
-                        title: "Shipping Policy",
-                        content: `Shipping to us: choose your carrier, a box or envelope with adequate packaging material, and send it to
-
-        5R Photo Lab
-        31 Washington Square West
-        Suite 3R-C
-        New York, NY 10011
-
-Be sure to include a note and get a tracking number from your carrier. Visit ------------------ for detailed instructions and 
-a printable order form.`
-                    }}
-                    isOpen={openAccordion.includes(0)}
-                    onToggle={toggleAccordion}
-                />
-
-            </div>
-            <div className="mt-5">
-                <AccordionItem
-                    index={1}
-                    item={{ title: "Return Policy", content: "There is a $10 credit available for blank rolls, whether because they were not shot or due to camera issues. There are no refunds for film processing services. Any items shipped to you that are defective may be refunded and/or replaced at our expense." }}
-                    isOpen={openAccordion.includes(1)}
-                    onToggle={toggleAccordion}
-                />
-            </div>
-        </div>
+                        <p className='font-atkinson-regular text-[0.625vw] tracking-wider'>
+                            {product.description || "No description available for this product."}
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <h1 className='font-atkinson-regular text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+                    </>
+                )}
 
 
-        {/* Mobile */}
-        <div className="md:hidden">
-            {page === "product-details" ? (
-                <>
-                    <h1 className='font-atkinson-bold text-[16px] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
-
-                    <h2 className='font-atkinson-bold text-[14px] text-[var(--color-orange)] tracking-wider'>
-                        Description
-                    </h2>
-
-                    <p className='font-atkinson-regular text-[12px] tracking-wider'>
-                        {product.description || "No description available for this product."}
-                    </p>
-                </>
-            ) : (
-                <>
-                    <h1 className='font-atkinson-regular text-[16px] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
-                </>
-            )}
-
-
-            <div className={`${page === "product-details" ? "mt-5" : "mt-2"}`}>
-                <AccordionItem
-                    index={0}
-                    item={{
-                        title: "Shipping Policy",
-                        content: `Shipping to us: choose your carrier, a box or envelope with adequate packaging material, and send it to
+                <div className={`${page === "product-details" ? "mt-5" : "mt-2"}`}>
+                    <AccordionItem
+                        index={0}
+                        item={{
+                            title: "Shipping Policy",
+                            content: `Shipping to us: choose your carrier, a box or envelope with adequate packaging material, and send it to
 
         5R Photo Lab
         31 Washington Square West
@@ -105,21 +53,97 @@ a printable order form.`
 
 Be sure to include a note and get a tracking number from your carrier. Visit ------------------ for detailed instructions and 
 a printable order form.`
-                    }}
-                    isOpen={openAccordion.includes(0)}
-                    onToggle={toggleAccordion}
-                />
+                        }}
+                        isOpen={openAccordion.includes(0)}
+                        onToggle={toggleAccordion}
+                    />
 
+                </div>
+                <div className="mt-5">
+                    <AccordionItem
+                        index={1}
+                        item={{ title: "Return Policy", content: "There is a $10 credit available for blank rolls, whether because they were not shot or due to camera issues. There are no refunds for film processing services. Any items shipped to you that are defective may be refunded and/or replaced at our expense." }}
+                        isOpen={openAccordion.includes(1)}
+                        onToggle={toggleAccordion}
+                    />
+                </div>
             </div>
-            <div className="mt-5">
-                <AccordionItem
-                    index={1}
-                    item={{ title: "Return Policy", content: "There is a $10 credit available for blank rolls, whether because they were not shot or due to camera issues. There are no refunds for film processing services. Any items shipped to you that are defective may be refunded and/or replaced at our expense." }}
-                    isOpen={openAccordion.includes(1)}
-                    onToggle={toggleAccordion}
-                />
+
+
+            {/* Mobile */}
+            <div className="md:hidden">
+                {page === "product-details" ? (
+                    <>
+                        <h1 className='font-atkinson-bold text-[16px] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+
+                        <h2 className='font-atkinson-bold text-[14px] text-[var(--color-orange)] tracking-wider'>
+                            Description
+                        </h2>
+
+                        <p className='font-atkinson-regular text-[12px] tracking-wider'>
+                            {product.description || "No description available for this product."}
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <h1 className='font-atkinson-regular text-[16px] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+                    </>
+                )}
+
+
+                <div className={`${page === "product-details" ? "mt-5" : "mt-2"}`}>
+                    <AccordionItem
+                        index={0}
+                        item={{
+                            title: "Shipping Policy",
+                            content: (
+                                <>
+                                    <p>
+                                        Shipping to us: choose your carrier, a box or envelope with
+                                        adequate packaging material, and send it to
+                                    </p>
+
+                                    <br />
+
+                                    <p className="ml-6">
+                                        5R Photo Lab<br />
+                                        31 Washington Square West<br />
+                                        Suite 3R-C<br />
+                                        New York, NY 10011
+                                    </p>
+
+                                    <br />
+
+                                    <p>
+                                        Be sure to include a note and get a tracking number from your
+                                        carrier. Visit{" "}
+                                        <a
+                                            href="https://www.5rphotolab.com/mail-in"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-[var(--color-orange)] underline"
+                                        >
+                                            How to Ship Your Film
+                                        </a>{" "}
+                                        for detailed instructions and a printable order form.
+                                    </p>
+                                </>
+                            )
+                        }}
+                        isOpen={openAccordion.includes(0)}
+                        onToggle={toggleAccordion}
+                    />
+
+                </div>
+                <div className="mt-5">
+                    <AccordionItem
+                        index={1}
+                        item={{ title: "Return Policy", content: "There is a $10 credit available for blank rolls, whether because they were not shot or due to camera issues. There are no refunds for film processing services. Any items shipped to you that are defective may be refunded and/or replaced at our expense." }}
+                        isOpen={openAccordion.includes(1)}
+                        onToggle={toggleAccordion}
+                    />
+                </div>
             </div>
-        </div>
         </>
 
     )

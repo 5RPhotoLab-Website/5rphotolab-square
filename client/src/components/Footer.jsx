@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
-        <div className='bg-[var(--color-purple)] font-atkinson-regular'>
+        <div className='bg-[var(--color-pink)] font-atkinson-regular'>
             {/* Desktop */}
             <div className="hidden md:flex justify-center w-full px-10 py-10 ">
                 <div className="w-full">

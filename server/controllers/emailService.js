@@ -63,7 +63,7 @@ const emailHtml = `
             </p>
             <img src="https://ci3.googleusercontent.com/mail-sig/AIorK4zQR9e8Y82YsnsSkbGVSliaE9knLsIO_DyNDC4BlBhLx4MYb5enJ8uHE0ieuWPqXSJpNrK-IKw6CZzs" alt="5R Photo Lab Logo" style="display: block; width: 100px; height: auto;">
             <a href="https://www.5rphotolab.com" style="font-size: 12px;">www.5rphotolab.com</a><br/>
-            <a href="https://5rphotolab.square.site/" style="font-size: 12px;">Place Your Mail-In Order</a>
+            <a href="https://www.5rphotolab.com/mail-in" style="font-size: 12px;">Place Your Mail-In Order</a>
         </div>
     </div>
 </body>
