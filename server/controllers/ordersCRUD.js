@@ -449,7 +449,7 @@ const payOrder = async (req, res) => {
         // fire-and-forget emails
         void sendOrderConfirmation(order).catch(console.error);
 
-        void sendAdminNotification({ order, receiptUrl: payment.receiptUrl }).catch(console.error);
+        void sendAdminNotification(order, payment.receiptUrl).catch(console.error);
 
     } catch (err) {
 

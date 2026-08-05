@@ -90,7 +90,7 @@ export async function sendAdminNotification(order, receiptUrl) {
         html: `
                         <h2>New Order</h2>
 
-                        <p><b>Customer:</b> ${order.shipping_name}</p>
+                        <p><b>Customer:</b> ${order.shipping_name || order.email}</p>
                         <p><b>Email:</b> ${order.email}</p>
                         <p><b>Amount:</b> $${Number(order.total_amount).toFixed(2)}</p>
                         <p><b>Notes:</b> ${order.notes || "None"}</p>
