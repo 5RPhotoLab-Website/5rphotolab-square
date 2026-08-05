@@ -22,7 +22,7 @@ const emailHtml = `
                 We’re writing to confirm that you placed a mail-in order with us and share a few tidbits of info on what comes next.
             </p>
             <p style="font-size: 14px; color: #000000;">
-                1. Ship your film to us
+                1. Ship your film to us (unless you just placed an order for merch)
             </p>
             <p style="font-size: 14px; color: #000000;">
             Please download, print, and fill out our ORDER FORM. (If you prefer, write your name on a piece of paper with your order number.) Put the form and your film in a zip-loc bag, then put the bag in a padded mailer or a box with ample packing material. Address your shipment to:
@@ -76,7 +76,7 @@ export async function sendOrderConfirmation(order) {
     await resend.emails.send({
         from: "5R Photo Lab <info@5rphotolab.com>",
         to: order.email,
-        subject: "Thank you for your mail-in order!",
+        subject: "Thanks for your order!",
         html: emailHtml,
     });
 }

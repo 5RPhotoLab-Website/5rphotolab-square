@@ -49,6 +49,16 @@ export default function CheckoutPage() {
             try {
                 const payments = window.Square.payments(appId, locationId);
 
+                const applePay = await payments.applePay({
+                    countryCode: "US",
+                    currencyCode: "USD",
+
+                    total: {
+                        amount: total.toFixed(2),
+                        label: "5R Photo Lab"
+                    }
+                });
+
                 const card = await payments.card();
                 await card.attach(cardRef.current);
 
@@ -58,13 +68,17 @@ export default function CheckoutPage() {
 
             } catch (err) {
                 console.error("Failed to initialize Square", err);
-                setError("Unable to load payment form.");
+                // setError("Unable to load payment form.");
+                setError(
+                    err?.message ||
+                    JSON.stringify(err) ||
+                    "Unable to load payment form."
+                );
+                alert(err?.message);
             }
         }
 
         init();
-        console.log("appId", appId);
-        console.log("locationId", locationId);
     }, [loaded]);
 
 
@@ -236,8 +250,6 @@ export default function CheckoutPage() {
 
                             {/* Google Pay */}
 
-                            {/* Cash App */}
-
                             {/* Divider */}
                             <h3 className="font-semibold mb-3">
                                 Contact
@@ -365,7 +377,7 @@ export default function CheckoutPage() {
                             <div
                                 ref={cardRef}
                                 className="border rounded-xl p-4 bg-white"
-                                tyle={{ minHeight: "180px" }}
+                                style={{ minHeight: "180px" }}
                             />
 
                             <div className="mt-6 flex items-center text-sm text-gray-500">
