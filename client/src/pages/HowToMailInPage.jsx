@@ -64,7 +64,7 @@ const HowToMailInPage = () => {
                         className="absolute top-0 left-0 z-10 border-4 bg-[var(--color-green)] rounded-[10px] w-full"
                         style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     >
-                        <h2 className="font-atkinson-bold text-[17px] tracking-wider max-w-[370px] mx-auto leading-[1.4] p-2">
+                        <h2 className="font-atkinson-bold text-[17px] tracking-wider max-w-[370px] mx-auto leading-[1.4] p-2 text-center">
                             All of our great lab services are available by mail, and getting your film and disposables to us is super easy.
                         </h2>
                     </div>
@@ -75,7 +75,7 @@ const HowToMailInPage = () => {
                         style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     >
 
-                        <div className="p-4.5 tracking-wider mt-10">
+                        <div className="p-4.5 tracking-wider mt-6">
                             <p className="font-atkinson-regular text-[17px]"><span className="font-atkinson-bold">1.</span> Write us a little note about your order, including the order number, or fill out the form below. <br /></p>
                             <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">2.</span> Place your film in a ziploc. <br /></p>
                             <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">3.</span> Place the bag in a padded envelope or a box with padding along with the form. <br /></p>

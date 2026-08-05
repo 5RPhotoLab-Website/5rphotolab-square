@@ -30,7 +30,7 @@ const InfoPage = () => {
                         </div>
 
                         <div className='flex flex-col text-[0.833vw]'>
-                            <p className="mt-5">Our standard scans are<span className="text-[var(--color-pink)] font-atkinson-bold"> 3130 by 2075 pixels </span>and<br />our resolution scans are <span className="text-[var(--color-pink)] font-atkinson-bold">6774 by 4492 pixels</span>.</p>
+                            <p className="mt-5">Our standard scans are <span className="text-[var(--color-pink)] font-atkinson-bold">3130 by 2075 pixels</span> and<br />our resolution scans are <span className="text-[var(--color-pink)] font-atkinson-bold">6774 by 4492 pixels</span>.</p>
                             <div className='relative mt-1'>
                                 <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
                                 <div className='flex justify-center ml-12'>
@@ -46,7 +46,7 @@ const InfoPage = () => {
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
-                <div className="border-4 rounded-[10px] w-[396px] mt-8 p-4 text-[13px] font-atkinson-regular tracking-wider leading-[1.7]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                <div className="border-4 rounded-[10px] w-[396px] mt-8 mb-8 p-4 text-[13px] font-atkinson-regular tracking-wider leading-[1.7]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                     <p className="mt-5">We develop, scan, and print film and disposable <br /> cameras in NYC's Greenwich Village neighborhood.</p>
                     <p className="mt-5">We process color <span className="text-[var(--color-pink)] font-atkinson-bold">C-41</span>, <span className="text-[var(--color-pink)] font-atkinson-bold">B&W</span>, <span className="text-[var(--color-pink)] font-atkinson-bold">35mm</span>, <span className="text-[var(--color-pink)] font-atkinson-bold">110</span>, and <br /><span className="text-[var(--color-pink)] font-atkinson-bold">medium format</span> films. </p>
                     <div className='relative mt-1'>
@@ -62,7 +62,7 @@ const InfoPage = () => {
                             <p className='mt-3'>Our scanner is routinely calibrated to deliver<br />the highest-quality images, with<br />an accurate palette and nuanced depth.</p>
                         </div>
                     </div>
-                    <p className="mt-5">Our standard scans are<span className="text-[var(--color-pink)] font-atkinson-bold">3130 by 2075 pixels</span>and<br />our resolution scans are <span className="text-[var(--color-pink)] font-atkinson-bold">6774 by 4492 pixels</span>.</p>
+                    <p className="mt-5">Our standard scans are <span className="text-[var(--color-pink)] font-atkinson-bold">3130 by 2075 pixels</span> and<br />our resolution scans are <span className="text-[var(--color-pink)] font-atkinson-bold">6774 by 4492 pixels</span>.</p>
                     <div className='relative mt-1'>
                         <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
                         <div className='flex justify-center ml-5'>

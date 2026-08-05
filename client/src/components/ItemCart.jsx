@@ -64,9 +64,9 @@ const ItemCart = ({ product, addProduct, removeProduct }) => {
                         })}
                 </div>
             </div>
-            <div className='flex justify-end'>
+            {/* <div className='flex justify-end'>
                 <img src={deleteIcon} alt="Delete Item" className="w-[12px] h-[13px] mt-2 cursor-pointer" onClick={() => removeProduct(product.product_id, product.modifiers)} />
-            </div>
+            </div> */}
         </div>
     )
 }
