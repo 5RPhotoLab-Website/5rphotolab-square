@@ -25,9 +25,10 @@ const YourCartPage = () => {
     const [error, setError] = useState(null);
 
     const totalItems = cart.reduce((total, product) => total + product.quantity, 0);
-    const subtotal = cart.reduce((sum, product) => sum + product.unitPrice * product.quantity, 0);
-    const taxes = (subtotal * TAX_RATE).toFixed(2);
-    const orderTotal = (subtotal + parseFloat(taxes)).toFixed(2);
+    // const subtotal = cart.reduce((sum, product) => sum + product.unitPrice * product.quantity, 0);
+    // const taxes = (subtotal * TAX_RATE).toFixed(2);
+    // const orderTotal = (subtotal + parseFloat(taxes)).toFixed(2);
+    const orderTotal = cart.reduce((sum, product) => sum + product.unitPrice * product.quantity, 0);
 
     // const fieldClass = (value, extra = "") =>
     //     `border-2 rounded-[10px] px-3 py-2 font-atkinson-regular tracking-wider outline-none ${extra} ${submitted && !value
@@ -194,15 +195,15 @@ const YourCartPage = () => {
                         )} */}
 
                         {/* Summary */}
-                        <div className="flex justify-between mt-14 tracking-wider font-atkinson-regular text-[0.729vw]">
+                        {/* <div className="flex justify-between mt-14 tracking-wider font-atkinson-regular text-[0.729vw]">
                             <h1 className="text-[var(--color-pink)]">Subtotal</h1>
                             <p>${subtotal.toFixed(2)}</p>
-                        </div>
-                        <div className="flex justify-between tracking-wider font-atkinson-regular text-[0.729vw]">
+                        </div> */}
+                        {/* <div className="flex justify-between tracking-wider font-atkinson-regular text-[0.729vw]">
                             <h1 className="text-[var(--color-pink)]">Estimated taxes (New York)</h1>
                             <p>${taxes}</p>
-                        </div>
-                        <div className="flex justify-between mt-5 tracking-wider font-atkinson-bold text-[0.729vw]">
+                        </div> */}
+                        <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.729vw]">
                             <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
                             <p>${orderTotal}</p>
                         </div>
@@ -346,15 +347,15 @@ const YourCartPage = () => {
                 )} */}
 
                 {/* Summary */}
-                <div className="flex justify-between mt-14 tracking-wider font-atkinson-regular text-[14px]">
+                {/* <div className="flex justify-between mt-14 tracking-wider font-atkinson-regular text-[14px]">
                     <h1 className="text-[var(--color-pink)]">Subtotal</h1>
                     <p>${subtotal.toFixed(2)}</p>
                 </div>
                 <div className="flex justify-between tracking-wider font-atkinson-regular text-[14px]">
                     <h1 className="text-[var(--color-pink)]">Estimated taxes (New York)</h1>
                     <p>${taxes}</p>
-                </div>
-                <div className="flex justify-between mt-5 tracking-wider font-atkinson-bold text-[14px]">
+                </div> */}
+                <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[14px]">
                     <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
                     <p>${orderTotal}</p>
                 </div>
