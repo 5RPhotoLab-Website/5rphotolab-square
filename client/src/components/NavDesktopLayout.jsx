@@ -45,26 +45,26 @@ const NavDesktopLayout = ({ products, colorProducts, merchandiseProducts }) => {
             </div>
 
             {/* MAIN LAYOUT */}
-            <div className="flex-1 mt-10">
+            <div className="flex-1">
 
                 {/* LEFT NAV */}
-                <div className="flex relative max-w-[40vw] gap-32 items-center justify-center mx-auto mb-10">
-                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[var(--color-orange)] tracking-wider text-[0.677vw] cursor-pointer" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                <div className="flex relative max-w-[40vw] gap-32 items-center justify-center mx-auto mb-10 mt-5">
+                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[var(--color-orange)] tracking-wider text-[0.677vw] cursor-pointer whitespace-nowrap" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                         onClick={() => navigate("/")}>
                         HOME
                     </button>
 
-                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[0.677vw] cursor-pointer" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[0.677vw] cursor-pointer whitespace-nowrap" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                         onClick={() => navigate("/mail-in")}>
                         MAIL-IN
                     </button>
 
-                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[#13C5C8] tracking-wider text-[0.677vw] cursor-pointer" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[#13C5C8] tracking-wider text-[0.677vw] cursor-pointer whitespace-nowrap" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                         onClick={() => navigate("/drop-off")}>
                         DROP-OFF
                     </button>
 
-                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[#E1388D] tracking-wider text-[0.677vw] cursor-pointer" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                    <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[#E1388D] tracking-wider text-[0.677vw] cursor-pointer whitespace-nowrap" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                         onClick={() => navigate("/info")}>
                         INFO
                     </button>

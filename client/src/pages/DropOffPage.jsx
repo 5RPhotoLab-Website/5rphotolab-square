@@ -193,10 +193,10 @@ const DropOffPage = () => {
                                 <div className='relative'>
                                     <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
                                     <div className='flex justify-between w-[17.5vw] ml-auto'>
-                                        <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>$5 each, minimum 5 slides</h2>
+                                        <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3 whitespace-nowrap'>$5 each, minimum 5 slides</h2>
                                     </div>
                                     <div className='flex justify-between w-[17.5vw] ml-auto'>
-                                        <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider'>$4 each for 50+ slides</h2>
+                                        <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider whitespace-nowrap'>$4 each for 50+ slides</h2>
                                     </div>
                                 </div>
                                 <div className='mt-1'>

@@ -277,6 +277,19 @@ const payOrder = async (req, res) => {
         //
         // Create Square Order
         //
+        const recipient = {
+            emailAddress: email,
+            phoneNumber: phone_number || undefined,
+            displayName: shipping?.name || email,
+            address: {
+                addressLine1: shipping?.address_line1 || undefined,
+                addressLine2: shipping?.address_line2 || undefined,
+                locality: shipping?.city || undefined,
+                administrativeDistrictLevel1: shipping?.state || undefined,
+                postalCode: shipping?.zip || undefined,
+                country: shipping?.country || undefined,
+            },
+        };
         const orderResponse = await squareClient.orders.create({
 
             idempotencyKey: randomUUID(),
@@ -284,32 +297,13 @@ const payOrder = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
-                metadata: notes
-                    ? {
-                        customer_notes: notes
-                    }
-                    : undefined,
-                fulfillments: shipping?.requested
-                    ? [{
-                        type: "SHIPMENT",
-                        note: notes || undefined,
-                        shipmentDetails: {
-                            recipient: {
-                                emailAddress: email,
-                                phoneNumber: phone_number || undefined,
-                                displayName: shipping.name,
-                                address: {
-                                    addressLine1: shipping.address_line1,
-                                    addressLine2: shipping.address_line2 || undefined,
-                                    locality: shipping.city,
-                                    administrativeDistrictLevel1: shipping.state,
-                                    postalCode: shipping.zip,
-                                    country: shipping.country || "US"
-                                }
-                            }
-                        }
-                    }]
-                    : undefined
+                fulfillments: [{
+                    type: "SHIPMENT",
+                    note: notes || undefined,
+                    shipmentDetails: {
+                        recipient,
+                    },
+                }]
             }
 
         });
@@ -329,7 +323,7 @@ const payOrder = async (req, res) => {
 
             amountMoney: squareOrder.totalMoney,
 
-            buyerEmailAddress: email,
+            receiptEmail: email,
 
         });
 
@@ -449,7 +443,7 @@ const payOrder = async (req, res) => {
         });
 
         // fire-and-forget emails
-        void sendOrderConfirmation(order).catch(console.error);
+        void sendOrderConfirmation(order, payment.receiptUrl).catch(console.error);
 
         void sendAdminNotification(order, payment.receiptUrl).catch(console.error);
 
