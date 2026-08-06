@@ -16,7 +16,7 @@ const HomePageNew = () => {
     return (
         <div className='bg-[#F5F5F5]'>
             {/* Desktop */}
-            <div className="hidden md:flex justify-center pb-[6vh]">
+            <div className="hidden md:flex justify-center">
                 <div className='space-y-10'>
                     <div className='relative z-10 max-w-[40vw] h-[28vh] border-4 rounded-[10px] flex flex-col items-center justify-center mx-auto bg-[var(--color-white)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                         <h1 className='w-auto px-20 py-1 border-4 rounded-[10px] font-atkinson-bold text-[1.042vw] text-center bg-[var(--color-yellow)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>EXPERT FILM SERVICES<br />PRO DEVELOP AND SCAN<br />BOUTIQUE EXPERIENCE</h1>
@@ -26,12 +26,12 @@ const HomePageNew = () => {
                                 5R Photo Lab processes C-41 color and B&W film in 35mm, 120, 110, APS, and disposable cameras, offering digital files and prints. We digitize old negatives, slides, and photos. And yes, 5R Photo Lab sells film! </p>
                         </div>
                     </div>
-                    <div className="relative flex justify-between items-center gap-8 cursor-pointer">
+                    <div className="relative flex justify-between items-center gap-8 cursor-pointer pb-[12vw]">
                         {/* Map */}
                         <img
                             src={LabmapDesktop}
                             alt="Map"
-                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.25vw] z-0 pointer-events-none"
+                            className="absolute left-1/2 top-40 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none"
                         />
                         <div className="relaitve z-10 w-[10vw] h-[7.604vw] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
                             <h1 className='font-bubblicious text-[var(--color-orange)] text-[2.604vw] tracking-widest'>NYC</h1>

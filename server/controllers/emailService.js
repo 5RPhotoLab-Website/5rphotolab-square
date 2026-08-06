@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const emailHtml = `
+const emailHtml = (receiptUrl) => `
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
@@ -15,6 +15,11 @@ const emailHtml = `
     <div>
         <!-- Body -->
         <div>
+            ${receiptUrl ? `
+                <p>
+                    <a href="${receiptUrl}" style="color: #000000; text-decoration: underline; font-size: 14px;">View your receipt</a>
+                </p>
+            ` : "" }
             <p style="font-size: 14px; color: #000000;">
                 Greetings!
             </p>
@@ -70,14 +75,14 @@ const emailHtml = `
 </html>
 `;
 
-export async function sendOrderConfirmation(order) {
+export async function sendOrderConfirmation(order, receiptUrl) {
     if (!order.email) return;
 
     await resend.emails.send({
         from: "5R Photo Lab <info@5rphotolab.com>",
         to: order.email,
         subject: "Thanks for your order!",
-        html: emailHtml,
+        html: emailHtml(receiptUrl),
     });
 }
 
