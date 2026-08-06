@@ -169,10 +169,10 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
                                 }}
                             >
-                                <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-white'}`}>
+                                <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>
                                     {isAdded ? "ADDED TO CART " : "ADD TO CART "}
                                 </span>
-                                <span className={isAdded ? 'text-[var(--color-blue)]' : 'text-white'}>
+                                <span className={isAdded ? 'text-[var(--color-blue)]' : 'text-black'}>
                                     ${calculateLineTotal().toFixed(2)}
                                 </span>
                             </button>
