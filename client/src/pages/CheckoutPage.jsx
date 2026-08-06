@@ -16,6 +16,8 @@ export default function CheckoutPage() {
     const loaded = useSquare();
     const cardRef = useRef(null);
     const cardInstance = useRef(null);
+    const paymentsRef = useRef(null);
+    const applePayInstance = useRef(null);
     const [cardReady, setCardReady] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -48,17 +50,33 @@ export default function CheckoutPage() {
         async function init() {
             try {
                 const payments = window.Square.payments(appId, locationId);
+                paymentsRef.current = payments;
 
-                const applePay = await payments.applePay({
-                    countryCode: "US",
-                    currencyCode: "USD",
+                //
+                // Apple Pay
+                //
+                if (window.ApplePaySession) {
+                    const paymentRequest = payments.paymentRequest({
+                        countryCode: "US",
+                        currencyCode: "USD",
+                        total: {
+                            amount: total.toFixed(2),
+                            label: "5R Photo Lab"
+                        }
+                    });
 
-                    total: {
-                        amount: total.toFixed(2),
-                        label: "5R Photo Lab"
+                    const applePay = await payments.applePay(paymentRequest);
+
+                    const supported = await applePay.canMakePayment();
+
+                    if (supported) {
+                        await applePay.attach("#apple-pay-button");
+                        applePayInstance.current = applePay;
                     }
-                });
-
+                }
+                //
+                // Card
+                //
                 const card = await payments.card();
                 await card.attach(cardRef.current);
 
@@ -79,7 +97,7 @@ export default function CheckoutPage() {
         }
 
         init();
-    }, [loaded]);
+    }, [loaded, total]);
 
 
     const handlePay = async () => {
@@ -172,6 +190,100 @@ export default function CheckoutPage() {
         }
     };
 
+    const handleApplePay = async () => {
+        setLoading(true);
+        setSubmitted(true);
+        setError("");
+
+        try {
+            if (!applePayInstance.current) {
+                throw new Error("Apple Pay is unavailable.");
+            }
+
+            if (!phoneNumber.trim()) {
+                throw new Error("Phone number is required.");
+            }
+
+            if (!email.trim()) {
+                throw new Error("Email is required.");
+            }
+
+            if (
+                shippingRequested &&
+                (
+                    !shipping.name ||
+                    !shipping.address_line1 ||
+                    !shipping.city ||
+                    !shipping.state ||
+                    !shipping.zip
+                )
+            ) {
+                throw new Error("Please complete your shipping address.");
+            }
+
+            const result = await applePayInstance.current.tokenize();
+
+            if (result.status !== "OK") {
+                throw new Error(
+                    result.errors?.[0]?.message ??
+                    "Apple Pay failed."
+                );
+            }
+
+
+            // verification for apple pay?
+            const payments = window.Square.payments(appId, locationId);
+
+            const verification = await payments.verifyBuyer(
+                result.token,
+                {
+                    amount: total.toFixed(2),
+                    currencyCode: "USD",
+                    intent: "CHARGE",
+                    billingContact: {
+                        givenName: shipping.name?.split(" ")[0] || "",
+                        familyName: shipping.name?.split(" ").slice(1).join(" ") || "",
+                        email,
+                        phone: phoneNumber,
+                        countryCode: "US"
+                    }
+                }
+            );
+
+            const response = await fetch(`${API_BASE_URL}/api/orders/pay`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-session-id": sessionId
+                },
+                body: JSON.stringify({
+                    sourceId: result.token,
+                    phone_number: phoneNumber,
+                    email,
+                    shipping: {
+                        requested: shippingRequested,
+                        ...(shippingRequested ? shipping : {})
+                    },
+                    notes
+                })
+            });
+
+            const json = await response.json();
+
+            if (!response.ok) {
+                throw new Error(json.error);
+            }
+
+            navigate(`/order/confirmation?orderId=${json.orderId}`);
+
+        } catch (err) {
+            console.error(err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <>
             <div className="bg-stone-50 min-h-screen py-16">
@@ -247,6 +359,12 @@ export default function CheckoutPage() {
                             </h2>
 
                             {/* Apple Pay goes here later */}
+                            <button
+                                onClick={handleApplePay}
+                                className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-3"
+                            >
+                                Apple Pay
+                            </button>
 
                             {/* Google Pay */}
 

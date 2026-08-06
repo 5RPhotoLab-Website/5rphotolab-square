@@ -327,7 +327,9 @@ const payOrder = async (req, res) => {
 
             orderId: squareOrder.id,
 
-            amountMoney: squareOrder.totalMoney
+            amountMoney: squareOrder.totalMoney,
+
+            buyerEmailAddress: email,
 
         });
 

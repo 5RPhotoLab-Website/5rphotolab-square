@@ -29,7 +29,7 @@ const MailInPageNew = () => {
                 <div className="inline-flex px-10 py-4 border-4 rounded-[10px] tracking-wider text-[0.781vw] font-atkinson-bold bg-[var(--color-green)] cursor-pointer"
                     style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     onClick={() => navigate("/mail-in/how-to-mail-in")}>
-                    How To Ship Your Film
+                    HOW TO SHIP YOUR FILM
                 </div>
             </div>
 
