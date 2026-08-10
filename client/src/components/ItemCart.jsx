@@ -15,8 +15,8 @@ const ItemCart = ({ product, addProduct, removeProduct }) => {
                 <div className="tracking-wider cursor-pointer" onClick={() => navigate(`/products/get/${product.product_id}`)}>
                     <p className='font-atkinson-bold text-[12px] md:text-[0.625vw]'>{product.name}</p>
                     <p className='font-atkinson-regular text-[12px] md:text-[0.625vw]'>{product.quantity > 1
-                        ? `$${(product.catalogPrice).toFixed(2)} × ${product.quantity} `
-                        : `$${(product.catalogPrice).toFixed(2)}`}</p>
+                        ? `$${(product.catalogPrice)} × ${product.quantity} `
+                        : `$${(product.catalogPrice)}`}</p>
                 </div>
                 <p className="text-[var(--color-pink)] font-atkinson-bold text-[12px] md:text-[0.625vw] tracking-wider">${lineTotal}</p>
             </div>
