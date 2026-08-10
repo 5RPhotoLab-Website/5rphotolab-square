@@ -199,11 +199,24 @@ const payOrder = async (req, res) => {
         await client.query("BEGIN");
 
         const session_id = req.headers["x-session-id"];
-        const { sourceId, email, shipping, phone_number, notes } = req.body;
+        const { sourceId, full_name, email, billing, shipping, phone_number, notes } = req.body;
         if (!email?.trim()) {
             await client.query("ROLLBACK");
             return res.status(400).json({
                 error: "Email is required."
+            });
+        }
+        if (
+            !billing?.address_line1 ||
+            !billing?.city ||
+            !billing?.state ||
+            !billing?.zip ||
+            !billing?.country
+        ) {
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                error: "Please complete your billing address."
             });
         }
 
@@ -249,24 +262,6 @@ const payOrder = async (req, res) => {
         );
 
         //
-        // Charge Square - before including the below code to create square order before charging
-        //
-        // const paymentResponse = await squareClient.payments.create({
-
-        //     sourceId,
-
-        //     idempotencyKey: randomUUID(),
-
-        //     amountMoney: {
-        //         amount: BigInt(Math.round(totalAmount * 100)),
-        //         currency: "USD"
-        //     }
-
-        // });
-
-        // const payment = paymentResponse.payment;
-
-        //
         // Build Square line items
         //
         const lineItems = products.map(product => ({
@@ -280,14 +275,14 @@ const payOrder = async (req, res) => {
         const recipient = {
             emailAddress: email,
             phoneNumber: phone_number || undefined,
-            displayName: shipping?.name || email,
+            displayName: full_name || email,
             address: {
-                addressLine1: shipping?.address_line1 || undefined,
-                addressLine2: shipping?.address_line2 || undefined,
-                locality: shipping?.city || undefined,
-                administrativeDistrictLevel1: shipping?.state || undefined,
-                postalCode: shipping?.zip || undefined,
-                country: shipping?.country || undefined,
+                addressLine1: shipping?.address_line1 || billing?.address_line1,
+                addressLine2: shipping?.address_line2 || billing?.address_line2,
+                locality: shipping?.city || billing?.city,
+                administrativeDistrictLevel1: shipping?.state || billing?.state,
+                postalCode: shipping?.zip || billing?.zip,
+                country: shipping?.country || billing?.country,
             },
         };
         const orderResponse = await squareClient.orders.create({
@@ -297,6 +292,7 @@ const payOrder = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
+                metadata: notes ? { customer_notes: notes } : undefined,
                 fulfillments: [{
                     type: "SHIPMENT",
                     note: notes || undefined,
@@ -325,6 +321,15 @@ const payOrder = async (req, res) => {
 
             receiptEmail: email,
 
+            billingAddress: {
+                addressLine1: billing.address_line1,
+                addressLine2: billing.address_line2 || undefined,
+                locality: billing.city,
+                administrativeDistrictLevel1: billing.state || undefined,
+                postalCode: billing.zip,
+                country: billing.country
+            }
+
         });
 
         const payment = paymentResponse.payment;
@@ -339,7 +344,6 @@ const payOrder = async (req, res) => {
                 session_id,
                 email,
                 shipping_requested,
-                shipping_name,
                 shipping_address_line1,
                 shipping_address_line2,
                 shipping_city,
@@ -352,30 +356,43 @@ const payOrder = async (req, res) => {
                 square_payment_id,
                 square_receipt_url,
                 phone_number,
-                notes
+                notes,
+                full_name,
+                billing_address_line1,
+                billing_address_line2,
+                billing_city,
+                billing_state,
+                billing_zip,
+                billing_country,
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23 )
             RETURNING *
             `,
             [
                 session_id,
                 email,
                 shipping?.requested ?? false,
-                shipping?.name ?? null,
                 shipping?.address_line1 ?? null,
                 shipping?.address_line2 ?? null,
                 shipping?.city ?? null,
                 shipping?.state ?? null,
                 shipping?.zip ?? null,
-                shipping?.country ?? "US",
+                shipping?.country ?? null,
                 totalAmount,
                 payment.status,
                 squareOrder.id,
                 payment.id,
                 payment.receiptUrl,
                 phone_number,
-                notes
+                notes,
+                full_name,
+                billing.address_line1,
+                billing.address_line2 || null,
+                billing.city,
+                billing.state || null,
+                billing.zip,
+                billing.country,
             ]
         );
 
@@ -443,9 +460,9 @@ const payOrder = async (req, res) => {
         });
 
         // fire-and-forget emails
-        void sendOrderConfirmation(order, payment.receiptUrl).catch(console.error);
+        void sendOrderConfirmation(order, payment).catch(console.error);
 
-        void sendAdminNotification(order, payment.receiptUrl).catch(console.error);
+        void sendAdminNotification(order, payment).catch(console.error);
 
     } catch (err) {
 

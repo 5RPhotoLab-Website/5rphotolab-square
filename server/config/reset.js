@@ -58,7 +58,6 @@ const createOrdersTable = async () => {
             currency VARCHAR(10) DEFAULT 'USD',
             phone_number VARCHAR(30),
             -- shipping address (optional, for mailing prints/negatives)
-            shipping_name TEXT,
             shipping_address_line1 TEXT,
             shipping_address_line2 TEXT,
             shipping_city TEXT,
@@ -68,7 +67,15 @@ const createOrdersTable = async () => {
             shipping_requested BOOLEAN DEFAULT FALSE,   
             notes TEXT,                                 
             created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP DEFAULT NOW()
+            updated_at TIMESTAMP DEFAULT NOW(),
+            -- billing address
+            full_name TEXT,
+            billing_address_line1 TEXT,
+            billing_address_line2 TEXT,
+            billing_city TEXT,
+            billing_state TEXT,
+            billing_zip TEXT,
+            billing_country TEXT
         );
     `;
     try {
@@ -107,4 +114,4 @@ const createOrderItemsTable = async () => {
     }
 }
 
-createOrderItemsTable();
+// createOrderItemsTable();
