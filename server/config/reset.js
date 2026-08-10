@@ -44,39 +44,43 @@ const createCartsTable = async () => {
 // createCartsTable();
 
 const createOrdersTable = async () => {
+    // const createOrdersTableQuery = `
+    //     DROP TABLE IF EXISTS orders CASCADE;
+    //     CREATE TABLE IF NOT EXISTS orders (
+    //         id SERIAL PRIMARY KEY,
+    //         session_id VARCHAR(128) NOT NULL,
+    //         email TEXT,          
+    //         square_order_id TEXT,                       
+    //         square_payment_id TEXT,                     
+    //         square_receipt_url TEXT,                    
+    //         payment_status VARCHAR(50) DEFAULT 'PENDING', -- PENDING, COMPLETED, FAILED, REFUNDED
+    //         total_amount NUMERIC(10,2) NOT NULL,
+    //         currency VARCHAR(10) DEFAULT 'USD',
+    //         phone_number VARCHAR(30),
+    //         -- shipping address (optional, for mailing prints/negatives)
+    //         shipping_address_line1 TEXT,
+    //         shipping_address_line2 TEXT,
+    //         shipping_city TEXT,
+    //         shipping_state TEXT,
+    //         shipping_zip TEXT,
+    //         shipping_country TEXT DEFAULT 'US',
+    //         shipping_requested BOOLEAN DEFAULT FALSE,   
+    //         notes TEXT,                                 
+    //         created_at TIMESTAMP DEFAULT NOW(),
+    //         updated_at TIMESTAMP DEFAULT NOW(),
+    //         -- billing address
+    //         full_name TEXT,
+    //         billing_address_line1 TEXT,
+    //         billing_address_line2 TEXT,
+    //         billing_city TEXT,
+    //         billing_state TEXT,
+    //         billing_zip TEXT,
+    //         billing_country TEXT
+    //     );
+    // `;
     const createOrdersTableQuery = `
-        DROP TABLE IF EXISTS orders CASCADE;
-        CREATE TABLE IF NOT EXISTS orders (
-            id SERIAL PRIMARY KEY,
-            session_id VARCHAR(128) NOT NULL,
-            email TEXT,          
-            square_order_id TEXT,                       
-            square_payment_id TEXT,                     
-            square_receipt_url TEXT,                    
-            payment_status VARCHAR(50) DEFAULT 'PENDING', -- PENDING, COMPLETED, FAILED, REFUNDED
-            total_amount NUMERIC(10,2) NOT NULL,
-            currency VARCHAR(10) DEFAULT 'USD',
-            phone_number VARCHAR(30),
-            -- shipping address (optional, for mailing prints/negatives)
-            shipping_address_line1 TEXT,
-            shipping_address_line2 TEXT,
-            shipping_city TEXT,
-            shipping_state TEXT,
-            shipping_zip TEXT,
-            shipping_country TEXT DEFAULT 'US',
-            shipping_requested BOOLEAN DEFAULT FALSE,   
-            notes TEXT,                                 
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP DEFAULT NOW(),
-            -- billing address
-            full_name TEXT,
-            billing_address_line1 TEXT,
-            billing_address_line2 TEXT,
-            billing_city TEXT,
-            billing_state TEXT,
-            billing_zip TEXT,
-            billing_country TEXT
-        );
+        ALTER TABLE orders
+        DROP COLUMN shipping_name;
     `;
     try {
         const res = await pool.query(createOrdersTableQuery)
@@ -86,7 +90,7 @@ const createOrdersTable = async () => {
     }
 }
 
-// createOrdersTable();
+createOrdersTable();
 
 
 const createOrderItemsTable = async () => {
