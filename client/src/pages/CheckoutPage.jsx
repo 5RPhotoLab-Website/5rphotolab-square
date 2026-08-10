@@ -221,104 +221,104 @@ export default function CheckoutPage() {
         }
     };
 
-    const handleApplePay = async () => {
-        setLoading(true);
-        setSubmitted(true);
-        setError("");
+    // const handleApplePay = async () => {
+    //     setLoading(true);
+    //     setSubmitted(true);
+    //     setError("");
 
-        try {
-            if (!applePayInstance.current) {
-                throw new Error("Apple Pay is unavailable.");
-            }
+    //     try {
+    //         if (!applePayInstance.current) {
+    //             throw new Error("Apple Pay is unavailable.");
+    //         }
 
-            if (!fullName.trim()) {
-                throw new Error("Full number is required.");
-            }
-
-
-            if (!phoneNumber.trim()) {
-                throw new Error("Phone number is required.");
-            }
-
-            if (!email.trim()) {
-                throw new Error("Email is required.");
-            }
-
-            if (
-                shippingRequested &&
-                (
-                    !shipping.address_line1 ||
-                    !shipping.city ||
-                    !shipping.state ||
-                    !shipping.zip
-                )
-            ) {
-                throw new Error("Please complete your shipping address.");
-            }
-
-            const result = await applePayInstance.current.tokenize();
-
-            if (result.status !== "OK") {
-                throw new Error(
-                    result.errors?.[0]?.message ??
-                    "Apple Pay failed."
-                );
-            }
+    //         if (!fullName.trim()) {
+    //             throw new Error("Full number is required.");
+    //         }
 
 
-            // verification for apple pay?
-            const payments = window.Square.payments(appId, locationId);
+    //         if (!phoneNumber.trim()) {
+    //             throw new Error("Phone number is required.");
+    //         }
 
-            const verification = await payments.verifyBuyer(
-                result.token,
-                {
-                    amount: total.toFixed(2),
-                    currencyCode: "USD",
-                    intent: "CHARGE",
-                    billingContact: {
-                        givenName: fullName?.split(" ")[0] || "",
-                        familyName: fullName?.split(" ").slice(1).join(" ") || "",
-                        email,
-                        phone: phoneNumber,
-                        countryCode: "US"
-                    }
-                }
-            );
+    //         if (!email.trim()) {
+    //             throw new Error("Email is required.");
+    //         }
 
-            const response = await fetch(`${API_BASE_URL}/api/orders/pay`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-session-id": sessionId
-                },
-                body: JSON.stringify({
-                    sourceId: result.token,
-                    full_name: fullName,
-                    phone_number: phoneNumber,
-                    email,
-                    shipping: {
-                        requested: shippingRequested,
-                        ...(shippingRequested ? shipping : {})
-                    },
-                    notes
-                })
-            });
+    //         if (
+    //             shippingRequested &&
+    //             (
+    //                 !shipping.address_line1 ||
+    //                 !shipping.city ||
+    //                 !shipping.state ||
+    //                 !shipping.zip
+    //             )
+    //         ) {
+    //             throw new Error("Please complete your shipping address.");
+    //         }
 
-            const json = await response.json();
+    //         const result = await applePayInstance.current.tokenize();
 
-            if (!response.ok) {
-                throw new Error(json.error);
-            }
+    //         if (result.status !== "OK") {
+    //             throw new Error(
+    //                 result.errors?.[0]?.message ??
+    //                 "Apple Pay failed."
+    //             );
+    //         }
 
-            navigate(`/order/confirmation?orderId=${json.orderId}`);
 
-        } catch (err) {
-            console.error(err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         // verification for apple pay?
+    //         const payments = window.Square.payments(appId, locationId);
+
+    //         const verification = await payments.verifyBuyer(
+    //             result.token,
+    //             {
+    //                 amount: total.toFixed(2),
+    //                 currencyCode: "USD",
+    //                 intent: "CHARGE",
+    //                 billingContact: {
+    //                     givenName: fullName?.split(" ")[0] || "",
+    //                     familyName: fullName?.split(" ").slice(1).join(" ") || "",
+    //                     email,
+    //                     phone: phoneNumber,
+    //                     countryCode: "US"
+    //                 }
+    //             }
+    //         );
+
+    //         const response = await fetch(`${API_BASE_URL}/api/orders/pay`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "x-session-id": sessionId
+    //             },
+    //             body: JSON.stringify({
+    //                 sourceId: result.token,
+    //                 full_name: fullName,
+    //                 phone_number: phoneNumber,
+    //                 email,
+    //                 shipping: {
+    //                     requested: shippingRequested,
+    //                     ...(shippingRequested ? shipping : {})
+    //                 },
+    //                 notes
+    //             })
+    //         });
+
+    //         const json = await response.json();
+
+    //         if (!response.ok) {
+    //             throw new Error(json.error);
+    //         }
+
+    //         navigate(`/order/confirmation?orderId=${json.orderId}`);
+
+    //     } catch (err) {
+    //         console.error(err);
+    //         setError(err.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     return (
         <>
