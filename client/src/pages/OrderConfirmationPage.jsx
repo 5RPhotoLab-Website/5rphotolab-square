@@ -56,7 +56,7 @@ const OrderConfirmationPage = () => {
                                         String(item.id)
                                     ),
                                     content_type: "product",
-                                    value: parseFloat(itemsData.squareTotal).toFixed(2),
+                                    value: parseFloat(itemsData.squareTotal),
                                     currency: "USD",
                                 });
                             }
@@ -65,7 +65,7 @@ const OrderConfirmationPage = () => {
                             if (typeof window.gtag === "function") {
                                 window.gtag("event", "purchase", {
                                     transaction_id: String(data.id),
-                                    value: parseFloat(itemsData.squareTotal).toFixed(2),
+                                    value: parseFloat(itemsData.squareTotal),
                                     currency: "USD",
                                     items: itemsData.items.map(item => ({
                                         item_id: String(item.id),
