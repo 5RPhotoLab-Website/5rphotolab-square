@@ -105,6 +105,72 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
         return calculateUnitPriceAfterModifiers() * quantity;
     };
 
+    const handleAddToCart = () => {
+        const modifiers = {};
+
+        if (isMerch) {
+            modifiers.merchandise = "merch";
+        } else {
+            config.groups?.forEach(groupKey => {
+                modifiers[groupKey] = selected[groupKey];
+            });
+        }
+
+        const cartProduct = {
+            product_id: id,
+            name: product.name,
+            catalogPrice: parseFloat(product.price).toFixed(2),
+            unitPrice: parseFloat(calculateUnitPriceAfterModifiers()).toFixed(2),
+            imageUrl: product.imageUrl,
+            quantity: quantity,
+            modifiers,
+            variation_id: product.variationId
+        };
+
+        // Add to your actual cart
+        addProduct(cartProduct);
+
+        // ==========================================
+        // META PIXEL - ADD TO CART
+        // ==========================================
+        if (typeof window.fbq === "function") {
+            window.fbq("track", "AddToCart", {
+                content_ids: [
+                    String(product.variationId || product.id)
+                ],
+                content_name: product.name,
+                content_type: "product",
+                value: parseFloat(cartProduct.unitPrice * cartProduct.quantity).toFixed(2),
+                currency: "USD",
+            });
+
+            console.log("Meta AddToCart:", cartProduct);
+        }
+
+        // ==========================================
+        // GOOGLE - ADD TO CART
+        // ==========================================
+        if (typeof window.gtag === "function") {
+            window.gtag("event", "add_to_cart", {
+                currency: "USD",
+                value: parseFloat(cartProduct.unitPrice * cartProduct.quantity).toFixed(2),
+                items: [
+                    {
+                        item_id: String(product.variationId || product.id),
+                        item_name: product.name,
+                        price: cartProduct.unitPrice,
+                        quantity: cartProduct.quantity,
+                    }
+                ]
+            });
+
+            console.log("Google AddToCart:", cartProduct);
+        }
+
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
+    };
+
 
 
     if (!product) return <div className="text-center p-30">Loading...</div>;
@@ -142,32 +208,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                             <button
                                 className={`w-[13vw] h-[4vh] border-4 rounded-[10px] tracking-wider text-[0.625vw] font-atkinson-regular cursor-pointer ${isAdded ? "bg-white" : "bg-[var(--color-blue)]"}`}
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                                onClick={() => {
-                                    const modifiers = {};
-
-                                    if (isMerch) {
-                                        modifiers.merchandise = "merch";
-                                    } else {
-                                        config.groups?.forEach(groupKey => {
-                                            modifiers[groupKey] = selected[groupKey];
-                                        });
-                                    }
-
-                                    addProduct({
-                                        product_id: id,
-                                        name: product.name,
-                                        catalogPrice: parseFloat(product.price),
-                                        unitPrice: parseFloat(calculateUnitPriceAfterModifiers()),
-                                        imageUrl: product.imageUrl,
-                                        quantity: quantity,
-                                        modifiers,
-                                        variation_id: product.variationId
-                                    });
-
-                                    setIsAdded(true);
-                                    setTimeout(() => setIsAdded(false), 2000);
-
-                                }}
+                                onClick={handleAddToCart}
                             >
                                 <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>
                                     {isAdded ? "ADDED TO CART " : "ADD TO CART "}
@@ -249,33 +290,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                     <button
                         className={`w-[245px] h-[35px] border-4 rounded-[10px] tracking-wider text-[12px] font-atkinson-regular space-x-3 ${isAdded ? 'bg-white' : 'bg-[var(--color-blue)]'}`}
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={() => {
-                            const modifiers = {};
-
-                            if (isMerch) {
-                                modifiers.merchandise = "merch";
-                            } else {
-                                config.groups?.forEach(groupKey => {
-                                    modifiers[groupKey] = selected[groupKey];
-                                });
-                            }
-
-                            addProduct({
-                                product_id: id,
-                                name: product.name,
-                                catalogPrice: parseFloat(product.price),
-                                unitPrice: parseFloat(calculateUnitPriceAfterModifiers()),
-                                imageUrl: product.imageUrl,
-                                quantity: quantity,
-                                modifiers,
-                                variation_id: product.variationId
-                            });
-
-                            setIsAdded(true);
-                            setTimeout(() => setIsAdded(false), 2000);
-
-                        }}
-
+                        onClick={handleAddToCart}
                     >
                         <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>{isAdded ? "ADDED TO CART" : "ADD TO CART"}</span>
                         <span className={`${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>${calculateLineTotal().toFixed(2)}</span>
