@@ -200,11 +200,9 @@ const payOrder = async (req, res) => {
     let payment = null;
 
     try {
-        // await client.query("BEGIN"); might remove
         const session_id = req.headers["x-session-id"];
         const { sourceId, full_name, email, billing, shipping, phone_number, notes } = req.body;
         if (!email?.trim()) {
-            await client.query("ROLLBACK");
             return res.status(400).json({
                 error: "Email is required."
             });
@@ -216,8 +214,6 @@ const payOrder = async (req, res) => {
             !billing?.zip ||
             !billing?.country
         ) {
-            await client.query("ROLLBACK");
-
             return res.status(400).json({
                 error: "Please complete your billing address."
             });
@@ -248,7 +244,6 @@ const payOrder = async (req, res) => {
             cartResult.rows.length === 0 ||
             !cartResult.rows[0].cart_data.products.length
         ) {
-            await client.query("ROLLBACK");
             return res.status(400).json({
                 error: "Cart is empty"
             });
@@ -312,8 +307,9 @@ const payOrder = async (req, res) => {
         // Create order
         //
         await client.query("BEGIN");
-        const orderResult = await client.query(
-            `
+        try {
+            const orderResult = await client.query(
+                `
             INSERT INTO orders
             (
                 session_id,
@@ -340,46 +336,46 @@ const payOrder = async (req, res) => {
                 billing_country
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22 )
             RETURNING *
             `,
-            [
-                session_id,
-                email,
-                shipping?.requested ?? false,
-                shipping?.address_line1 ?? null,
-                shipping?.address_line2 ?? null,
-                shipping?.city ?? null,
-                shipping?.state ?? null,
-                shipping?.zip ?? null,
-                shipping?.country ?? null,
-                totalAmount,
-                "PENDING",
-                squarePaymentIdempotencyKey,
-                squareOrderIdempotencyKey,
-                phone_number,
-                notes,
-                full_name,
-                billing.address_line1,
-                billing.address_line2 || null,
-                billing.city,
-                billing.state || null,
-                billing.zip,
-                billing.country,
-            ]
-        );
+                [
+                    session_id,
+                    email,
+                    shipping?.requested ?? false,
+                    shipping?.address_line1 ?? null,
+                    shipping?.address_line2 ?? null,
+                    shipping?.city ?? null,
+                    shipping?.state ?? null,
+                    shipping?.zip ?? null,
+                    shipping?.country ?? null,
+                    totalAmount,
+                    "PENDING",
+                    squarePaymentIdempotencyKey,
+                    squareOrderIdempotencyKey,
+                    phone_number,
+                    notes,
+                    full_name,
+                    billing.address_line1,
+                    billing.address_line2 || null,
+                    billing.city,
+                    billing.state || null,
+                    billing.zip,
+                    billing.country,
+                ]
+            );
 
-        localOrder = orderResult.rows[0];
+            localOrder = orderResult.rows[0];
 
-        //
-        // Snapshot every purchased item
-        //
-        for (const product of products) {
+            //
+            // Snapshot every purchased item
+            //
+            for (const product of products) {
 
-            const lineTotal = product.unitPrice * product.quantity;
+                const lineTotal = product.unitPrice * product.quantity;
 
-            await client.query(
-                `
+                await client.query(
+                    `
         INSERT INTO order_items
         (
             order_id,
@@ -396,20 +392,24 @@ const payOrder = async (req, res) => {
             $1,$2,$3,$4,$5,$6,$7,$8
         )
         `,
-                [
-                    localOrder.id,
-                    product.product_id,
-                    product.variation_id,
-                    product.name,
-                    product.unitPrice,
-                    product.quantity,
-                    lineTotal,
-                    JSON.stringify(product.modifiers ?? {})
-                ]
-            );
-        }
+                    [
+                        localOrder.id,
+                        product.product_id,
+                        product.variation_id,
+                        product.name,
+                        product.unitPrice,
+                        product.quantity,
+                        lineTotal,
+                        JSON.stringify(product.modifiers ?? {})
+                    ]
+                );
+            }
 
-        await client.query("COMMIT");
+            await client.query("COMMIT");
+        } catch (err) {
+            await client.query("ROLLBACK");
+            throw err;
+        }
 
         //
         // ---------------------------------------------------------
@@ -503,8 +503,10 @@ const payOrder = async (req, res) => {
         // Update DB.
         // ---------------------------------------------------------
         //
-        const finalOrderResult = await client.query(
-            `
+        await client.query("BEGIN");
+        try {
+            const finalOrderResult = await client.query(
+                `
             UPDATE orders
             SET
                 payment_status = $1,
@@ -514,31 +516,34 @@ const payOrder = async (req, res) => {
             WHERE id = $4
             RETURNING *
             `,
-            [
-                payment.status,
-                payment.id,
-                payment.receiptUrl || null,
-                localOrder.id
-            ]
-        );
+                [
+                    payment.status,
+                    payment.id,
+                    payment.receiptUrl || null,
+                    localOrder.id
+                ]
+            );
 
-        localOrder = finalOrderResult.rows[0];
+            localOrder = finalOrderResult.rows[0];
 
-
-
-        //
-        // Empty cart
-        //
-        await client.query(
-            `
+            //
+            // Empty cart
+            //
+            await client.query(
+                `
             UPDATE carts
             SET
                 cart_data = '{"products":[]}'::jsonb,
                 updated_at = NOW()
             WHERE session_id = $1;  
             `,
-            [session_id]
-        );
+                [session_id]
+            );
+            await client.query("COMMIT");
+        } catch (err) {
+            await client.query("ROLLBACK");
+            throw err;
+        }
 
 
         res.status(200).json({
