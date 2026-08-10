@@ -75,33 +75,33 @@ const emailHtml = (receiptUrl) => `
 </html>
 `;
 
-export async function sendOrderConfirmation(order, receiptUrl) {
+export async function sendOrderConfirmation(order, payment) {
     if (!order.email) return;
 
     await resend.emails.send({
         from: "5R Photo Lab <info@5rphotolab.com>",
         to: order.email,
         subject: "Thanks for your order!",
-        html: emailHtml(receiptUrl),
+        html: emailHtml(payment.receiptUrl),
     });
 }
 
 
-export async function sendAdminNotification(order, receiptUrl) {
+export async function sendAdminNotification(order, payment) {
     await resend.emails.send({
         from: "5R Photo Lab <info@5rphotolab.com>",
         to: "info@5rphotolab.com",
-        subject: `Order #${order.id} placed at 5R Photo Lab by ${order.shipping_name || order.email}`,
+        subject: `Order #${order.id} placed at 5R Photo Lab by ${order.full_name || order.email}`,
         html: `
                         <h2>New Order</h2>
 
-                        <p><b>Customer:</b> ${order.shipping_name || order.email}</p>
+                        <p><b>Customer:</b> ${order.full_name || order.email}</p>
                         <p><b>Email:</b> ${order.email}</p>
                         <p><b>Amount:</b> $${Number(order.total_amount).toFixed(2)}</p>
                         <p><b>Notes:</b> ${order.notes || "None"}</p>
 
                         <p>
-                            <a href="${receiptUrl}">
+                            <a href="${payment.receiptUrl}">
                                 View Square Receipt
                             </a>
                         </p>

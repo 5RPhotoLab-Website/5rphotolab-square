@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import useSquare from "../hooks/useSquare";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import BillingAddress from "../components/BillingAddress";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const appId = import.meta.env.VITE_SQUARE_PROD_APP_ID;
@@ -16,6 +17,7 @@ export default function CheckoutPage() {
     const loaded = useSquare();
     const cardRef = useRef(null);
     const cardInstance = useRef(null);
+    const initializingRef = useRef(false);
     const paymentsRef = useRef(null);
     const applePayInstance = useRef(null);
     const [cardReady, setCardReady] = useState(false);
@@ -24,17 +26,25 @@ export default function CheckoutPage() {
     const total = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const [notes, setNotes] = useState("");
 
+    const [fullName, setFullName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
     const [shippingRequested, setShippingRequested] = useState(false);
     const [shipping, setShipping] = useState({
-        name: "",
         address_line1: "",
         address_line2: "",
         city: "",
         state: "",
         zip: "",
         country: "US"
+    });
+    const [billing, setBilling] = useState({
+        address_line1: "",
+        address_line2: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: ""
     });
     const [submitted, setSubmitted] = useState(false);
 
@@ -45,7 +55,9 @@ export default function CheckoutPage() {
         }`;
 
     useEffect(() => {
-        if (!loaded || cardInstance.current) return;
+        if (!loaded || cardInstance.current || initializingRef.current) return;
+
+        initializingRef.current = true;
 
         async function init() {
             try {
@@ -93,6 +105,8 @@ export default function CheckoutPage() {
                     "Unable to load payment form."
                 );
                 alert(err?.message);
+            } finally {
+                initializingRef.current = false;
             }
         }
 
@@ -104,6 +118,11 @@ export default function CheckoutPage() {
         setLoading(true);
         setSubmitted(true);
         setError("");
+        if (!fullName.trim()) {
+            setError("Full name is required.");
+            setLoading(false);
+            return;
+        }
         if (!phoneNumber.trim()) {
             setError("Phone number is required.");
             setLoading(false);
@@ -117,7 +136,6 @@ export default function CheckoutPage() {
         if (
             shippingRequested &&
             (
-                !shipping.name ||
                 !shipping.address_line1 ||
                 !shipping.city ||
                 !shipping.state ||
@@ -125,6 +143,17 @@ export default function CheckoutPage() {
             )
         ) {
             setError("Please complete your shipping address.");
+            setLoading(false);
+            return;
+        }
+        if (
+            !billing.address_line1 ||
+            !billing.city ||
+            !billing.state ||
+            !billing.zip ||
+            !billing.country
+        ) {
+            setError("Please complete your billing address.");
             setLoading(false);
             return;
         }
@@ -153,8 +182,10 @@ export default function CheckoutPage() {
 
                 body: JSON.stringify({
                     sourceId: result.token,
+                    full_name: fullName,
                     phone_number: phoneNumber,
                     email,
+                    billing,
                     shipping: {
                         requested: shippingRequested,
                         ...(shippingRequested ? shipping : {})
@@ -200,6 +231,11 @@ export default function CheckoutPage() {
                 throw new Error("Apple Pay is unavailable.");
             }
 
+            if (!fullName.trim()) {
+                throw new Error("Full number is required.");
+            }
+
+
             if (!phoneNumber.trim()) {
                 throw new Error("Phone number is required.");
             }
@@ -211,7 +247,6 @@ export default function CheckoutPage() {
             if (
                 shippingRequested &&
                 (
-                    !shipping.name ||
                     !shipping.address_line1 ||
                     !shipping.city ||
                     !shipping.state ||
@@ -241,8 +276,8 @@ export default function CheckoutPage() {
                     currencyCode: "USD",
                     intent: "CHARGE",
                     billingContact: {
-                        givenName: shipping.name?.split(" ")[0] || "",
-                        familyName: shipping.name?.split(" ").slice(1).join(" ") || "",
+                        givenName: fullName?.split(" ")[0] || "",
+                        familyName: fullName?.split(" ").slice(1).join(" ") || "",
                         email,
                         phone: phoneNumber,
                         countryCode: "US"
@@ -258,6 +293,7 @@ export default function CheckoutPage() {
                 },
                 body: JSON.stringify({
                     sourceId: result.token,
+                    full_name: fullName,
                     phone_number: phoneNumber,
                     email,
                     shipping: {
@@ -359,12 +395,12 @@ export default function CheckoutPage() {
                             </h2>
 
                             {/* Apple Pay goes here later */}
-                            <button
+                            {/* <button
                                 onClick={handleApplePay}
                                 className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-3"
                             >
                                 Apple Pay
-                            </button>
+                            </button> */}
 
                             {/* Google Pay */}
 
@@ -372,21 +408,29 @@ export default function CheckoutPage() {
                             <h3 className="font-semibold mb-3">
                                 Contact
                             </h3>
-                            <input
-                                type="phoneNumber"
-                                placeholder="Phone Number"
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                className={fieldClass(phoneNumber)}
-                            />
+                            <div className="space-y-3">
+                                <input
+                                    placeholder="Full Name"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className={fieldClass(fullName)}
+                                />
+                                <input
+                                    type="phoneNumber"
+                                    placeholder="Phone Number"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    className={fieldClass(phoneNumber)}
+                                />
 
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className={fieldClass(email)}
-                            />
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className={fieldClass(email)}
+                                />
+                            </div>
                             <label className="flex items-center gap-3 mt-6">
                                 <input
                                     type="checkbox"
@@ -398,20 +442,12 @@ export default function CheckoutPage() {
 
                                 Ship my prints/negatives
                             </label>
+
                             {shippingRequested && (
                                 <div className="space-y-3 mt-4">
-                                    <input
-                                        placeholder="Full Name"
-                                        value={shipping.name}
-                                        onChange={(e) =>
-                                            setShipping({
-                                                ...shipping,
-                                                name: e.target.value
-                                            })
-                                        }
-                                        className={fieldClass(shipping.name)}
-                                    />
-
+                                    <h2 className="text-[14px] font-semibold mb-2">
+                                        Shipping Address
+                                    </h2>
                                     <input
                                         placeholder="Address line 1"
                                         value={shipping.address_line1}
@@ -425,7 +461,7 @@ export default function CheckoutPage() {
                                     />
 
                                     <input
-                                        placeholder="Address line 2"
+                                        placeholder="Address line 2 (optional)"
                                         value={shipping.address_line2}
                                         onChange={(e) =>
                                             setShipping({
@@ -498,6 +534,12 @@ export default function CheckoutPage() {
                                 style={{ minHeight: "180px" }}
                             />
 
+                            <BillingAddress
+                                billing={billing}
+                                setBilling={setBilling}
+                                fieldClass={fieldClass}
+                            />
+
                             <div className="mt-6 flex items-center text-sm text-gray-500">
 
                                 🔒 Secure payment powered by Square
@@ -517,7 +559,7 @@ export default function CheckoutPage() {
                     </div>
 
                 </div>
-            </div>
+            </div >
             <>
                 {error && (
                     <div className="mt-4 text-red-500 text-center">

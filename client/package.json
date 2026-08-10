@@ -13,6 +13,7 @@
     "@sentry/react": "^10.42.0",
     "@tailwindcss/vite": "^4.1.18",
     "cors": "^2.8.5",
+    "country-state-city": "^3.2.1",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "pg": "^8.16.3",
