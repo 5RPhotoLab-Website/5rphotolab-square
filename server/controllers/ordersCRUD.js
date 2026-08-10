@@ -329,7 +329,6 @@ const payOrder = async (req, res) => {
                 payment_status,
                 square_payment_idempotency_key,
                 square_order_idempotency_key,
-                square_receipt_url,
                 phone_number,
                 notes,
                 full_name,
@@ -341,7 +340,7 @@ const payOrder = async (req, res) => {
                 billing_country,
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21 )
             RETURNING *
             `,
             [
@@ -358,7 +357,6 @@ const payOrder = async (req, res) => {
                 "PENDING",
                 squarePaymentIdempotencyKey,
                 squareOrderIdempotencyKey,
-                payment.receiptUrl,
                 phone_number,
                 notes,
                 full_name,
@@ -474,7 +472,6 @@ const payOrder = async (req, res) => {
         // The idempotency key was generated BEFORE the Square call
         // and saved in our DB.
         //
-        const paymentIdempotencyKey = `order-${order.id}`;
         const paymentResponse = await squareClient.payments.create({
 
             sourceId,
@@ -498,7 +495,7 @@ const payOrder = async (req, res) => {
 
         });
 
-        const payment = paymentResponse.payment;
+        payment = paymentResponse.payment;
 
         //
         // ---------------------------------------------------------
@@ -543,7 +540,6 @@ const payOrder = async (req, res) => {
             [session_id]
         );
 
-        await client.query("COMMIT");
 
         res.status(200).json({
             success: true,
