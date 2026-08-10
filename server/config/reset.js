@@ -80,7 +80,9 @@ const createOrdersTable = async () => {
     // `;
     const createOrdersTableQuery = `
         ALTER TABLE orders
-        DROP COLUMN shipping_name;
+ADD COLUMN IF NOT EXISTS square_payment_idempotency_key VARCHAR(45);
+ALTER TABLE orders
+ADD COLUMN IF NOT EXISTS square_order_idempotency_key VARCHAR(45);
     `;
     try {
         const res = await pool.query(createOrdersTableQuery)
@@ -90,7 +92,7 @@ const createOrdersTable = async () => {
     }
 }
 
-createOrdersTable();
+// createOrdersTable();
 
 
 const createOrderItemsTable = async () => {

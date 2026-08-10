@@ -17,7 +17,7 @@ const emailHtml = (receiptUrl) => `
         <div>
             ${receiptUrl ? `
                 <p>
-                    <a href="${receiptUrl}" style="color: #000000; text-decoration: underline; font-size: 14px;">View your receipt</a>
+                    <a href="${receiptUrl}" style="font-size: 14px;">View your receipt</a>
                 </p>
             ` : "" }
             <p style="font-size: 14px; color: #000000;">

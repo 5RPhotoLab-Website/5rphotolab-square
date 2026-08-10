@@ -195,9 +195,12 @@ const getOrderItems = async (req, res) => {
 const payOrder = async (req, res) => {
     const client = await pool.connect();
 
-    try {
-        await client.query("BEGIN");
+    let localOrder = null;
+    let squareOrder = null;
+    let payment = null;
 
+    try {
+        // await client.query("BEGIN"); might remove
         const session_id = req.headers["x-session-id"];
         const { sourceId, full_name, email, billing, shipping, phone_number, notes } = req.body;
         if (!email?.trim()) {
@@ -270,73 +273,45 @@ const payOrder = async (req, res) => {
         }));
 
         //
-        // Create Square Order
+        // IMPORTANT:
+        // Create a local order BEFORE charging Square.
         //
-        const recipient = {
-            emailAddress: email,
-            phoneNumber: phone_number || undefined,
-            displayName: full_name || email,
-            address: {
-                addressLine1: shipping?.address_line1 || billing?.address_line1,
-                addressLine2: shipping?.address_line2 || billing?.address_line2,
-                locality: shipping?.city || billing?.city,
-                administrativeDistrictLevel1: shipping?.state || billing?.state,
-                postalCode: shipping?.zip || billing?.zip,
-                country: shipping?.country || billing?.country,
-            },
-        };
-        const orderResponse = await squareClient.orders.create({
+        // These keys are generated ONCE for this local order.
+        //
+        const squareOrderIdempotencyKey = randomUUID();
+        const squarePaymentIdempotencyKey = randomUUID();
 
-            idempotencyKey: randomUUID(),
-
-            order: {
-                locationId: squareEnv.locationId,
-                lineItems,
-                metadata: notes ? { customer_notes: notes } : undefined,
-                fulfillments: [{
-                    type: "SHIPMENT",
-                    note: notes || undefined,
-                    shipmentDetails: {
-                        recipient,
-                    },
-                }]
+        //
+        // Determine which address Square should use
+        // as the fulfillment/shipping address.
+        //
+        const recipientAddress = shipping?.requested
+            ? {
+                addressLine1: shipping.address_line1,
+                addressLine2: shipping.address_line2 || undefined,
+                locality: shipping.city,
+                administrativeDistrictLevel1: shipping.state,
+                postalCode: shipping.zip,
+                country: shipping.country || "US"
             }
-
-        });
-
-        const squareOrder = orderResponse.order;
-
-        //
-        // Charge the Square Order
-        //
-        const paymentResponse = await squareClient.payments.create({
-
-            sourceId,
-
-            idempotencyKey: randomUUID(),
-
-            orderId: squareOrder.id,
-
-            amountMoney: squareOrder.totalMoney,
-
-            receiptEmail: email,
-
-            billingAddress: {
+            : {
                 addressLine1: billing.address_line1,
                 addressLine2: billing.address_line2 || undefined,
                 locality: billing.city,
-                administrativeDistrictLevel1: billing.state || undefined,
+                administrativeDistrictLevel1: billing.state,
                 postalCode: billing.zip,
                 country: billing.country
-            }
+            };
 
-        });
-
-        const payment = paymentResponse.payment;
-
+        //
+        // ---------------------------------------------------------
+        // STEP 1: Create local DB order
+        // ---------------------------------------------------------
+        //
         //
         // Create order
         //
+        await client.query("BEGIN");
         const orderResult = await client.query(
             `
             INSERT INTO orders
@@ -352,8 +327,8 @@ const payOrder = async (req, res) => {
                 shipping_country,
                 total_amount,
                 payment_status,
-                square_order_id,
-                square_payment_id,
+                square_payment_idempotency_key,
+                square_order_idempotency_key,
                 square_receipt_url,
                 phone_number,
                 notes,
@@ -363,10 +338,10 @@ const payOrder = async (req, res) => {
                 billing_city,
                 billing_state,
                 billing_zip,
-                billing_country
+                billing_country,
             )
             VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23 )
+            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22 )
             RETURNING *
             `,
             [
@@ -380,9 +355,9 @@ const payOrder = async (req, res) => {
                 shipping?.zip ?? null,
                 shipping?.country ?? null,
                 totalAmount,
-                payment.status,
-                squareOrder.id,
-                payment.id,
+                "PENDING",
+                squarePaymentIdempotencyKey,
+                squareOrderIdempotencyKey,
                 payment.receiptUrl,
                 phone_number,
                 notes,
@@ -396,7 +371,7 @@ const payOrder = async (req, res) => {
             ]
         );
 
-        const order = orderResult.rows[0];
+        localOrder = orderResult.rows[0];
 
         //
         // Snapshot every purchased item
@@ -424,7 +399,7 @@ const payOrder = async (req, res) => {
         )
         `,
                 [
-                    order.id,
+                    localOrder.id,
                     product.product_id,
                     product.variation_id,
                     product.name,
@@ -435,6 +410,124 @@ const payOrder = async (req, res) => {
                 ]
             );
         }
+
+        await client.query("COMMIT");
+
+        //
+        // ---------------------------------------------------------
+        // STEP 2: Create Square Order
+        // ---------------------------------------------------------
+        //
+        const orderResponse = await squareClient.orders.create({
+
+            idempotencyKey: squareOrderIdempotencyKey,
+
+            order: {
+                locationId: squareEnv.locationId,
+                lineItems,
+                metadata: notes ? { customer_notes: notes } : undefined,
+                fulfillments: [{
+                    type: "SHIPMENT",
+                    note: notes || undefined,
+                    shipmentDetails: {
+                        recipient: {
+                            emailAddress: email,
+                            phoneNumber:
+                                phone_number || undefined,
+                            displayName:
+                                full_name || email,
+                            address: recipientAddress
+                        }
+                    },
+                }]
+            }
+
+        });
+
+        const squareOrder = orderResponse.order;
+
+        //
+        // Save Square Order ID immediately.
+        //
+        await client.query(
+            `
+            UPDATE orders
+            SET
+                square_order_id = $1,
+                updated_at = NOW()
+            WHERE id = $2
+            `,
+            [
+                squareOrder.id,
+                localOrder.id
+            ]
+        );
+
+
+        //
+        // ---------------------------------------------------------
+        // STEP 3: Charge Square
+        // ---------------------------------------------------------
+        //
+        // VERY IMPORTANT:
+        //
+        // The idempotency key was generated BEFORE the Square call
+        // and saved in our DB.
+        //
+        const paymentIdempotencyKey = `order-${order.id}`;
+        const paymentResponse = await squareClient.payments.create({
+
+            sourceId,
+
+            idempotencyKey: squarePaymentIdempotencyKey,
+
+            orderId: squareOrder.id,
+
+            amountMoney: squareOrder.totalMoney,
+
+            receiptEmail: email,
+
+            billingAddress: {
+                addressLine1: billing.address_line1,
+                addressLine2: billing.address_line2 || undefined,
+                locality: billing.city,
+                administrativeDistrictLevel1: billing.state || undefined,
+                postalCode: billing.zip,
+                country: billing.country
+            }
+
+        });
+
+        const payment = paymentResponse.payment;
+
+        //
+        // ---------------------------------------------------------
+        // STEP 4: Payment succeeded.
+        // Update DB.
+        // ---------------------------------------------------------
+        //
+        const finalOrderResult = await client.query(
+            `
+            UPDATE orders
+            SET
+                payment_status = $1,
+                square_payment_id = $2,
+                square_receipt_url = $3,
+                updated_at = NOW()
+            WHERE id = $4
+            RETURNING *
+            `,
+            [
+                payment.status,
+                payment.id,
+                payment.receiptUrl || null,
+                localOrder.id
+            ]
+        );
+
+        localOrder = finalOrderResult.rows[0];
+
+
 
         //
         // Empty cart
@@ -454,26 +547,102 @@ const payOrder = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            orderId: order.id,
+            orderId: localOrder.id,
             paymentId: payment.id,
             receiptUrl: payment.receiptUrl
         });
 
         // fire-and-forget emails
-        void sendOrderConfirmation(order, payment).catch(console.error);
+        void sendOrderConfirmation(localOrder, payment).catch(console.error);
 
-        void sendAdminNotification(order, payment).catch(console.error);
+        void sendAdminNotification(localOrder, payment).catch(console.error);
 
     } catch (err) {
 
-        await client.query("ROLLBACK");
-
-        console.error(err);
+        console.error("PAY ORDER ERROR:", err);
         console.error(err.stack);
 
-        res.status(500).json({
+        //
+        // IMPORTANT:
+        //
+        // If Square already charged the customer, DO NOT tell
+        // the frontend that the payment definitely failed.
+        //
+        if (payment?.id) {
+
+            //
+            // We know Square returned a payment.
+            // The payment exists, so keep the local order
+            // recoverable.
+            //
+            try {
+                await client.query(
+                    `
+                    UPDATE orders
+                    SET
+                        payment_status = $1,
+                        square_payment_id = $2,
+                        square_receipt_url = $3,
+                        updated_at = NOW()
+                    WHERE id = $4
+                    `,
+                    [
+                        payment.status || "COMPLETED",
+                        payment.id,
+                        payment.receiptUrl || null,
+                        localOrder?.id
+                    ]
+                );
+            } catch (dbError) {
+                console.error(
+                    "CRITICAL: Square payment succeeded but DB update failed:",
+                    dbError
+                );
+            }
+
+            return res.status(200).json({
+                success: true,
+                paymentReceived: true,
+                orderId: localOrder?.id,
+                paymentId: payment.id,
+                message: "Payment received. Your order is being processed."
+            });
+        }
+
+        //
+        // If we created a local order but Square payment
+        // never succeeded, mark it FAILED.
+        //
+        if (localOrder?.id) {
+
+            try {
+                await client.query(
+                    `
+                    UPDATE orders
+                    SET
+                        payment_status = 'FAILED',
+                        updated_at = NOW()
+                    WHERE id = $1
+                    `,
+                    [localOrder.id]
+                );
+            } catch (dbError) {
+                console.error(
+                    "Failed to mark local order as FAILED:",
+                    dbError
+                );
+            }
+        }
+
+        //
+        // At this point we don't have a successful Square
+        // payment response.
+        //
+        return res.status(500).json({
             success: false,
-            error: err.message
+            error:
+                err?.message ||
+                "Unable to process payment."
         });
 
     } finally {
