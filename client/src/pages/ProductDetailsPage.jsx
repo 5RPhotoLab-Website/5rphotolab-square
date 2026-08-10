@@ -119,8 +119,8 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
         const cartProduct = {
             product_id: id,
             name: product.name,
-            catalogPrice: parseFloat(product.price).toFixed(2),
-            unitPrice: parseFloat(calculateUnitPriceAfterModifiers()).toFixed(2),
+            catalogPrice: parseFloat(product.price),
+            unitPrice: parseFloat(calculateUnitPriceAfterModifiers()),
             imageUrl: product.imageUrl,
             quantity: quantity,
             modifiers,
