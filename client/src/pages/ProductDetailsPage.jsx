@@ -120,7 +120,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
             product_id: id,
             name: product.name,
             catalogPrice: parseFloat(product.price),
-            unitPrice: parseFloat(calculateUnitPriceAfterModifiers()),
+            unitPrice: parseFloat(calculateUnitPriceAfterModifiers()).toFixed(2),
             imageUrl: product.imageUrl,
             quantity: quantity,
             modifiers,
