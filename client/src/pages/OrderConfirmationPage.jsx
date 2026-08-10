@@ -1,10 +1,11 @@
 // pages/OrderConfirmationPage.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { OPTION_LABEL_DATA, TITLE_MAP } from "../config/productConfig";
 
 const OrderConfirmationPage = () => {
+    const purchaseTracked = useRef(false);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { sessionId, refreshCart } = useCart();
@@ -44,6 +45,37 @@ const OrderConfirmationPage = () => {
                         const itemsData = await itemsRes.json();
                         setItems(itemsData.items);
                         setSquareTotal(itemsData.squareTotal);
+
+                        if (!purchaseTracked.current) {
+                            purchaseTracked.current = true;
+
+                            // Meta
+                            if (typeof window.fbq === "function") {
+                                window.fbq("track", "Purchase", {
+                                    content_ids: itemsData.items.map(item =>
+                                        String(item.id)
+                                    ),
+                                    content_type: "product",
+                                    value: parseFloat(itemsData.squareTotal).toFixed(2),
+                                    currency: "USD",
+                                });
+                            }
+
+                            // Google
+                            if (typeof window.gtag === "function") {
+                                window.gtag("event", "purchase", {
+                                    transaction_id: String(data.id),
+                                    value: parseFloat(itemsData.squareTotal).toFixed(2),
+                                    currency: "USD",
+                                    items: itemsData.items.map(item => ({
+                                        item_id: String(item.id),
+                                        item_name: item.product_name,
+                                        price: parseFloat(item.unit_price),
+                                        quantity: item.quantity,
+                                    })),
+                                });
+                            }
+                        }
                     }
                     return;
                 }
