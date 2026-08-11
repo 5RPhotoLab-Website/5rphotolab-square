@@ -19,7 +19,7 @@ export default function CheckoutPage() {
     const cardInstance = useRef(null);
     const initializingRef = useRef(false);
     const paymentsRef = useRef(null);
-    const applePayInstance = useRef(null);
+    // const applePayInstance = useRef(null);
     const [cardReady, setCardReady] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -67,25 +67,25 @@ export default function CheckoutPage() {
                 //
                 // Apple Pay
                 //
-                if (window.ApplePaySession) {
-                    const paymentRequest = payments.paymentRequest({
-                        countryCode: "US",
-                        currencyCode: "USD",
-                        total: {
-                            amount: total.toFixed(2),
-                            label: "5R Photo Lab"
-                        }
-                    });
+                // if (window.ApplePaySession) {
+                //     const paymentRequest = payments.paymentRequest({
+                //         countryCode: "US",
+                //         currencyCode: "USD",
+                //         total: {
+                //             amount: total.toFixed(2),
+                //             label: "5R Photo Lab"
+                //         }
+                //     });
 
-                    const applePay = await payments.applePay(paymentRequest);
+                //     const applePay = await payments.applePay(paymentRequest);
 
-                    const supported = await applePay.canMakePayment();
+                //     const supported = await applePay.canMakePayment();
 
-                    if (supported) {
-                        await applePay.attach("#apple-pay-button");
-                        applePayInstance.current = applePay;
-                    }
-                }
+                //     if (supported) {
+                //         await applePay.attach("#apple-pay-button");
+                //         applePayInstance.current = applePay;
+                //     }
+                // }
                 //
                 // Card
                 //
