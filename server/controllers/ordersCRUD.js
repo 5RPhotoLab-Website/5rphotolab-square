@@ -268,9 +268,9 @@ const payOrder = async (req, res) => {
         // }));
         const lineItems = products.map(product => {
             const squareModifiers = Object.values(product.modifiers || {})
-                .filter(modifier => modifier?.id)
+                .filter(modifier => modifier?.modifierId)
                 .map(modifier => ({
-                    catalogObjectId: modifier.id
+                    catalogObjectId: modifier.modifierId
                 }));
 
             return {
@@ -281,6 +281,11 @@ const payOrder = async (req, res) => {
                     : {})
             };
         });
+
+        console.log(
+            "SQUARE LINE ITEMS:",
+            JSON.stringify(lineItems, null, 2)
+        );
 
         //
         // IMPORTANT:
@@ -458,6 +463,10 @@ const payOrder = async (req, res) => {
         });
 
         const squareOrder = orderResponse.order;
+        console.log(
+            "SQUARE ORDER:",
+            JSON.stringify(squareOrder, null, 2)
+        );
 
         //
         // Save Square Order ID immediately.
