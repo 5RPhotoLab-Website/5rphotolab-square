@@ -262,10 +262,25 @@ const payOrder = async (req, res) => {
         //
         // Build Square line items
         //
-        const lineItems = products.map(product => ({
-            catalogObjectId: product.variation_id,
-            quantity: String(product.quantity)
-        }));
+        // const lineItems = products.map(product => ({
+        //     catalogObjectId: product.variation_id,
+        //     quantity: String(product.quantity)
+        // }));
+        const lineItems = products.map(product => {
+            const squareModifiers = Object.values(product.modifiers || {})
+                .filter(modifier => modifier?.id)
+                .map(modifier => ({
+                    catalogObjectId: modifier.id
+                }));
+
+            return {
+                catalogObjectId: product.variation_id,
+                quantity: String(product.quantity),
+                ...(squareModifiers.length > 0
+                    ? { modifiers: squareModifiers }
+                    : {})
+            };
+        });
 
         //
         // IMPORTANT:

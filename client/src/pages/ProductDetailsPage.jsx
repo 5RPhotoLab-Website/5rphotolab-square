@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import HelpfulInformation from '../components/HelpfulInformation';
 import OptionGroup from '../components/OptionGroup';
 import ItemCounter from '../components/ItemCounter';
-import { PRODUCT_CONFIG, TITLE_MAP, OPTION_LABEL_DATA } from '../config/productConfig';
 import { useCart } from '../context/CartContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -15,116 +14,177 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
     const [isAdded, setIsAdded] = useState(false);
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [selected, setSelected] = useState({
-        type: OPTION_LABEL_DATA.type[0].id,
-        scanType: OPTION_LABEL_DATA.scanType[0].id,
-        scanTypeBorder: OPTION_LABEL_DATA.scanTypeBorder[0].id,
-        scanSize: OPTION_LABEL_DATA.scanSize[0].id,
-        physicalCopies: OPTION_LABEL_DATA.physicalCopies[0].id,
-        physicalCopies35mm: OPTION_LABEL_DATA.physicalCopies35mm[0].id,
-        saveNegatives: OPTION_LABEL_DATA.saveNegatives[0].id,
-        addOns: OPTION_LABEL_DATA.addOns[0].id,
-        pullPush: OPTION_LABEL_DATA.pullPush[0].id,
-    });
+    const [selected, setSelected] = useState({});
 
-    // Fetch from API if user refreshed the page (fallback)
+
+    // -----------------------------------------
+    // FETCH PRODUCT
+    // -----------------------------------------
     useEffect(() => {
-        if (!product) {
-            const fetchItemById = async () => {
-                const response = await fetch(`${API_BASE_URL}/api/products/get/${id}`);
-                const data = await response.json();
-                setProduct(data);
-            };
-            fetchItemById();
-        }
-    }, [id, product]);
+        const fetchProduct = async () => {
+            setProduct(null);
+            const response = await fetch(
+                `${API_BASE_URL}/api/products/get/${id}`
+            );
+            const data = await response.json();
+            setProduct(data);
+        };
+        fetchProduct();
+    }, [id]);
 
+    // -----------------------------------------
+    // DETERMINE PRODUCT TYPE FROM NAME
+    // -----------------------------------------
+    const productType = product?.name?.startsWith("Color ")
+        ? "color"
+        : product?.name?.startsWith("B&W ")
+            ? "bw"
+            : null;
 
+    // -----------------------------------------
+    // HARD-CODED TYPE GROUP
+    // -----------------------------------------
+    const typeGroup = {
+        listName: "TYPE",
+        type: "productType",
+        choices: [
+            {
+                name: "Color (C-41)",
+                type: "color",
+                priceAdd: "0.00"
+            },
+            {
+                name: "B&W",
+                type: "bw",
+                priceAdd: "0.00"
+            }
+        ]
+    };
+
+    // -----------------------------------------
+    // BASE PRODUCT NAME
+    // -----------------------------------------
     const getBaseName = (name) => {
         return name.replace(/^Color\s|^B&W\s/, "").trim();
     };
 
-    useEffect(() => {
+    // -----------------------------------------
+    // SWITCH COLOR / B&W PRODUCT
+    // -----------------------------------------
+    const switchProductType = (type) => {
         if (!product || !products) return;
 
         const baseName = getBaseName(product.name);
 
-        const targetPrefix = selected.type === "color" ? "Color" : "B&W";
+        const prefix = type === "color"
+            ? "Color"
+            : "B&W";
 
-        const matchingProduct = products.find(p =>
-            p.name === `${targetPrefix} ${baseName}`
+        const matchingProduct = products.find(
+            p => p.name === `${prefix} ${baseName}`
         );
 
-        if (matchingProduct && matchingProduct.id !== product.id) {
-            setProduct(matchingProduct);
-            navigate(`/products/get/${matchingProduct.id}`);
+        if (!matchingProduct) {
+            return;
         }
 
-    }, [selected.type]);
-
-    // identify product type from name to determine which options to show and if any special pricing applies
-    const getProductKey = (product) => {
-        if (!product?.name) return null;
-
-        const name = product.name.toLowerCase();
-
-        const isColor = name.startsWith("color");
-
-        if (name.includes("aps")) return "aps";
-        if (name.includes("110")) return isColor ? "110_color" : "110_bw";
-        if (name.includes("120")) return isColor ? "120_color" : "120_bw";
-        if (name.includes("disposable")) return isColor ? "disposable_color" : "disposable_bw";
-        if (name.includes("35mm")) return isColor ? "35mm_color" : "35mm_bw";
-
-        return null;
+        navigate(`/products/get/${matchingProduct.id}`);
     };
 
-    const productKey = getProductKey(product);
-    const config = PRODUCT_CONFIG[productKey] || {};
-    const optionData = OPTION_LABEL_DATA;
+
+    // -----------------------------------------
+    // INITIALIZE SQUARE MODIFIERS
+    // -----------------------------------------
+    useEffect(() => {
+        if (!product) return;
+
+        const initial = {};
+
+        product.modifiers?.forEach(group => {
+            initial[group.listName] =
+                group.choices?.[0]?.name ?? null;
+        });
+
+        // TYPE is based on the product name
+        if (productType) {
+            initial.TYPE =
+                productType === "color"
+                    ? "Color (C-41)"
+                    : "B&W";
+        }
+
+        setSelected(initial);
+
+    }, [product, productType]);
 
 
+    // -----------------------------------------
+    // PRICE
+    // -----------------------------------------
     const calculateUnitPriceAfterModifiers = () => {
         if (!product) return 0;
 
-        const basePrice = parseFloat(product.price) || 0;
+        let total = parseFloat(product.price) || 0;
 
-        let extra = 0;
+        product.modifiers?.forEach(group => {
+            const selectedName = selected[group.listName];
 
-        config.groups?.forEach(group => {
-            const option = optionData[group]?.find(
-                o => o.id === selected[group]
+            const choice = group.choices.find(
+                choice => choice.name === selectedName
             );
-            if (option) extra += option.price || 0;
+
+            if (choice) {
+                total += parseFloat(choice.priceAdd) || 0;
+            }
         });
 
-        return basePrice + extra;
+        return total;
     };
 
     const calculateLineTotal = () => {
         return calculateUnitPriceAfterModifiers() * quantity;
     };
 
+    // -----------------------------------------
+    // ADD TO CART
+    // -----------------------------------------
     const handleAddToCart = () => {
+        if (!product) return;
+
+        // Build modifiers from the currently selected options.
         const modifiers = {};
 
-        if (isMerch) {
-            modifiers.merchandise = "merch";
-        } else {
-            config.groups?.forEach(groupKey => {
-                modifiers[groupKey] = selected[groupKey];
-            });
-        }
+        product.modifiers?.forEach((group) => {
+            const selectedName = selected[group.listName];
+
+            if (!selectedName) return;
+
+            const selectedChoice = group.choices?.find(
+                (choice) => choice.name === selectedName
+            );
+
+            if (!selectedChoice) return;
+
+            modifiers[group.listName] = {
+                modifierListId: group.modifierListId,
+                modifierId: selectedChoice.id,
+                name: selectedChoice.name,
+                priceAdd: parseFloat(selectedChoice.priceAdd || 0),
+            };
+        });
+
+        const unitPrice = calculateUnitPriceAfterModifiers();
+        const lineTotal = unitPrice * quantity;
 
         const cartProduct = {
-            product_id: id,
+            product_id: product.id,
             name: product.name,
-            catalogPrice: parseFloat(product.price),
-            unitPrice: parseFloat(calculateUnitPriceAfterModifiers()).toFixed(2),
+            catalogPrice: parseFloat(product.price) || 0,
+            unitPrice: unitPrice.toFixed(2),
             imageUrl: product.imageUrl,
-            quantity: quantity,
+            quantity,
             modifiers,
-            variation_id: product.variationId
+            variation_id: product.variationId,
         };
 
         // Add to your actual cart
@@ -140,11 +200,9 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                 ],
                 content_name: product.name,
                 content_type: "product",
-                value: parseFloat(cartProduct.unitPrice * cartProduct.quantity).toFixed(2),
+                value: lineTotal.toFixed(2),
                 currency: "USD",
             });
-
-            console.log("Meta AddToCart:", cartProduct);
         }
 
         // ==========================================
@@ -153,24 +211,26 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
         if (typeof window.gtag === "function") {
             window.gtag("event", "add_to_cart", {
                 currency: "USD",
-                value: parseFloat(cartProduct.unitPrice * cartProduct.quantity).toFixed(2),
+                value: lineTotal.toFixed(2),
                 items: [
                     {
-                        item_id: String(product.variationId || product.id),
+                        item_id: String(
+                            product.variationId || product.id
+                        ),
                         item_name: product.name,
-                        price: cartProduct.unitPrice,
-                        quantity: cartProduct.quantity,
+                        price: unitPrice,
+                        quantity,
                     }
                 ]
             });
-
-            console.log("Google AddToCart:", cartProduct);
         }
 
         setIsAdded(true);
-        setTimeout(() => setIsAdded(false), 2000);
-    };
 
+        setTimeout(() => {
+            setIsAdded(false);
+        }, 2000);
+    };
 
 
     if (!product) return <div className="text-center p-30">Loading...</div>;
@@ -234,18 +294,26 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
                     {/* RIGHT COLUMN */}
                     <div className="flex flex-col">
-                        {!isMerch &&
-                            config.groups?.map(groupKey => (
-                                <OptionGroup
-                                    key={groupKey}
-                                    title={TITLE_MAP[groupKey]}
-                                    groupKey={groupKey}
-                                    optionData={optionData}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                    config={config}
-                                />
-                            ))}
+                        {productType && (
+                            <OptionGroup
+                                key="TYPE"
+                                title="TYPE"
+                                modifierGroup={typeGroup}
+                                selected={selected}
+                                setSelected={setSelected}
+                                switchProductType={switchProductType}
+                                isProductType={true}
+                            />
+                        )}
+                        {product.modifiers?.map((modifierGroup) => (
+                            <OptionGroup
+                                key={modifierGroup.listName}
+                                title={modifierGroup.listName}
+                                modifierGroup={modifierGroup}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                        ))}
                     </div>
 
                 </div>
@@ -271,15 +339,24 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                 </div>
 
 
-                {!isMerch && config.groups?.map(groupKey => (
+                {productType && (
                     <OptionGroup
-                        key={groupKey}
-                        title={TITLE_MAP[groupKey]}
-                        groupKey={groupKey}
-                        optionData={optionData}
+                        key="TYPE"
+                        title="TYPE"
+                        modifierGroup={typeGroup}
                         selected={selected}
                         setSelected={setSelected}
-                        config={config}
+                        switchProductType={switchProductType}
+                        isProductType={true}
+                    />
+                )}
+                {product.modifiers?.map((modifierGroup) => (
+                    <OptionGroup
+                        key={modifierGroup.listName}
+                        title={modifierGroup.listName}
+                        modifierGroup={modifierGroup}
+                        selected={selected}
+                        setSelected={setSelected}
                     />
                 ))}
 

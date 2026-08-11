@@ -34,13 +34,25 @@ const getCart = async (req, res) => {
 };
 
 // Add or update a product
+const normalizeModifiers = (modifiers = {}) => {
+  return Object.fromEntries(
+    Object.entries(modifiers)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, value]) => [
+        key,
+        typeof value === "object" && value !== null
+          ? {
+            modifierListId: value.modifierListId,
+            modifierId: value.modifierId,
+          }
+          : value
+      ])
+  );
+};
+
 const isSameModifiers = (a = {}, b = {}) => {
-  const aKeys = Object.keys(a);
-  const bKeys = Object.keys(b);
-
-  if (aKeys.length !== bKeys.length) return false;
-
-  return aKeys.every(key => a[key] === b[key]);
+  return JSON.stringify(normalizeModifiers(a)) ===
+    JSON.stringify(normalizeModifiers(b));
 };
 
 //Add or update a product
