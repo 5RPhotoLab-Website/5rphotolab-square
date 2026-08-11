@@ -87,7 +87,7 @@ const YourCartPage = () => {
 
                         <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.729vw]">
                             <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
-                            <p>${orderTotal}</p>
+                            <p>${orderTotal.toFixed(2)}</p>
                         </div>
                         <p className="text-[var(--color-pink)] text-[0.521vw] tracking-wider">
                             Additional taxes and fees will be calculated at checkout

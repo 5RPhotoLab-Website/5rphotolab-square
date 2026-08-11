@@ -97,7 +97,7 @@ const DropOffPage = () => {
                             </div>
                             <div className='flex justify-between mt-1'>
                                 <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider'>Hi-Res Scan + 16-bit TIFFS</h2>
-                                <p className='font-atkinson-regular text-[0.729vw] tracking-wider'>$09.99</p>
+                                <p className='font-atkinson-regular text-[0.729vw] tracking-wider'>$14.99</p>
                             </div>
                             <div className='flex justify-between mt-1'>
                                 <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider'>Panoramic Scan for any format</h2>
@@ -346,7 +346,7 @@ const DropOffPage = () => {
                     </div>
                     <div className='flex justify-between mt-0.5'>
                         <h2 className='font-atkinson-bold text-[14px] tracking-wider'>Hi-Res Scan + 16-bit TIFFS</h2>
-                        <p className='font-atkinson-regular text-[14px] tracking-wider'>$09.99</p>
+                        <p className='font-atkinson-regular text-[14px] tracking-wider'>$14.99</p>
                     </div>
                     <div className='flex justify-between mt-0.5'>
                         <h2 className='font-atkinson-bold text-[14px] tracking-wider'>Panoramic Scan for any format</h2>
