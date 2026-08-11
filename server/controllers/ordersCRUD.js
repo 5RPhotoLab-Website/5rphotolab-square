@@ -282,10 +282,6 @@ const payOrder = async (req, res) => {
             };
         });
 
-        console.log(
-            "SQUARE LINE ITEMS:",
-            JSON.stringify(lineItems, null, 2)
-        );
 
         //
         // IMPORTANT:
@@ -464,8 +460,26 @@ const payOrder = async (req, res) => {
 
         const squareOrder = orderResponse.order;
         console.log(
-            "SQUARE ORDER:",
-            JSON.stringify(squareOrder, null, 2)
+            "SQUARE ORDER TOTAL:",
+            squareOrder.totalMoney
+        );
+
+        console.log(
+            "SQUARE ORDER LINE ITEMS:",
+            squareOrder.lineItems?.map(item => ({
+                name: item.name,
+                catalogObjectId: item.catalogObjectId,
+                quantity: item.quantity,
+                basePriceMoney: item.basePriceMoney,
+                modifiers: item.modifiers?.map(modifier => ({
+                    catalogObjectId: modifier.catalogObjectId,
+                    name: modifier.name,
+                    quantity: modifier.quantity,
+                    basePriceMoney: modifier.basePriceMoney,
+                    totalPriceMoney: modifier.totalPriceMoney
+                })),
+                totalMoney: item.totalMoney
+            }))
         );
 
         //
