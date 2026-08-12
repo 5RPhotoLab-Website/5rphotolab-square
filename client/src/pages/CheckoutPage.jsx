@@ -229,8 +229,8 @@ export default function CheckoutPage() {
 
                     setCardReady(false);
                     setError(
-                        cardError?.message ||
-                        "Unable to load card payment form."
+                        `CARD ERROR: ${cardError?.name || "unknown"} - ${cardError?.message || "unknown error"
+                        }`
                     );
                 }
 
@@ -814,6 +814,14 @@ export default function CheckoutPage() {
                                 {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
                             </button>
 
+                        </div>
+                        <div className="p-4 bg-yellow-100 text-xs break-all">
+                            <div>Square loaded: {String(!!window.Square)}</div>
+                            <div>HTTPS: {String(location.protocol === "https:")}</div>
+                            <div>Host: {location.hostname}</div>
+                            <div>Card ready: {String(cardReady)}</div>
+                            <div>Apple Pay ready: {String(applePayReady)}</div>
+                            <div>Error: {error}</div>
                         </div>
 
                     </div>
