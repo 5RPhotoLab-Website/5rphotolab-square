@@ -20,6 +20,7 @@ export default function CheckoutPage() {
     const initializingRef = useRef(false);
     const paymentsRef = useRef(null);
     const applePayInstance = useRef(null);
+    const paymentRequestRef = useRef(null);
     const [applePayReady, setApplePayReady] = useState(false);
     const [cardReady, setCardReady] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -101,6 +102,8 @@ export default function CheckoutPage() {
                                 }
                             });
 
+                        paymentRequestRef.current = paymentRequest;
+
                         const applePay =
                             await payments.applePay(
                                 paymentRequest
@@ -169,7 +172,22 @@ export default function CheckoutPage() {
 
         init();
 
-    }, [loaded, total]);
+    }, [loaded]);
+
+    useEffect(() => {
+        if (!paymentRequestRef.current || total <= 0) {
+            return;
+        }
+
+        paymentRequestRef.current.update({
+            total: {
+                amount: total.toFixed(2),
+                label: "5R Photo Lab"
+            }
+        });
+
+        console.log("Apple Pay total updated:", total.toFixed(2));
+    }, [total]);
 
 
 
