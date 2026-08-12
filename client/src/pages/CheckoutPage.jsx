@@ -19,7 +19,8 @@ export default function CheckoutPage() {
     const cardInstance = useRef(null);
     const initializingRef = useRef(false);
     const paymentsRef = useRef(null);
-    // const applePayInstance = useRef(null);
+    const applePayInstance = useRef(null);
+    const [applePayReady, setApplePayReady] = useState(false);
     const [cardReady, setCardReady] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -111,7 +112,71 @@ export default function CheckoutPage() {
         }
 
         init();
-    }, [loaded, total]);
+    }, [loaded]);
+
+    useEffect(() => {
+        if (!loaded || !paymentsRef.current) return;
+
+        let cancelled = false;
+
+        async function initApplePay() {
+            try {
+                setApplePayReady(false);
+
+                if (!window.ApplePaySession) {
+                    return;
+                }
+
+                const paymentRequest = paymentsRef.current.paymentRequest({
+                    countryCode: "US",
+                    currencyCode: "USD",
+
+                    requestBillingContact: true,
+
+                    requestShippingContact: shippingRequested,
+
+                    total: {
+                        amount: total.toFixed(2),
+                        label: "5R Photo Lab"
+                    }
+                });
+
+                const applePay = await paymentsRef.current.applePay(
+                    paymentRequest
+                );
+
+                const supported = await applePay.canMakePayment();
+
+                if (!supported || cancelled) {
+                    return;
+                }
+
+                applePayInstance.current = applePay;
+                setApplePayReady(true);
+
+            } catch (err) {
+                console.error("Apple Pay initialization failed:", err);
+
+                if (!cancelled) {
+                    applePayInstance.current = null;
+                    setApplePayReady(false);
+                }
+            }
+        }
+
+        initApplePay();
+
+        return () => {
+            cancelled = true;
+
+            if (applePayInstance.current) {
+                applePayInstance.current.destroy().catch(() => { });
+                applePayInstance.current = null;
+            }
+
+            setApplePayReady(false);
+        };
+    }, [loaded, total, shippingRequested]);
 
 
     const handlePay = async () => {
@@ -221,104 +286,196 @@ export default function CheckoutPage() {
         }
     };
 
-    // const handleApplePay = async () => {
-    //     setLoading(true);
-    //     setSubmitted(true);
-    //     setError("");
+    const handleApplePay = async () => {
+        setLoading(true);
+        setError("");
 
-    //     try {
-    //         if (!applePayInstance.current) {
-    //             throw new Error("Apple Pay is unavailable.");
-    //         }
+        try {
+            if (!applePayInstance.current) {
+                throw new Error("Apple Pay is unavailable.");
+            }
 
-    //         if (!fullName.trim()) {
-    //             throw new Error("Full number is required.");
-    //         }
+            //
+            // IMPORTANT:
+            // tokenize() must happen immediately from the click handler.
+            //
+            const result = await applePayInstance.current.tokenize();
 
+            if (result.status !== "OK") {
+                throw new Error(
+                    result.errors?.[0]?.message ??
+                    "Apple Pay payment failed."
+                );
+            }
 
-    //         if (!phoneNumber.trim()) {
-    //             throw new Error("Phone number is required.");
-    //         }
+            console.log("APPLE PAY TOKEN DETAILS:", result.details);
 
-    //         if (!email.trim()) {
-    //             throw new Error("Email is required.");
-    //         }
+            const billingContact = result.details?.billing;
+            const shippingContact = result.details?.shipping?.contact;
 
-    //         if (
-    //             shippingRequested &&
-    //             (
-    //                 !shipping.address_line1 ||
-    //                 !shipping.city ||
-    //                 !shipping.state ||
-    //                 !shipping.zip
-    //             )
-    //         ) {
-    //             throw new Error("Please complete your shipping address.");
-    //         }
+            if (!billingContact) {
+                throw new Error(
+                    "Apple Pay did not return billing information."
+                );
+            }
 
-    //         const result = await applePayInstance.current.tokenize();
+            //
+            // Build our normal name/email/phone values
+            //
+            const fullName = [
+                billingContact.givenName,
+                billingContact.familyName
+            ]
+                .filter(Boolean)
+                .join(" ");
 
-    //         if (result.status !== "OK") {
-    //             throw new Error(
-    //                 result.errors?.[0]?.message ??
-    //                 "Apple Pay failed."
-    //             );
-    //         }
+            const email =
+                billingContact.email ||
+                shippingContact?.email ||
+                "";
 
+            const phoneNumber =
+                billingContact.phone ||
+                shippingContact?.phone ||
+                "";
 
-    //         // verification for apple pay?
-    //         const payments = window.Square.payments(appId, locationId);
+            if (!email) {
+                throw new Error(
+                    "Apple Pay did not provide an email address."
+                );
+            }
 
-    //         const verification = await payments.verifyBuyer(
-    //             result.token,
-    //             {
-    //                 amount: total.toFixed(2),
-    //                 currencyCode: "USD",
-    //                 intent: "CHARGE",
-    //                 billingContact: {
-    //                     givenName: fullName?.split(" ")[0] || "",
-    //                     familyName: fullName?.split(" ").slice(1).join(" ") || "",
-    //                     email,
-    //                     phone: phoneNumber,
-    //                     countryCode: "US"
-    //                 }
-    //             }
-    //         );
+            //
+            // Convert Square's Apple Pay billing contact
+            // into YOUR database's billing format.
+            //
+            const billing = {
+                address_line1:
+                    billingContact.addressLines?.[0] || "",
 
-    //         const response = await fetch(`${API_BASE_URL}/api/orders/pay`, {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "x-session-id": sessionId
-    //             },
-    //             body: JSON.stringify({
-    //                 sourceId: result.token,
-    //                 full_name: fullName,
-    //                 phone_number: phoneNumber,
-    //                 email,
-    //                 shipping: {
-    //                     requested: shippingRequested,
-    //                     ...(shippingRequested ? shipping : {})
-    //                 },
-    //                 notes
-    //             })
-    //         });
+                address_line2:
+                    billingContact.addressLines?.[1] || "",
 
-    //         const json = await response.json();
+                city:
+                    billingContact.city || "",
 
-    //         if (!response.ok) {
-    //             throw new Error(json.error);
-    //         }
+                state:
+                    billingContact.state || "",
 
-    //         navigate(`/order/confirmation?orderId=${json.orderId}`);
+                zip:
+                    billingContact.postalCode || "",
 
-    //     } catch (err) {
-    //         console.error(err);
-    //         setError(err.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+                country:
+                    billingContact.countryCode || "US"
+            };
+
+            //
+            // Shipping
+            //
+            let appleShipping = null;
+
+            if (shippingRequested) {
+                if (!shippingContact) {
+                    throw new Error(
+                        "Apple Pay did not return a shipping address."
+                    );
+                }
+
+                appleShipping = {
+                    address_line1:
+                        shippingContact.addressLines?.[0] || "",
+
+                    address_line2:
+                        shippingContact.addressLines?.[1] || "",
+
+                    city:
+                        shippingContact.city || "",
+
+                    state:
+                        shippingContact.state || "",
+
+                    zip:
+                        shippingContact.postalCode || "",
+
+                    country:
+                        shippingContact.countryCode || "US"
+                };
+            }
+
+            //
+            // Send the EXACT SAME backend request
+            // that card payments use.
+            //
+            const response = await fetch(
+                `${API_BASE_URL}/api/orders/pay`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-session-id": sessionId
+                    },
+
+                    body: JSON.stringify({
+                        sourceId: result.token,
+
+                        full_name: fullName,
+                        phone_number: phoneNumber,
+                        email,
+
+                        billing,
+
+                        shipping: {
+                            requested: shippingRequested,
+
+                            ...(shippingRequested
+                                ? appleShipping
+                                : {})
+                        },
+
+                        notes
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                const contentType =
+                    response.headers.get("content-type");
+
+                if (contentType?.includes("application/json")) {
+                    const json = await response.json();
+
+                    throw new Error(
+                        json.error || "Apple Pay payment failed."
+                    );
+                }
+
+                throw new Error(await response.text());
+            }
+
+            const json = await response.json();
+
+            if (!json.success) {
+                throw new Error(
+                    json.error ||
+                    "Unable to process your Apple Pay payment."
+                );
+            }
+
+            navigate(
+                `/order/confirmation?orderId=${json.orderId}`
+            );
+
+        } catch (error) {
+            console.error("Apple Pay error:", error);
+
+            setError(
+                error?.message ||
+                "Unable to process your Apple Pay payment."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -401,6 +558,18 @@ export default function CheckoutPage() {
                             >
                                 Apple Pay
                             </button> */}
+                            {applePayReady && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={handleApplePay}
+                                        disabled={loading}
+                                        className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center"
+                                    >
+                                        Pay with Apple Pay
+                                    </button>
+                                </>
+                            )}
 
                             {/* Google Pay */}
 
