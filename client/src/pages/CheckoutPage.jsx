@@ -93,8 +93,7 @@ export default function CheckoutPage() {
 
                                 requestBillingContact: true,
 
-                                requestShippingContact:
-                                    shippingRequested,
+                                requestShippingContact: true,
 
                                 total: {
                                     amount: total.toFixed(2),
