@@ -169,7 +169,7 @@ export default function CheckoutPage() {
 
         init();
 
-    }, [loaded]);
+    }, [loaded, total]);
 
 
 
