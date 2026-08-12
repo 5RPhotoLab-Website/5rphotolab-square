@@ -106,27 +106,19 @@ export default function CheckoutPage() {
                                 paymentRequest
                             );
 
-                        const supported =
-                            await applePay.canMakePayment();
-
                         console.log(
-                            "Apple Pay supported:",
-                            supported
+                            "Apple Pay initialized:",
+                            applePay
                         );
 
-                        if (supported) {
-                            applePayInstance.current =
-                                applePay;
+                        applePayInstance.current =
+                            applePay;
 
-                            setApplePayReady(true);
-                        } else {
-                            console.log(
-                                "Apple Pay is not available on this device/browser."
-                            );
+                        setApplePayReady(true);
 
-                            applePayInstance.current = null;
-                            setApplePayReady(false);
-                        }
+                        console.log(
+                            "Apple Pay is READY"
+                        );
 
                     } catch (applePayError) {
                         console.error(
