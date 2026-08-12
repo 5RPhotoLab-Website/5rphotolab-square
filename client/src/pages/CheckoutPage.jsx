@@ -56,41 +56,103 @@ export default function CheckoutPage() {
         }`;
 
     useEffect(() => {
-        if (!loaded || cardInstance.current || initializingRef.current) return;
+        if (!loaded || cardInstance.current || initializingRef.current) {
+            return;
+        }
 
         initializingRef.current = true;
 
         async function init() {
             try {
-                const payments = window.Square.payments(appId, locationId);
+                const payments = window.Square.payments(
+                    appId,
+                    locationId
+                );
+
                 paymentsRef.current = payments;
 
+                console.log("Square Payments initialized");
+                console.log(
+                    "ApplePaySession:",
+                    window.ApplePaySession
+                );
+
                 //
+                // -------------------------------------------------
                 // Apple Pay
+                // -------------------------------------------------
                 //
-                // if (window.ApplePaySession) {
-                //     const paymentRequest = payments.paymentRequest({
-                //         countryCode: "US",
-                //         currencyCode: "USD",
-                //         total: {
-                //             amount: total.toFixed(2),
-                //             label: "5R Photo Lab"
-                //         }
-                //     });
 
-                //     const applePay = await payments.applePay(paymentRequest);
+                if (window.ApplePaySession) {
+                    try {
+                        const paymentRequest =
+                            payments.paymentRequest({
+                                countryCode: "US",
+                                currencyCode: "USD",
 
-                //     const supported = await applePay.canMakePayment();
+                                requestBillingContact: true,
 
-                //     if (supported) {
-                //         await applePay.attach("#apple-pay-button");
-                //         applePayInstance.current = applePay;
-                //     }
-                // }
+                                requestShippingContact:
+                                    shippingRequested,
+
+                                total: {
+                                    amount: total.toFixed(2),
+                                    label: "5R Photo Lab"
+                                }
+                            });
+
+                        const applePay =
+                            await payments.applePay(
+                                paymentRequest
+                            );
+
+                        const supported =
+                            await applePay.canMakePayment();
+
+                        console.log(
+                            "Apple Pay supported:",
+                            supported
+                        );
+
+                        if (supported) {
+                            applePayInstance.current =
+                                applePay;
+
+                            setApplePayReady(true);
+                        } else {
+                            console.log(
+                                "Apple Pay is not available on this device/browser."
+                            );
+
+                            applePayInstance.current = null;
+                            setApplePayReady(false);
+                        }
+
+                    } catch (applePayError) {
+                        console.error(
+                            "Apple Pay initialization failed:",
+                            applePayError
+                        );
+
+                        applePayInstance.current = null;
+                        setApplePayReady(false);
+                    }
+                } else {
+                    console.log(
+                        "ApplePaySession is not available in this browser."
+                    );
+
+                    setApplePayReady(false);
+                }
+
                 //
+                // -------------------------------------------------
                 // Card
+                // -------------------------------------------------
                 //
+
                 const card = await payments.card();
+
                 await card.attach(cardRef.current);
 
                 cardInstance.current = card;
@@ -98,85 +160,25 @@ export default function CheckoutPage() {
                 setCardReady(true);
 
             } catch (err) {
-                console.error("Failed to initialize Square", err);
-                // setError("Unable to load payment form.");
+                console.error(
+                    "Failed to initialize Square:",
+                    err
+                );
+
                 setError(
                     err?.message ||
-                    JSON.stringify(err) ||
-                    "Unable to load payment form."
+                    "Unable to initialize payment form."
                 );
-                alert(err?.message);
+
             } finally {
                 initializingRef.current = false;
             }
         }
 
         init();
+
     }, [loaded]);
 
-    useEffect(() => {
-        if (!loaded || !paymentsRef.current) return;
-
-        let cancelled = false;
-
-        async function initApplePay() {
-            try {
-                setApplePayReady(false);
-
-                if (!window.ApplePaySession) {
-                    return;
-                }
-
-                const paymentRequest = paymentsRef.current.paymentRequest({
-                    countryCode: "US",
-                    currencyCode: "USD",
-
-                    requestBillingContact: true,
-
-                    requestShippingContact: shippingRequested,
-
-                    total: {
-                        amount: total.toFixed(2),
-                        label: "5R Photo Lab"
-                    }
-                });
-
-                const applePay = await paymentsRef.current.applePay(
-                    paymentRequest
-                );
-
-                const supported = await applePay.canMakePayment();
-
-                if (!supported || cancelled) {
-                    return;
-                }
-
-                applePayInstance.current = applePay;
-                setApplePayReady(true);
-
-            } catch (err) {
-                console.error("Apple Pay initialization failed:", err);
-
-                if (!cancelled) {
-                    applePayInstance.current = null;
-                    setApplePayReady(false);
-                }
-            }
-        }
-
-        initApplePay();
-
-        return () => {
-            cancelled = true;
-
-            if (applePayInstance.current) {
-                applePayInstance.current.destroy().catch(() => { });
-                applePayInstance.current = null;
-            }
-
-            setApplePayReady(false);
-        };
-    }, [loaded, total, shippingRequested]);
 
 
     const handlePay = async () => {
