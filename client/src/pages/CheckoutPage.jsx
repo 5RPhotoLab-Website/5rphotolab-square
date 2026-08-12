@@ -63,6 +63,111 @@ export default function CheckoutPage() {
 
         initializingRef.current = true;
 
+        // async function init() {
+        //     try {
+        //         const payments = window.Square.payments(
+        //             appId,
+        //             locationId
+        //         );
+
+        //         paymentsRef.current = payments;
+
+        //         console.log("Square Payments initialized");
+        //         console.log(
+        //             "ApplePaySession:",
+        //             window.ApplePaySession
+        //         );
+
+        //         //
+        //         // -------------------------------------------------
+        //         // Apple Pay
+        //         // -------------------------------------------------
+        //         //
+
+        //         if (window.ApplePaySession) {
+        //             try {
+        //                 const paymentRequest =
+        //                     payments.paymentRequest({
+        //                         countryCode: "US",
+        //                         currencyCode: "USD",
+
+        //                         requestBillingContact: true,
+
+        //                         requestShippingContact: true,
+
+        //                         total: {
+        //                             amount: total.toFixed(2),
+        //                             label: "5R Photo Lab"
+        //                         }
+        //                     });
+
+        //                 paymentRequestRef.current = paymentRequest;
+
+        //                 const applePay =
+        //                     await payments.applePay(
+        //                         paymentRequest
+        //                     );
+
+        //                 console.log(
+        //                     "Apple Pay initialized:",
+        //                     applePay
+        //                 );
+
+        //                 applePayInstance.current =
+        //                     applePay;
+
+        //                 setApplePayReady(true);
+
+        //                 console.log(
+        //                     "Apple Pay is READY"
+        //                 );
+
+        //             } catch (applePayError) {
+        //                 console.error(
+        //                     "Apple Pay initialization failed:",
+        //                     applePayError
+        //                 );
+
+        //                 applePayInstance.current = null;
+        //                 setApplePayReady(false);
+        //             }
+        //         } else {
+        //             console.log(
+        //                 "ApplePaySession is not available in this browser."
+        //             );
+
+        //             setApplePayReady(false);
+        //         }
+
+        //         //
+        //         // -------------------------------------------------
+        //         // Card
+        //         // -------------------------------------------------
+        //         //
+
+        //         const card = await payments.card();
+
+        //         await card.attach(cardRef.current);
+
+        //         cardInstance.current = card;
+
+        //         setCardReady(true);
+
+        //     } catch (err) {
+        //         console.error(
+        //             "Failed to initialize Square:",
+        //             err
+        //         );
+
+        //         setError(
+        //             err?.message ||
+        //             "Unable to initialize payment form."
+        //         );
+
+        //     } finally {
+        //         initializingRef.current = false;
+        //     }
+        // }
         async function init() {
             try {
                 const payments = window.Square.payments(
@@ -72,90 +177,66 @@ export default function CheckoutPage() {
 
                 paymentsRef.current = payments;
 
-                console.log("Square Payments initialized");
-                console.log(
-                    "ApplePaySession:",
-                    window.ApplePaySession
-                );
-
-                //
-                // -------------------------------------------------
+                // -------------------------
                 // Apple Pay
-                // -------------------------------------------------
-                //
+                // -------------------------
+                try {
+                    const paymentRequest = payments.paymentRequest({
+                        countryCode: "US",
+                        currencyCode: "USD",
+                        requestBillingContact: true,
+                        requestShippingContact: true,
+                        total: {
+                            amount: total.toFixed(2),
+                            label: "5R Photo Lab"
+                        }
+                    });
 
-                if (window.ApplePaySession) {
-                    try {
-                        const paymentRequest =
-                            payments.paymentRequest({
-                                countryCode: "US",
-                                currencyCode: "USD",
+                    paymentRequestRef.current = paymentRequest;
 
-                                requestBillingContact: true,
+                    const applePay =
+                        await payments.applePay(paymentRequest);
 
-                                requestShippingContact: true,
+                    applePayInstance.current = applePay;
+                    setApplePayReady(true);
 
-                                total: {
-                                    amount: total.toFixed(2),
-                                    label: "5R Photo Lab"
-                                }
-                            });
-
-                        paymentRequestRef.current = paymentRequest;
-
-                        const applePay =
-                            await payments.applePay(
-                                paymentRequest
-                            );
-
-                        console.log(
-                            "Apple Pay initialized:",
-                            applePay
-                        );
-
-                        applePayInstance.current =
-                            applePay;
-
-                        setApplePayReady(true);
-
-                        console.log(
-                            "Apple Pay is READY"
-                        );
-
-                    } catch (applePayError) {
-                        console.error(
-                            "Apple Pay initialization failed:",
-                            applePayError
-                        );
-
-                        applePayInstance.current = null;
-                        setApplePayReady(false);
-                    }
-                } else {
-                    console.log(
-                        "ApplePaySession is not available in this browser."
+                } catch (applePayError) {
+                    console.error(
+                        "Apple Pay unavailable:",
+                        applePayError
                     );
 
+                    applePayInstance.current = null;
                     setApplePayReady(false);
                 }
 
-                //
-                // -------------------------------------------------
-                // Card
-                // -------------------------------------------------
-                //
+                // -------------------------
+                // CARD — independent
+                // -------------------------
+                try {
+                    const card = await payments.card();
 
-                const card = await payments.card();
+                    await card.attach(cardRef.current);
 
-                await card.attach(cardRef.current);
+                    cardInstance.current = card;
+                    setCardReady(true);
 
-                cardInstance.current = card;
+                } catch (cardError) {
+                    console.error(
+                        "CARD INITIALIZATION FAILED:",
+                        cardError
+                    );
 
-                setCardReady(true);
+                    setCardReady(false);
+                    setError(
+                        cardError?.message ||
+                        "Unable to load card payment form."
+                    );
+                }
 
             } catch (err) {
                 console.error(
-                    "Failed to initialize Square:",
+                    "Square initialization failed:",
                     err
                 );
 
@@ -385,33 +466,30 @@ export default function CheckoutPage() {
             //
             let appleShipping = null;
 
-            if (shippingRequested) {
-                if (!shippingContact) {
-                    throw new Error(
-                        "Apple Pay did not return a shipping address."
-                    );
-                }
-
-                appleShipping = {
-                    address_line1:
-                        shippingContact.addressLines?.[0] || "",
-
-                    address_line2:
-                        shippingContact.addressLines?.[1] || "",
-
-                    city:
-                        shippingContact.city || "",
-
-                    state:
-                        shippingContact.state || "",
-
-                    zip:
-                        shippingContact.postalCode || "",
-
-                    country:
-                        shippingContact.countryCode || "US"
-                };
+            if (!shippingContact) {
+                throw new Error(
+                    "Apple Pay did not return a shipping address."
+                );
             }
+            appleShipping = {
+                address_line1:
+                    shippingContact.addressLines?.[0] || "",
+
+                address_line2:
+                    shippingContact.addressLines?.[1] || "",
+
+                city:
+                    shippingContact.city || "",
+
+                state:
+                    shippingContact.state || "",
+
+                zip:
+                    shippingContact.postalCode || "",
+
+                country:
+                    shippingContact.countryCode || "US"
+            };
 
             //
             // Send the EXACT SAME backend request
@@ -436,11 +514,8 @@ export default function CheckoutPage() {
                         billing,
 
                         shipping: {
-                            requested: shippingRequested,
-
-                            ...(shippingRequested
-                                ? appleShipping
-                                : {})
+                            requested: true,
+                            ...appleShipping
                         },
 
                         notes
@@ -563,23 +638,28 @@ export default function CheckoutPage() {
                             </h2>
 
                             {/* Apple Pay goes here later */}
-                            {/* <button
-                                onClick={handleApplePay}
-                                className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-3"
-                            >
-                                Apple Pay
-                            </button> */}
+                            {loading && (
+                                <div className="mb-6 rounded-xl border bg-stone-50 p-5 text-center">
+                                    <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
+
+                                    <p className="font-semibold">
+                                        Processing your payment...
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        Please don't close this page.
+                                    </p>
+                                </div>
+                            )}
                             {applePayReady && (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={handleApplePay}
-                                        disabled={loading}
-                                        className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center"
-                                    >
-                                        Pay with Apple Pay
-                                    </button>
-                                </>
+                                <button
+                                    type="button"
+                                    onClick={handleApplePay}
+                                    disabled={loading}
+                                    className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? "Finalizing your order..." : "Pay with Apple Pay"}
+                                </button>
                             )}
 
                             {/* Google Pay */}
