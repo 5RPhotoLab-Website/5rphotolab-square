@@ -17,8 +17,8 @@ const MailInPageNew = () => {
                     {products && products.length > 0 ?
                         products.map((product) => (
                             <div key={product.id} className='p-3 cursor-pointer' onClick={() => navigate(`/products/get/${product.id}`)}>
-                                <img src={product.imageUrl} alt={product.name} />
-                                <p className='font-atkinson-bold text-[0.833vw] tracking-wider'>{product.name}</p>
+                                <img src={product.imageUrl} alt={product.name.replace(/^Color\s+/, "")} />
+                                <p className='font-atkinson-bold text-[0.833vw] tracking-wider'>{product.name.replace(/^Color\s+/, "")}</p>
                                 <p className='font-atkinson-regular text-[0.625vw] tracking-wider'>${product.price}</p>
                             </div>
                         ))
@@ -29,22 +29,22 @@ const MailInPageNew = () => {
                 <div className="inline-flex px-10 py-4 border-4 rounded-[10px] tracking-wider text-[0.781vw] font-atkinson-bold bg-[var(--color-green)] cursor-pointer"
                     style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     onClick={() => navigate("/mail-in/how-to-mail-in")}>
-                    How To Ship Your Film
+                    HOW TO SHIP YOUR FILM
                 </div>
             </div>
 
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
-                <div className="inline-flex px-10 py-4 border-4 rounded-[10px] tracking-wider text-[20px] font-atkinson-bold mt-5 bg-[var(--color-green)]"
+                <div className="inline-flex px-14.5 py-4 border-4 rounded-[10px] tracking-wider text-[20px] font-atkinson-bold mt-5 bg-[var(--color-green)] tracking-wider"
                     style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
-                    onClick={() => navigate("/mail-in/how-to-mail-in")}>How To Ship Your Film</div>
+                    onClick={() => navigate("/mail-in/how-to-mail-in")}>HOW TO SHIP YOUR FILM</div>
                 <div className="grid grid-cols-2 grid-rows-4 mt-6">
                     {products && products.length > 0 ?
                         products.map((product) => (
                             <div key={product.id} className='p-3' onClick={() => navigate(`/products/get/${product.id}`)}>
-                                <img src={product.imageUrl} alt={product.name} />
-                                <p className='font-atkinson-bold text-[16px] tracking-wider'>{product.name}</p>
+                                <img src={product.imageUrl} alt={product.name.replace(/^Color\s+/, "")} />
+                                <p className='font-atkinson-bold text-[16px] tracking-wider mt-2'>{product.name.replace(/^Color\s+/, "")}</p>
                                 <p className='font-atkinson-regular text-[12px] tracking-wider'>${product.price}</p>
                             </div>
                         ))

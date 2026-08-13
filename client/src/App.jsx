@@ -13,6 +13,7 @@ import InfoPage from './pages/InfoPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import Layout from './components/Layout';
 import AccessibleSitePage from './pages/AccessibleSitePage';
+import CheckoutPage from './pages/CheckoutPage';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -123,6 +124,10 @@ function App() {
         {
           path: "/accessible-site",
           element: <AccessibleSitePage />
+        },
+        {
+          path: "/checkout",
+          element: <CheckoutPage />
         },
         {
           path: "*",

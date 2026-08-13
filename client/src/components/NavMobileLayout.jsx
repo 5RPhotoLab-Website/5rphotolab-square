@@ -18,12 +18,12 @@ const NavMobileLayout = ({ products, colorProducts, merchandiseProducts }) => {
 
 
   return (
-    <div className='md:hidden bg-[#F5F5F5] font-atkinson-regular'>
+    <div className='md:hidden bg-[#F5F5F5] font-atkinson-regular min-h-screen flex flex-col'>
       {/* Mobile */}
       <div className="p-2">
         <div className='relative flex justify-center p-2'>
           <img
-            src={isHome ? navTitleNoFilmy : navTitle}
+            src={navTitle}
             className={isHome ? "pt-2" : ""}
             alt="5R Photo Lab"
           />

@@ -1,103 +1,127 @@
-const OptionGroup = ({ title, groupKey, optionData, selected, setSelected, config }) => {
-    const options = optionData[groupKey] || [];
+const OptionGroup = ({
+    title,
+    modifierGroup,
+    selected,
+    setSelected,
+    switchProductType,
+    isProductType = false
+}) => {
 
-    const filteredOptions = config?.excludeOptions?.[groupKey]
-        ? options.filter(
-            o => !config.excludeOptions[groupKey].includes(o.id)
-        )
-        : options;
+    const options = modifierGroup?.choices || [];
 
+    const handleClick = (option) => {
+
+        // TYPE is special:
+        // it switches the actual product.
+        if (isProductType) {
+            switchProductType(option.type);
+            return;
+        }
+
+
+        // Normal Square modifier
+        const isSelected =
+            selected[modifierGroup.listName] === option.name;
+
+        setSelected(prev => ({
+            ...prev,
+            [modifierGroup.listName]:
+                isSelected ? null : option.name
+        }));
+    };
+
+
+    const renderOptions = (mobile = false) => (
+        <div
+            className={
+                mobile
+                    ? "flex flex-wrap gap-3 mt-2"
+                    : "flex flex-wrap gap-[1.6vh] mt-[0.5vw]"
+            }
+        >
+
+            {options.map(option => {
+
+                let isSelected;
+
+                if (isProductType) {
+                    isSelected = selected.TYPE === option.name;
+                } else {
+                    isSelected = selected[modifierGroup.listName] === option.name;
+                }
+
+
+                return (
+                    <div
+                        key={option.name}
+                        onClick={() => handleClick(option)}
+                        className={`border-4 rounded-[10px] text-center py-1 px-3 cursor-pointer transition ${isSelected
+                            ? "bg-[var(--color-green)]"
+                            : "bg-white"
+                            }`}
+                        style={{
+                            boxShadow:
+                                "0px 4px 0px rgba(33, 31, 34, 1)"
+                        }}
+                    >
+
+                        <p
+                            className={
+                                mobile
+                                    ? "text-[12px]"
+                                    : "text-[0.625vw]"
+                            }
+                        >
+                            {option.name}
+
+                            {!isProductType &&
+                                parseFloat(option.priceAdd) > 0 &&
+                                ` (+$${parseFloat(
+                                    option.priceAdd
+                                ).toFixed(2)})`
+                            }
+                        </p>
+
+                    </div>
+                );
+            })}
+
+        </div>
+    );
+
+    const isShippingLater =
+        ["physical copies", "save my negatives"].includes(
+            title?.trim().toLowerCase()
+        );
 
     return (
         <>
             {/* Desktop */}
             <div className="hidden md:block">
-                <h1 className='font-atkinson-bold text-[var(--color-pink)] text-[0.625vw] tracking-wider mt-5'>
+
+                <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.625vw] tracking-wider mt-5 uppercase">
                     {title}
+                    {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
                 </h1>
 
-                <div className='flex flex-wrap gap-[1.6vh] mt-[0.5vw]'>
-                    {filteredOptions.map(option => (
-                        <div
-                            key={option.id}
-                            onClick={() => {
-                                if (groupKey === "saveNegatives") {
-                                    setSelected(prev => ({
-                                        ...prev,
-                                        [groupKey]:
-                                            prev[groupKey] === option.id
-                                                ? null
-                                                : option.id
-                                    }));
-                                } else {
-                                    setSelected(prev => ({
-                                        ...prev,
-                                        [groupKey]: option.id
-                                    }));
-                                }
-                            }}
-                            className={`border-4 rounded-[10px] text-center py-1 px-3 cursor-pointer transition
-                            ${selected[groupKey] === option.id
-                                    ? "bg-[var(--color-green)]"
-                                    : "bg-white"
-                                }
-                        `}
-                            style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        >
-                            <p className='text-[0.625vw]'>
-                                {option.label}
-                                {option.price > 0 && ` (+$${option.price.toFixed(2)})`}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                {renderOptions(false)}
+
             </div>
 
 
             {/* Mobile */}
             <div className="md:hidden">
-                <h1 className='font-atkinson-bold text-[var(--color-pink)] text-[12px] tracking-wider mt-5'>
+
+                <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[12px] tracking-wider mt-5 uppercase">
                     {title}
+                    {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
                 </h1>
 
-                <div className='flex flex-wrap gap-3 mt-2'>
-                    {filteredOptions.map(option => (
-                        <div
-                            key={option.id}
-                            onClick={() => {
-                                if (groupKey === "saveNegatives") {
-                                    setSelected(prev => ({
-                                        ...prev,
-                                        [groupKey]:
-                                            prev[groupKey] === option.id
-                                                ? null
-                                                : option.id
-                                    }));
-                                } else {
-                                    setSelected(prev => ({
-                                        ...prev,
-                                        [groupKey]: option.id
-                                    }));
-                                }
-                            }}
-                            className={`border-4 rounded-[10px] text-center py-1 px-3 cursor-pointer transition
-                            ${selected[groupKey] === option.id
-                                    ? "bg-[var(--color-green)]"
-                                    : "bg-white"
-                                }
-                        `}
-                            style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        >
-                            <p className='text-[12px]'>
-                                {option.label}
-                                {option.price > 0 && ` (+$${option.price.toFixed(2)})`}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                {renderOptions(true)}
+
             </div>
         </>
-    )
+    );
 };
 
 export default OptionGroup;

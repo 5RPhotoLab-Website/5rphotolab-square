@@ -87,6 +87,20 @@ export const getProductById = async (req, res) => {
                     inclusionType: taxData.calculation_phase
                 };
             }),
+            modifiers: (itemData.modifier_list_info || []).map(info => {
+                const listData = lookup[info.modifier_list_id]?.modifier_list_data;
+                return {
+                    modifierListId: info.modifier_list_id,
+                    listName: listData?.name,
+                    choices: listData?.modifiers?.map(m => ({
+                        id: m.id,
+                        name: m.modifier_data.name,
+                        priceAdd: m.modifier_data.price_money
+                            ? (m.modifier_data.price_money.amount / 100).toFixed(2)
+                            : "0.00"
+                    })) || []
+                };
+            })
         };
 
         res.status(200).json(formattedProduct);
@@ -124,8 +138,10 @@ const formatItem = (item, lookup) => {
     const modifiers = (itemData.modifier_list_info || []).map(info => {
         const listData = lookup[info.modifier_list_id]?.modifier_list_data;
         return {
+            modifierListId: info.modifier_list_id,
             listName: listData?.name,
             choices: listData?.modifiers?.map(m => ({
+                id: m.id,
                 name: m.modifier_data.name,
                 priceAdd: m.modifier_data.price_money
                     ? (m.modifier_data.price_money.amount / 100).toFixed(2)
@@ -202,7 +218,15 @@ export const getAllProducts = async (req, res) => {
         res.status(200).json(results);
 
     } catch (error) {
-        console.error("Square Error:", error);
-        res.status(500).json({ error: "Failed to fetch all products" });
+        console.error("Square Error:");
+        console.error(error);
+
+        if (error.response) {
+            console.error(await error.response.text());
+        }
+
+        res.status(500).json({
+            error: error.message
+        });
     }
 };

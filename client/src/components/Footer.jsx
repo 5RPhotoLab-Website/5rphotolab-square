@@ -6,32 +6,39 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
-        <div className='bg-[var(--color-purple)] font-atkinson-regular'>
+        <div className='bg-[var(--color-pink)] font-atkinson-regular'>
             {/* Desktop */}
-            <div className="hidden md:flex justify-center w-full px-10 py-10 ">
+            <div className="hidden md:flex justify-center px-20 py-2 z-10 relative">
                 <div className="w-full">
-
-                    <div className="flex relative justify-between items-center text-[var(--color-dark-gray)] text-[0.833vw] tracking-widest">
+                    <div className="flex justify-between items-center text-[var(--color-dark-gray)] text-[0.833vw] tracking-widest">
 
                         {/* Column 1 */}
                         <div>
                             <p
-                                className="cursor-pointer w-[15.625vw]"
+                                className="cursor-pointer w-full"
                                 onClick={() =>
                                     window.open("https://share.google/G27Rvit6vwDAQEpx3", "_blank")
                                 }
                             >
-                                31 Washington Square West <br />Suite 3R-C, New York, NY 10011
+                                31 Washington Square West Suite 3R-C, New York, NY 10011
                             </p>
                         </div>
 
                         {/* Column 2 */}
-                        <div className="w-[15.625vw] text-[var(--color-dark-gray)] ">
+                        <div>
                             <p>Mon - Sun, 10am - 8pm</p>
-                            <a href="tel:+16463194106">+1 (646) 319 - 4106</a>
                         </div>
 
                         {/* Column 3 */}
+                        <div>
+                            <a href="tel:+16463194106">+1 (646) 319 - 4106</a>
+                        </div>
+                        {/* Column 4 */}
+                        <div>
+                            <a href="mailto:info@5rphotolab.com" className="block">info@5rphotolab.com</a>
+
+                        </div>
+                        {/* Column 5 */}
                         <div className="flex justify-center">
                             <img
                                 src={igIcon}
@@ -45,26 +52,6 @@ const Footer = () => {
                                 }
                             />
                         </div>
-
-                        {/* Column 4 */}
-                        <div className="flex items-start cursor-pointer">
-                            <p className="text-[0.681vw] cursor-pointer">FAQ</p>
-                        </div>
-
-                        {/* Column 5 */}
-                        <div className="flex items-center justify-center cursor-pointer">
-                            <button
-                                className="w-[15vw] h-[3.5vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] text-[0.833vw] font-atkinson-regular text-[#9C9C9C] cursor-pointer"
-                                style={{
-                                    boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)",
-                                }}
-                                onClick={() => window.open("http://eepurl.com/ioapWo", "_blank")}
-                            >
-                                <img src={emailAtIcon} className="mr-2 inline-block cursor-pointer" />
-                                Subscribe To Our Newsletter
-                            </button>
-                        </div>
-
                         {/* Column 6 */}
                         <div className="flex justify-center">
                             <img src={fiveRIcon} alt="5R Photo Lab Icon" />
@@ -76,7 +63,7 @@ const Footer = () => {
 
             {/* Mobile */}
             <div className="md:hidden">
-                <div className='text-[var(--color-dark-gray)] text-[16px] tracking-widest flex flex-col w-[270px] mx-auto'>
+                {/* <div className='text-[var(--color-dark-gray)] text-[16px] tracking-widest flex flex-col w-[270px] mx-auto'>
                     <p className="mt-14" onClick={() => window.open("https://share.google/G27Rvit6vwDAQEpx3", "_blank")}>
                         31 Washington Square West
                         Suite 3R-C, New York, NY 10011
@@ -103,6 +90,21 @@ const Footer = () => {
 
                 <div className='flex justify-center mt-10'>
                     <img src={fiveRIcon} alt="5R Photo Lab Icon" className='mb-5' />
+                </div> */}
+                <div className='flex relative items-center gap-10 px-8 py-8'>
+                    <div className="flex flex-col text-[10px] text-[var(--color-dark-gray)] text-left tracking-widest">
+                        <p onClick={() => window.open("https://share.google/G27Rvit6vwDAQEpx3", "_blank")}>
+                            31 Washington Square West<br />
+                            Suite 3R-C, New York, NY 10011
+                        </p>
+                        <p>Mon - Sun, 10am - 8pm</p>
+                        <a href="tel:+16463194106" className=" block"> +1 (646) 319 - 4106</a>
+                        <a href="mailto:info@5rphotolab.com" className="block">info@5rphotolab.com</a>
+                    </div>
+                    <div className='flex justify-center'>
+                        <img src={fiveRIcon} alt="5R Photo Lab Icon" />
+                    </div>
+                    <img src={igIcon} alt="Instagram Icon" className='w-[25px] h-[25px]' onClick={() => window.open("https://www.instagram.com/5rphotolab/?hl=en", "_blank")} />
                 </div>
             </div>
 
