@@ -4,7 +4,7 @@ import useSquare from "../hooks/useSquare";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import BillingAddress from "../components/BillingAddress";
-import applePayIcon from '../assets/applePayIcon.svg';
+import applePayIcon from '../assets/checkout/applePayIcon.svg';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const appId = import.meta.env.VITE_SQUARE_PROD_APP_ID;
