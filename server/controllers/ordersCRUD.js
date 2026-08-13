@@ -500,6 +500,8 @@ const payOrder = async (req, res) => {
 
             receiptEmail: email,
 
+            buyerEmailAddress: email,
+
             billingAddress: {
                 addressLine1: billing.address_line1,
                 addressLine2: billing.address_line2 || undefined,
