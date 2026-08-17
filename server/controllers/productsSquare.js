@@ -87,20 +87,22 @@ export const getProductById = async (req, res) => {
                     inclusionType: taxData.calculation_phase
                 };
             }),
-            modifiers: (itemData.modifier_list_info || []).map(info => {
-                const listData = lookup[info.modifier_list_id]?.modifier_list_data;
-                return {
-                    modifierListId: info.modifier_list_id,
-                    listName: listData?.name,
-                    choices: listData?.modifiers?.map(m => ({
-                        id: m.id,
-                        name: m.modifier_data.name,
-                        priceAdd: m.modifier_data.price_money
-                            ? (m.modifier_data.price_money.amount / 100).toFixed(2)
-                            : "0.00"
-                    })) || []
-                };
-            })
+            modifiers: (itemData.modifier_list_info || [])
+                .filter(info => info.enabled !== false)
+                .map(info => {
+                    const listData = lookup[info.modifier_list_id]?.modifier_list_data;
+                    return {
+                        modifierListId: info.modifier_list_id,
+                        listName: listData?.name,
+                        choices: listData?.modifiers?.map(m => ({
+                            id: m.id,
+                            name: m.modifier_data.name,
+                            priceAdd: m.modifier_data.price_money
+                                ? (m.modifier_data.price_money.amount / 100).toFixed(2)
+                                : "0.00"
+                        })) || []
+                    };
+                })
         };
 
         res.status(200).json(formattedProduct);
@@ -135,20 +137,22 @@ const formatItem = (item, lookup) => {
     });
 
     // Modifiers
-    const modifiers = (itemData.modifier_list_info || []).map(info => {
-        const listData = lookup[info.modifier_list_id]?.modifier_list_data;
-        return {
-            modifierListId: info.modifier_list_id,
-            listName: listData?.name,
-            choices: listData?.modifiers?.map(m => ({
-                id: m.id,
-                name: m.modifier_data.name,
-                priceAdd: m.modifier_data.price_money
-                    ? (m.modifier_data.price_money.amount / 100).toFixed(2)
-                    : "0.00"
-            })) || []
-        };
-    });
+    const modifiers = (itemData.modifier_list_info || [])
+        .filter(info => info.enabled !== false)
+        .map(info => {
+            const listData = lookup[info.modifier_list_id]?.modifier_list_data;
+            return {
+                modifierListId: info.modifier_list_id,
+                listName: listData?.name,
+                choices: listData?.modifiers?.map(m => ({
+                    id: m.id,
+                    name: m.modifier_data.name,
+                    priceAdd: m.modifier_data.price_money
+                        ? (m.modifier_data.price_money.amount / 100).toFixed(2)
+                        : "0.00"
+                })) || []
+            };
+        });
 
     const imageId = itemData.image_ids?.[0];
 

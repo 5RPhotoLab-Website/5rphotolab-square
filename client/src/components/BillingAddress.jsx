@@ -23,10 +23,8 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
 
     const postalLabel =
         billing.country === "US"
-            ? "ZIP Code"
-            : billing.country === "GB"
-                ? "Postcode"
-                : "Postal Code";
+            ? "ZIP"
+            : "Postcode";
 
     const regionLabel =
         billing.country === "US"
@@ -34,8 +32,8 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
             : billing.country === "CA"
                 ? "Province"
                 : billing.country === "AU"
-                    ? "State / Territory"
-                    : "State / Province / Region";
+                    ? "Territory"
+                    : "Region";
 
     const updateField = (field, value) => {
         setBilling(prev => ({
@@ -53,8 +51,8 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
     }, [billing.country]);
 
     return (
-        <div className="space-y-3 mt-4">
-            <h2 className="text-[14px] font-semibold mb-2">
+        <div className="space-y-6">
+            <h2 className="text-[14px] mb-3">
                 Billing Address
             </h2>
 
@@ -65,6 +63,8 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                     updateField("country", e.target.value)
                 }
                 className={fieldClass(billing.country)}
+                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+
             >
                 <option value="">
                     Select Country
@@ -93,6 +93,8 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                     )
                 }
                 className={fieldClass(billing.address_line1)}
+                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+
             />
 
 
@@ -107,81 +109,90 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                         e.target.value
                     )
                 }
-                className="border rounded-xl p-3 w-full"
+                className={fieldClass(billing.address_line2)}
+                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+
             />
 
-
-            {/* City */}
-            <input
-                type="text"
-                placeholder="City"
-                value={billing.city}
-                onChange={(e) =>
-                    updateField(
-                        "city",
-                        e.target.value
-                    )
-                }
-                className={fieldClass(billing.city)}
-            />
-
-
-            {/* State / Province */}
-            {hasStates ? (
-                <select
-                    value={billing.state}
-                    onChange={(e) =>
-                        updateField(
-                            "state",
-                            e.target.value
-                        )
-                    }
-                    className={fieldClass(billing.state)}
-                >
-                    <option value="">
-                        Select {regionLabel}
-                    </option>
-
-                    {states.map(state => (
-                        <option
-                            key={state.isoCode}
-                            value={state.isoCode}
-                        >
-                            {state.name}
-                        </option>
-                    ))}
-                </select>
-            ) : (
+            <div className="flex items-center gap-3">
+                {/* City */}
                 <input
                     type="text"
-                    placeholder={regionLabel}
-                    value={billing.state}
+                    placeholder="City"
+                    value={billing.city}
                     onChange={(e) =>
                         updateField(
-                            "state",
+                            "city",
                             e.target.value
                         )
                     }
-                    className={fieldClass(billing.state)}
+                    className={`${fieldClass(billing.city)} !w-[94px]`}
+                    style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+
                 />
-            )}
 
+                {/* State / Province */}
+                {hasStates ? (
+                    <select
+                        value={billing.state}
+                        onChange={(e) =>
+                            updateField(
+                                "state",
+                                e.target.value
+                            )
+                        }
+                        className={`${fieldClass(billing.city)} !w-[94px]`}
+                        style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
 
-            {/* Postal Code */}
-            <input
-                type="text"
-                inputMode="text"
-                autoComplete="postal-code"
-                placeholder={postalLabel}
-                value={billing.zip}
-                onChange={(e) =>
-                    updateField(
-                        "zip",
-                        e.target.value
-                    )
-                }
-                className={fieldClass(billing.zip)}
-            />
+                    >
+                        <option value="">
+                            {regionLabel}
+                        </option>
+
+                        {states.map(state => (
+                            <option
+                                key={state.isoCode}
+                                value={state.isoCode}
+                            >
+                                {state.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <input
+                        type="text"
+                        placeholder={regionLabel}
+                        value={billing.state}
+                        onChange={(e) =>
+                            updateField(
+                                "state",
+                                e.target.value
+                            )
+                        }
+                        className={`${fieldClass(billing.city)} !w-[94px]`}
+                        style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+
+                    />
+                )}
+
+                {/* Postal Code */}
+                <input
+                    type="text"
+                    inputMode="text"
+                    autoComplete="postal-code"
+                    placeholder={postalLabel}
+                    value={billing.zip}
+                    onChange={(e) =>
+                        updateField(
+                            "zip",
+                            e.target.value
+                        )
+                    }
+                    className={`${fieldClass(billing.city)} !w-[94px]`}
+                    style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+
+                />
+            </div>
 
         </div>
     );

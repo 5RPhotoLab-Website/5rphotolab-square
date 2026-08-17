@@ -1,10 +1,11 @@
-const ItemCounter = ({ quantity, onIncrease, onDecrease }) => {
+const ItemCounter = ({ quantity, onIncrease, onDecrease, disabled = false }) => {
   return (
     <>
       {/* Desktop */}
       <div className="hidden md:flex items-center space-x-3 mt-10">
         <button
           onClick={onDecrease}
+          // disabled={disabled || quantity <= 1}
           className="w-[1.198vw] h-[2.2vh] border-2 rounded-[6px] bg-[#EEEDED] flex items-center justify-center cursor-pointer"
           style={{ boxShadow: "0px 2px 0px rgba(0, 0, 0, 1)" }}
         >
@@ -17,6 +18,7 @@ const ItemCounter = ({ quantity, onIncrease, onDecrease }) => {
 
         <button
           onClick={onIncrease}
+          // disabled={disabled}
           className="w-[1.198vw] h-[2.2vh] border-2 rounded-[6px] bg-[#CECECE] flex items-center justify-center cursor-pointer"
           style={{ boxShadow: "0px 2px 0px rgba(0, 0, 0, 1)" }}
         >
@@ -28,6 +30,7 @@ const ItemCounter = ({ quantity, onIncrease, onDecrease }) => {
       <div className="md:hidden flex items-center space-x-3 mt-10">
         <button
           onClick={onDecrease}
+          // disabled={disabled || quantity <= 1}
           className="w-[23px] h-[22px] border-2 rounded-[6px] bg-[#EEEDED] flex items-center justify-center cursor-pointer"
           style={{ boxShadow: "0px 2px 0px rgba(0, 0, 0, 1)" }}
         >
@@ -40,6 +43,7 @@ const ItemCounter = ({ quantity, onIncrease, onDecrease }) => {
 
         <button
           onClick={onIncrease}
+          // disabled={disabled}
           className="w-[23px] h-[22px] border-2 rounded-[6px] bg-[#CECECE] flex items-center justify-center cursor-pointer"
           style={{ boxShadow: "0px 2px 0px rgba(0, 0, 0, 1)" }}
         >

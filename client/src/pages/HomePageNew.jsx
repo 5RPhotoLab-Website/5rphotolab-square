@@ -7,6 +7,7 @@ import review6 from '../assets/homepage/review6.svg';
 import filmyOnlyIcon from '../assets/homepage/filmyOnlyIcon.png';
 import Labmap from '../assets/homepage/Labmap.png';
 import LabmapDesktop from '../assets/homepage/LabmapDesktop.svg';
+import globe from '../assets/homepage/globe.svg';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -29,9 +30,9 @@ const HomePageNew = () => {
                     <div className="relative flex justify-between items-center gap-8 cursor-pointer pb-[12vw]">
                         {/* Map */}
                         <img
-                            src={LabmapDesktop}
+                            src={globe}
                             alt="Map"
-                            className="absolute left-1/2 top-40 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none"
+                            className="absolute left-1/2 top-40 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none w-[21.25vw]"
                         />
                         <div className="relaitve z-10 w-[10vw] h-[7.604vw] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
                             <h1 className='font-bubblicious text-[var(--color-orange)] text-[2.604vw] tracking-widest'>NYC</h1>
