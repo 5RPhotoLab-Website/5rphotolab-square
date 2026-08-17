@@ -543,36 +543,36 @@ export default function CheckoutPage() {
                 {/* Desktop */}
                 <div className="hidden md:block max-w-[900px] mx-auto pb-32">
 
-    <div className="grid grid-cols-2 gap-x-16">
+                    <div className="grid grid-cols-2 gap-x-16">
 
-        {/* LEFT COLUMN */}
-        <div>
+                        {/* LEFT COLUMN */}
+                        <div>
 
-            {/* Order Summary */}
-            <OrderSummaryAccordion
-                cart={cart}
-                total={total}
-                isOpen={orderSummaryOpen}
-                onToggle={() => setOrderSummaryOpen((prev) => !prev)}
-            />
+                            {/* Order Summary */}
+                            <OrderSummaryAccordion
+                                cart={cart}
+                                total={total}
+                                isOpen={orderSummaryOpen}
+                                onToggle={() => setOrderSummaryOpen((prev) => !prev)}
+                            />
 
-            {/* Express checkout */}
-            <div className="flex items-center my-6">
-                <div className="flex-1 border-[#CECECE] border-t" />
+                            {/* Express checkout */}
+                            <div className="flex items-center my-6">
+                                <div className="flex-1 border-[#CECECE] border-t" />
 
-                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest whitespace-nowrap">
-                    Express checkout
-                </span>
+                                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest whitespace-nowrap">
+                                    Express checkout
+                                </span>
 
-                <div className="flex-1 border-[#CECECE] border-t" />
-            </div>
+                                <div className="flex-1 border-[#CECECE] border-t" />
+                            </div>
 
-            {applePayReady && (
-                <button
-                    type="button"
-                    onClick={handleApplePay}
-                    disabled={loading}
-                    className="
+                            {applePayReady && (
+                                <button
+                                    type="button"
+                                    onClick={handleApplePay}
+                                    disabled={loading}
+                                    className="
                         w-full
                         rounded-[10px]
                         bg-[#211F22]
@@ -587,107 +587,150 @@ export default function CheckoutPage() {
                         disabled:opacity-60
                         disabled:cursor-not-allowed
                     "
-                >
-                    {loading ? (
-                        "Finalizing your order..."
-                    ) : (
-                        <>
-                            Pay with
-                            <img
-                                src={applePayIcon}
-                                alt="Apple Pay"
-                                className="ml-4"
-                            />
-                        </>
-                    )}
-                </button>
-            )}
+                                >
+                                    {loading ? (
+                                        "Finalizing your order..."
+                                    ) : (
+                                        <>
+                                            Pay with
+                                            <img
+                                                src={applePayIcon}
+                                                alt="Apple Pay"
+                                                className="ml-4"
+                                            />
+                                        </>
+                                    )}
+                                </button>
+                            )}
 
-            {/* Or */}
-            <div className="flex items-center my-6">
-                <div className="flex-1 border-[#CECECE] border-t" />
+                            {/* Or */}
+                            <div className="flex items-center my-6">
+                                <div className="flex-1 border-[#CECECE] border-t" />
 
-                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
-                    Or
-                </span>
+                                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                                    Or
+                                </span>
 
-                <div className="flex-1 border-[#CECECE] border-t" />
-            </div>
+                                <div className="flex-1 border-[#CECECE] border-t" />
+                            </div>
 
-            {/* Contact */}
-            <div className="tracking-widest">
+                            {/* Contact */}
+                            <div className="tracking-widest">
 
-                <h3 className="font-atkinson-regular text-[14px] mb-3">
-                    Contact
-                </h3>
+                                <h3 className="font-atkinson-regular text-[14px] mb-3">
+                                    Contact
+                                </h3>
 
-                <div className="space-y-6">
+                                <div className="space-y-6">
 
-                    <input
-                        placeholder="Full Name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className={fieldClass(fullName)}
-                        style={{
-                            boxShadow:
-                                "0px 4px 0px rgba(206, 206, 206, 1)"
-                        }}
-                    />
+                                    <input
+                                        placeholder="Full Name"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        className={fieldClass(fullName)}
+                                        style={{
+                                            boxShadow:
+                                                "0px 4px 0px rgba(206, 206, 206, 1)"
+                                        }}
+                                    />
 
-                    <input
-                        type="tel"
-                        placeholder="Phone Number"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className={fieldClass(phoneNumber)}
-                        style={{
-                            boxShadow:
-                                "0px 4px 0px rgba(206, 206, 206, 1)"
-                        }}
-                    />
+                                    <input
+                                        type="tel"
+                                        placeholder="Phone Number"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        className={fieldClass(phoneNumber)}
+                                        style={{
+                                            boxShadow:
+                                                "0px 4px 0px rgba(206, 206, 206, 1)"
+                                        }}
+                                    />
 
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={fieldClass(email)}
-                        style={{
-                            boxShadow:
-                                "0px 4px 0px rgba(206, 206, 206, 1)"
-                        }}
-                    />
+                                    <input
+                                        type="email"
+                                        placeholder="Email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className={fieldClass(email)}
+                                        style={{
+                                            boxShadow:
+                                                "0px 4px 0px rgba(206, 206, 206, 1)"
+                                        }}
+                                    />
 
-                </div>
+                                </div>
 
-            </div>
+                            </div>
 
-            {/* Payment */}
-            <div className="tracking-widest mt-8">
+                            {/* Payment */}
+                            <div className="tracking-widest mt-8">
 
-                <h3 className="font-atkinson-regular text-[14px] mb-3">
-                    Payment
-                </h3>
+                                <h3 className="font-atkinson-regular text-[14px] mb-3">
+                                    Payment
+                                </h3>
 
-                <div
-                    ref={cardRef}
-                    className="w-full"
-                />
+                                <div
+                                    ref={cardRef}
+                                    className="w-full"
+                                />
 
-            </div>
+                            </div>
 
-        </div>
+                        </div>
 
 
-        {/* RIGHT COLUMN */}
-        <div>
+                        {/* RIGHT COLUMN */}
+                        <div>
 
-            {/* Discount */}
-            <div className="relative w-full">
+                            {/* Discount */}
+                            {/* <div className="relative w-full">
 
-                <img
-                    src={cashierTagIcon}
-                    className="
+                                <img
+                                    src={cashierTagIcon}
+                                    className="
+                                        absolute
+                                        left-3
+                                        top-1/2
+                                        -translate-y-1/2
+                                        w-4
+                                        h-4
+                                    "
+                                    alt=""
+                                />
+
+                                <input
+                                    type="text"
+                                    placeholder="Discount code or gift card"
+                                    value={discountCode}
+                                    onChange={(e) => setDiscountCode(e.target.value)}
+                                    className="
+                                        w-full
+                                        h-[35px]
+                                        border-4
+                                        rounded-[10px]
+                                        bg-[#F5F5F5]
+                                        border-[#CECECE]
+                                        tracking-widest
+                                        text-[12px]
+                                        font-atkinson-regular
+                                        text-[#9C9C9C]
+                                        outline-none
+                                        pl-9
+                                    "
+                                    style={{
+                                        boxShadow:
+                                            "0px 4px 0px rgba(206, 206, 206, 1)"
+                                    }}
+                                />
+                            </div> */}
+
+
+                            {/* Notes */}
+                            <div className="relative w-full mt-5">
+
+                                <img
+                                    src={notesIcon}
+                                    className="
                         absolute
                         left-3
                         top-1/2
@@ -695,15 +738,15 @@ export default function CheckoutPage() {
                         w-4
                         h-4
                     "
-                    alt=""
-                />
+                                    alt=""
+                                />
 
-                <input
-                    type="text"
-                    placeholder="Discount code or gift card"
-                    value={discountCode}
-                    onChange={(e) => setDiscountCode(e.target.value)}
-                    className="
+                                <input
+                                    type="text"
+                                    placeholder="Say hi or whatever..."
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    className="
                         w-full
                         h-[35px]
                         border-4
@@ -717,82 +760,38 @@ export default function CheckoutPage() {
                         outline-none
                         pl-9
                     "
-                    style={{
-                        boxShadow:
-                            "0px 4px 0px rgba(206, 206, 206, 1)"
-                    }}
-                />
+                                    style={{
+                                        boxShadow:
+                                            "0px 4px 0px rgba(206, 206, 206, 1)"
+                                    }}
+                                />
 
-            </div>
-
-
-            {/* Notes */}
-            <div className="relative w-full mt-5">
-
-                <img
-                    src={notesIcon}
-                    className="
-                        absolute
-                        left-3
-                        top-1/2
-                        -translate-y-1/2
-                        w-4
-                        h-4
-                    "
-                    alt=""
-                />
-
-                <input
-                    type="text"
-                    placeholder="Say hi or whatever..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="
-                        w-full
-                        h-[35px]
-                        border-4
-                        rounded-[10px]
-                        bg-[#F5F5F5]
-                        border-[#CECECE]
-                        tracking-widest
-                        text-[12px]
-                        font-atkinson-regular
-                        text-[#9C9C9C]
-                        outline-none
-                        pl-9
-                    "
-                    style={{
-                        boxShadow:
-                            "0px 4px 0px rgba(206, 206, 206, 1)"
-                    }}
-                />
-
-            </div>
+                            </div>
 
 
-            {/* Billing Address */}
-            <div className="">
+                            {/* Billing Address */}
+                            <div className="">
 
-                <BillingAddress
-                    billing={billing}
-                    setBilling={setBilling}
-                    fieldClass={fieldClass}
-                />
+                                <BillingAddress
+                                    billing={billing}
+                                    setBilling={setBilling}
+                                    fieldClass={fieldClass}
+                                />
 
-            </div>
+                            </div>
 
 
-            {/* Shipping */}
-            <div className="mt-8">
+                            {/* Shipping */}
+                            <div className="mt-8">
 
-                <label className="flex items-center gap-3 text-[12px]">
-                    <input
-                        type="checkbox"
-                        checked={shippingRequested}
-                        onChange={(e) =>
-                            setShippingRequested(e.target.checked)
-                        }
-                        className="
+                                <label className="flex items-center gap-3 text-[12px]">
+                                    <input
+                                        type="checkbox"
+                                        checked={shippingRequested}
+                                        onChange={(e) =>
+                                            setShippingRequested(e.target.checked)
+                                        }
+                                        className="
                             appearance-none
                             w-[24px]
                             h-[23px]
@@ -816,44 +815,44 @@ export default function CheckoutPage() {
                             after:opacity-0
                             checked:after:opacity-100
                         "
-                        style={{
-                            boxShadow:
-                                "0px 4px 0px rgba(0, 0, 0, 1)"
-                        }}
-                    />
+                                        style={{
+                                            boxShadow:
+                                                "0px 4px 0px rgba(0, 0, 0, 1)"
+                                        }}
+                                    />
 
-                    Ship my prints/negatives
-                </label>
-
-
-                {shippingRequested && (
-                    <ShippingAddress
-                        shipping={shipping}
-                        setShipping={setShipping}
-                        shippingRequested={shippingRequested}
-                        setShippingRequested={setShippingRequested}
-                        mailingSameAsBilling={mailingSameAsBilling}
-                        setMailingSameAsBilling={setMailingSameAsBilling}
-                        billing={billing}
-                        fieldClass={fieldClass}
-                        submitted={submitted}
-                    />
-                )}
-
-            </div>
-
-        </div>
-
-    </div>
+                                    Ship my prints/negatives
+                                </label>
 
 
-    {/* Pay button centered underneath both columns */}
-    <div className="max-w-[500px] mx-auto mt-10">
+                                {shippingRequested && (
+                                    <ShippingAddress
+                                        shipping={shipping}
+                                        setShipping={setShipping}
+                                        shippingRequested={shippingRequested}
+                                        setShippingRequested={setShippingRequested}
+                                        mailingSameAsBilling={mailingSameAsBilling}
+                                        setMailingSameAsBilling={setMailingSameAsBilling}
+                                        billing={billing}
+                                        fieldClass={fieldClass}
+                                        submitted={submitted}
+                                    />
+                                )}
 
-        <button
-            disabled={loading || !cardReady}
-            onClick={handlePay}
-            className="
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* Pay button centered underneath both columns */}
+                    <div className="max-w-[500px] mx-auto mt-10">
+
+                        <button
+                            disabled={loading || !cardReady}
+                            onClick={handlePay}
+                            className="
                 w-full
                 rounded-xl
                 bg-[var(--color-blue)]
@@ -867,20 +866,20 @@ export default function CheckoutPage() {
                 hover:bg-gray-800
                 transition
             "
-            style={{
-                boxShadow:
-                    "0px 4px 0px rgba(0, 0, 0, 1)"
-            }}
-        >
-            {loading
-                ? "Processing..."
-                : `Pay $${total.toFixed(2)}`
-            }
-        </button>
+                            style={{
+                                boxShadow:
+                                    "0px 4px 0px rgba(0, 0, 0, 1)"
+                            }}
+                        >
+                            {loading
+                                ? "Processing..."
+                                : `Pay $${total.toFixed(2)}`
+                            }
+                        </button>
 
-    </div>
+                    </div>
 
-</div>
+                </div>
 
                 {/* Mobile */}
                 <div className="md:hidden p-4 flex flex-col justify-center">
@@ -892,7 +891,7 @@ export default function CheckoutPage() {
                         onToggle={() => setOrderSummaryOpen((prev) => !prev)}
                     />
 
-                    <div className="relative w-[309px] mx-auto">
+                    {/* <div className="relative w-[309px] mx-auto">
                         <img
                             src={cashierTagIcon}
                             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
@@ -905,7 +904,7 @@ export default function CheckoutPage() {
                             className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
                             style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
                         />
-                    </div>
+                    </div> */}
                     <div className="relative w-[309px] mt-5 mx-auto">
                         <img
                             src={notesIcon}
