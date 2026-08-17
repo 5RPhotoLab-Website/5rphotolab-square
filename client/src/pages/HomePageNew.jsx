@@ -83,7 +83,7 @@ const HomePageNew = () => {
                     </div>
                 </div>
 
-                <img src={Labmap} alt="Map" className="w-full relative z-0 mt-10" />
+                {/* <img src={Labmap} alt="Map" className="w-full relative z-0 mt-10" /> */}
 
                 {/* <div className="relative w-full mt-0"> */}
 
