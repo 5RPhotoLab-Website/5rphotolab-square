@@ -1,10 +1,12 @@
 import ItemCounter from './ItemCounter';
 import deleteIcon from '../assets/itemdetails/deleteIcon.svg';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 
 const ItemCart = ({ product, addProduct, removeProduct }) => {
     const navigate = useNavigate();
+    // const [updating, setUpdating] = useState(false);
     // This is the total for this specific cart row (ie. unit price (catalogPrice + modifiers) * quantity)
     const lineTotal = (product.unitPrice * product.quantity).toFixed(2);
 
@@ -20,6 +22,36 @@ const ItemCart = ({ product, addProduct, removeProduct }) => {
             value !== "" &&
             value !== "merch"
     );
+
+    const handleIncrease = async () => {
+        if (updating) return;
+
+        setUpdating(true);
+
+        try {
+            await addProduct({
+                ...product,
+                quantity: 1
+            });
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const handleDecrease = async () => {
+        if (updating || product.quantity <= 1) return;
+
+        setUpdating(true);
+
+        try {
+            await addProduct({
+                ...product,
+                quantity: -1
+            });
+        } finally {
+            setUpdating(false);
+        }
+    };
 
     return (
         <div className="mt-8">
@@ -44,6 +76,9 @@ const ItemCart = ({ product, addProduct, removeProduct }) => {
                         onDecrease={() =>
                             addProduct({ ...product, quantity: -1 })
                         }
+                        // disabled={updating}
+                        // onIncrease={handleIncrease}
+                        // onDecrease={handleDecrease}
                     />
                 </div>
 

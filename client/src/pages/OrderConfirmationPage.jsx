@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { OPTION_LABEL_DATA, TITLE_MAP } from "../config/productConfig";
+import OrderSummaryItem from "../components/OrderSummaryItem";
 
 const OrderConfirmationPage = () => {
     const purchaseTracked = useRef(false);
@@ -43,7 +44,17 @@ const OrderConfirmationPage = () => {
                     });
                     if (itemsRes.ok) {
                         const itemsData = await itemsRes.json();
-                        setItems(itemsData.items);
+
+                        const normalizedItems = itemsData.items.map((item) => ({
+                            product_id: item.product_id ?? item.id,
+                            name: item.product_name,
+                            unitPrice: parseFloat(item.unit_price),
+                            quantity: item.quantity,
+                            imageUrl: item.image_url,
+                            modifiers: item.modifiers || {},
+                        }));
+
+                        setItems(normalizedItems);
                         setSquareTotal(itemsData.squareTotal);
 
                         if (!purchaseTracked.current) {
@@ -123,8 +134,18 @@ const OrderConfirmationPage = () => {
     } else if (order.payment_status === "CANCELED") {
         heading = "Your order has been canceled.";
     } else if (order.payment_status === "PAID" || order.payment_status === "COMPLETED") {
-        heading = "Order Confirmed!";
+        heading = "Thank you for your order!";
     }
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+
+        return `${date.getMonth() + 1}/${String(date.getDate()).padStart(2, "0")}/${date.getFullYear()}, ${date.toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })}`;
+    };
 
     return (
         <>
@@ -138,96 +159,34 @@ const OrderConfirmationPage = () => {
 
                 <div className="mt-8 font-atkinson-regular tracking-wider text-[0.9vw] max-w-[40vw] mx-auto">
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Order #</span>
-                        <span>{order.id}</span>
+                        <span className="text-[var(--color-orange)]">Order number</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">#{order.id}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Status</span>
-                        <span>{order.payment_status}</span>
+                        <span>Order date</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">{formatDate(order.created_at)}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Phone Number</span>
-                        <span>{order.phone_number || 'N/A'}</span>
+                        <span>Email</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">{order.email || 'N/A'}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Email</span>
-                        <span>{order.email || 'N/A'}</span>
+                        <span>Status</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">{order.payment_status}</span>
                     </div>
-                    {items.length > 0 && (
-                        <div className="mb-2">
-                            <p className="text-[var(--color-orange)] mb-2">Items ordered</p>
-                            {items.map((item, i) => (
-                                <div key={i} className="text-[0.7vw] font-atkinson-regular tracking-wider mb-1">
-                                    <div className="flex justify-between">
-                                        <span>{item.product_name} × {item.quantity}</span>
-                                        <span>${item.line_total}</span>
-                                    </div>
-                                    <div className="ml-4">
-                                        <div className="flex flex-col mb-4">
-                                            {Object.keys(TITLE_MAP)
-                                                .filter(
-                                                    key =>
-                                                        item.modifiers?.[key] !== undefined &&
-                                                        item.modifiers?.[key] !== null &&
-                                                        key !== "type"
-                                                )
-                                                .map((key) => {
-                                                    const selectedId = item.modifiers[key];
+                    <p className="text-left">Items Ordered</p>
 
-                                                    const optionData = OPTION_LABEL_DATA[key]?.find(
-                                                        opt => opt.id === selectedId
-                                                    );
 
-                                                    let title = TITLE_MAP[key] || key;
-                                                    title = title.replace(" FOR SHIPPING", "");
 
-                                                    const isMerch = selectedId === "merch";
+                    <OrderSummaryItem cart={items} />
 
-                                                    return (
-                                                        <div key={key} className="mt-1 font-atkinson-bold tracking-wider">
-                                                            <p className="text-[0.7vw] text-[var(--color-pink)] ">
-                                                                {isMerch ? null : title}
-                                                            </p>
 
-                                                            <p className="text-[0.7vw] font-atkinson-regular tracking-wider">
-                                                                {optionData
-                                                                    ? `${optionData.label}${optionData.price > 0
-                                                                        ? ` (+$${optionData.price.toFixed(2)})`
-                                                                        : ""
-                                                                    }`
-                                                                    : selectedId}
-                                                            </p>
-                                                        </div>
-                                                    );
-                                                })}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+
                     <div className="flex justify-between mt-6">
-                        <span className="text-[var(--color-orange)]">Total</span>
-                        <span>${squareTotal || parseFloat(order.total_amount).toFixed(2)}</span>
+                        <span>Total</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">${squareTotal || parseFloat(order.total_amount).toFixed(2)}</span>
                     </div>
 
-
-
-                    {order.shipping_requested && (
-                        <div className="mt-4">
-                            <p className="text-[var(--color-orange)] mb-1">Mailing address</p>
-                            <p>{order.shipping_address_line1}</p>
-                            {order.shipping_address_line2 && <p>{order.shipping_address_line2}</p>}
-                            <p>{order.shipping_city}, {order.shipping_state} {order.shipping_zip}</p>
-                        </div>
-                    )}
-
-                    {order.notes && (
-                        <div className="mt-4">
-                            <p className="text-[var(--color-orange)] mb-1">Notes</p>
-                            <p>{order.notes}</p>
-                        </div>
-                    )}
 
                     {order.square_receipt_url && (
                         <a href={order.square_receipt_url}
@@ -240,14 +199,10 @@ const OrderConfirmationPage = () => {
                     )}
                 </div>
 
-                <div className="mt-10 mb-8 max-w-[40vw] mx-auto ">
-                    <button
-                        className='w-full py-2 border-4 rounded-[10px] bg-[var(--color-orange)] border-[var(--color-orange)] tracking-wider text-[0.75vw] font-atkinson-regular cursor-pointer'
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={() => navigate('/mail-in')}
-                    >
-                        Continue Shopping
-                    </button>
+                <div className="inline-flex px-10 py-4 border-4 rounded-[10px] tracking-wider text-[0.781vw] font-atkinson-bold bg-[var(--color-green)] cursor-pointer"
+                    style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                    onClick={() => navigate("/mail-in/how-to-mail-in")}>
+                    HOW TO SHIP YOUR FILM
                 </div>
             </div>
 
@@ -258,50 +213,38 @@ const OrderConfirmationPage = () => {
             {/* Mobile */}
             <div className="md:hidden p-4">
                 <div className="mt-5">
-                    <h1 className="text-[1.641vw] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
+                    <h1 className="text-[20px] font-atkinson-bold text-[var(--color-orange)] tracking-wider text-center">
                         {heading}
                     </h1>
                 </div>
 
                 <div className="mt-8 font-atkinson-regular tracking-wider text-[14px]">
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Order #</span>
-                        <span>{order.id}</span>
+                        <span>Order number</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">#{order.id}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Status</span>
-                        <span>{order.payment_status}</span>
+                        <span>Order date</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">{formatDate(order.created_at)}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                        <span className="text-[var(--color-orange)]">Email</span>
-                        <span>{order.email || 'N/A'}</span>
+                        <span>Email</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">{order.email || 'N/A'}</span>
                     </div>
-                    {items.length > 0 && (
-                        <div className="mb-2">
-                            <p className="text-[var(--color-orange)] mb-2">Items ordered</p>
-                            {items.map((item, i) => (
-                                <div key={i} className="flex justify-between text-[13px] font-atkinson-regular tracking-wider mb-1">
-                                    <span>{item.product_name} × {item.quantity}</span>
-                                    <span>${item.line_total}</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <div className="flex justify-between mb-2">
+                        <span>Status</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">{order.payment_status}</span>
+                    </div>
+                    <p className="text-left">Items Ordered</p>
+
+
+                    <OrderSummaryItem cart={items} />
+
+
                     <div className="flex justify-between mt-6">
-                        <span className="text-[var(--color-orange)]">Total</span>
-                        <span>${squareTotal || parseFloat(order.total_amount).toFixed(2)}</span>
+                        <span>Total</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">${squareTotal || parseFloat(order.total_amount).toFixed(2)}</span>
                     </div>
-
-
-
-                    {order.shipping_requested && (
-                        <div className="mt-4">
-                            <p className="text-[var(--color-orange)] mb-1">Mailing address</p>
-                            <p>{order.shipping_address_line1}</p>
-                            {order.shipping_address_line2 && <p>{order.shipping_address_line2}</p>}
-                            <p>{order.shipping_city}, {order.shipping_state} {order.shipping_zip}</p>
-                        </div>
-                    )}
 
                     {order.square_receipt_url && (
                         <a href={order.square_receipt_url}
@@ -314,15 +257,9 @@ const OrderConfirmationPage = () => {
                     )}
                 </div>
 
-                <div className="mt-10 mb-8">
-                    <button
-                        className='w-full h-[35px] border-4 rounded-[10px] bg-[var(--color-orange)] border-[var(--color-orange)] tracking-wider text-[12px] font-atkinson-regular'
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={() => navigate('/mail-in')}
-                    >
-                        Continue Shopping
-                    </button>
-                </div>
+                <div className="inline-flex px-14.5 py-4 border-4 rounded-[10px] tracking-wider text-[20px] font-atkinson-bold mt-5 bg-[var(--color-green)] tracking-wider"
+                    style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                    onClick={() => navigate("/mail-in/how-to-mail-in")}>HOW TO SHIP YOUR FILM</div>
             </div>
         </>
     );

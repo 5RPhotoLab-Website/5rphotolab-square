@@ -1,5 +1,6 @@
 import arrowRight from '../assets/dropoff/arrowRight.svg';
 import dropoffMap from '../assets/dropoff/dropoffMap.svg';
+import flatMap from '../assets/dropoff/flatMap.svg';
 
 const DropOffPage = () => {
     return (
@@ -14,7 +15,8 @@ const DropOffPage = () => {
                         a week for film drop-off, negatives and prints pickup,<br />
                         and film purchasing. Finding us can be tricky the first<br /> time, but you won't forget. If you want to prepare for your<br /> visit, check out this <a href="https://www.instagram.com/p/DROwbbYjq8U/" target="_blank" className="underline">video</a>.
                     </p>
-                    <img src={dropoffMap} alt="Drop-off Map" className="w-[31.938vw] h-auto" />
+                    <img src={flatMap} alt="Drop-off Map" className="w-[30.938vw] h-auto" />
+
                 </div>
                 <div className="border-4 rounded-[10px] w-full p-3" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                     <div className='bg-[var(--color-yellow)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.833vw] tracking-wider py-2 mt-5' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>

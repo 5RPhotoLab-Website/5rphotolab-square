@@ -77,12 +77,14 @@ const addProductToCart = async (req, res) => {
     );
 
     if (existingIndex > -1) {
-      products[existingIndex].quantity += quantity;
+      const newQuantity = products[existingIndex].quantity + quantity;
 
-      if (products[existingIndex].quantity <= 0) {
+      if (newQuantity <= 0) {
         products.splice(existingIndex, 1);
+      } else {
+        products[existingIndex].quantity = newQuantity;
       }
-    } else {
+    } else if (quantity > 0) {
       products.push({ product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers, variation_id });
     }
 

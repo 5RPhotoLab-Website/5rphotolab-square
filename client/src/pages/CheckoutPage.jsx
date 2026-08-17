@@ -4,6 +4,12 @@ import useSquare from "../hooks/useSquare";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import BillingAddress from "../components/BillingAddress";
+import ShippingAddress from "../components/ShippingAddress";
+import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
+import notesIcon from '../assets/checkout/notesIcon.svg';
+import applePayIcon from '../assets/checkout/applePayIcon.svg';
+import OrderSummaryAccordion from "../components/OrderSummaryAccordion";
+
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const appId = import.meta.env.VITE_SQUARE_PROD_APP_ID;
@@ -27,11 +33,12 @@ export default function CheckoutPage() {
     const [error, setError] = useState("");
     const total = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const [notes, setNotes] = useState("");
-
+    const [discountCode, setDiscountCode] = useState("");
     const [fullName, setFullName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
     const [shippingRequested, setShippingRequested] = useState(false);
+    const [mailingSameAsBilling, setMailingSameAsBilling] = useState(false);
     const [shipping, setShipping] = useState({
         address_line1: "",
         address_line2: "",
@@ -49,12 +56,19 @@ export default function CheckoutPage() {
         country: ""
     });
     const [submitted, setSubmitted] = useState(false);
+    const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
+    const [openAccordion, setOpenAccordion] = useState(false);
+    const toggleAccordion = (index) => {
+        setOpenAccordion((prev) => {
+            // if already open, remove it (close)
+            if (prev.includes(index)) {
+                return prev.filter((i) => i !== index);
+            }
+            // else add it (open)
+            return [...prev, index];
+        });
+    };
 
-    const fieldClass = (value) =>
-        `border rounded-xl p-3 w-full ${submitted && !value
-            ? "border-red-500"
-            : "border-gray-300"
-        }`;
 
     useEffect(() => {
         if (!loaded || cardInstance.current || initializingRef.current) {
@@ -63,111 +77,6 @@ export default function CheckoutPage() {
 
         initializingRef.current = true;
 
-        // async function init() {
-        //     try {
-        //         const payments = window.Square.payments(
-        //             appId,
-        //             locationId
-        //         );
-
-        //         paymentsRef.current = payments;
-
-        //         console.log("Square Payments initialized");
-        //         console.log(
-        //             "ApplePaySession:",
-        //             window.ApplePaySession
-        //         );
-
-        //         //
-        //         // -------------------------------------------------
-        //         // Apple Pay
-        //         // -------------------------------------------------
-        //         //
-
-        //         if (window.ApplePaySession) {
-        //             try {
-        //                 const paymentRequest =
-        //                     payments.paymentRequest({
-        //                         countryCode: "US",
-        //                         currencyCode: "USD",
-
-        //                         requestBillingContact: true,
-
-        //                         requestShippingContact: true,
-
-        //                         total: {
-        //                             amount: total.toFixed(2),
-        //                             label: "5R Photo Lab"
-        //                         }
-        //                     });
-
-        //                 paymentRequestRef.current = paymentRequest;
-
-        //                 const applePay =
-        //                     await payments.applePay(
-        //                         paymentRequest
-        //                     );
-
-        //                 console.log(
-        //                     "Apple Pay initialized:",
-        //                     applePay
-        //                 );
-
-        //                 applePayInstance.current =
-        //                     applePay;
-
-        //                 setApplePayReady(true);
-
-        //                 console.log(
-        //                     "Apple Pay is READY"
-        //                 );
-
-        //             } catch (applePayError) {
-        //                 console.error(
-        //                     "Apple Pay initialization failed:",
-        //                     applePayError
-        //                 );
-
-        //                 applePayInstance.current = null;
-        //                 setApplePayReady(false);
-        //             }
-        //         } else {
-        //             console.log(
-        //                 "ApplePaySession is not available in this browser."
-        //             );
-
-        //             setApplePayReady(false);
-        //         }
-
-        //         //
-        //         // -------------------------------------------------
-        //         // Card
-        //         // -------------------------------------------------
-        //         //
-
-        //         const card = await payments.card();
-
-        //         await card.attach(cardRef.current);
-
-        //         cardInstance.current = card;
-
-        //         setCardReady(true);
-
-        //     } catch (err) {
-        //         console.error(
-        //             "Failed to initialize Square:",
-        //             err
-        //         );
-
-        //         setError(
-        //             err?.message ||
-        //             "Unable to initialize payment form."
-        //         );
-
-        //     } finally {
-        //         initializingRef.current = false;
-        //     }
-        // }
         async function init() {
             try {
                 const payments = window.Square.payments(
@@ -214,7 +123,57 @@ export default function CheckoutPage() {
                 // CARD — independent
                 // -------------------------
                 try {
-                    const card = await payments.card();
+                    const card = await payments.card({
+                        style: {
+                            ".input-container": {
+                                borderColor: "#CECECE",
+                                borderWidth: "4px",
+                                borderRadius: "10px",
+                            },
+
+                            ".input-container.is-focus": {
+                                borderColor: "#CECECE",
+                                borderWidth: "4px",
+                            },
+
+                            ".input-container.is-error": {
+                                borderColor: "#EF4444",
+                                borderWidth: "4px",
+                            },
+
+                            input: {
+                                backgroundColor: "#F5F5F5",
+                                color: "#9C9C9C",
+                                fontFamily: "inherit",
+                                fontSize: "12px",
+                            },
+
+                            "input::placeholder": {
+                                color: "#9C9C9C",
+                            },
+
+                            "input.is-focus": {
+                                backgroundColor: "#F5F5F5",
+                                color: "#9C9C9C",
+                            },
+
+                            ".message-text": {
+                                color: "#9C9C9C",
+                            },
+
+                            ".message-text.is-error": {
+                                color: "#EF4444",
+                            },
+
+                            ".message-icon": {
+                                color: "#9C9C9C",
+                            },
+
+                            ".message-icon.is-error": {
+                                color: "#EF4444",
+                            },
+                        },
+                    });
 
                     await card.attach(cardRef.current);
 
@@ -268,6 +227,16 @@ export default function CheckoutPage() {
 
         console.log("Apple Pay total updated:", total.toFixed(2));
     }, [total]);
+
+
+    useEffect(() => {
+        if (mailingSameAsBilling) {
+            setShipping({
+                ...billing,
+                country: billing.country || "US"
+            });
+        }
+    }, [billing, mailingSameAsBilling]);
 
 
 
@@ -400,8 +369,6 @@ export default function CheckoutPage() {
                 );
             }
 
-            console.log("APPLE PAY TOKEN DETAILS:", result.details);
-
             const billingContact = result.details?.billing;
             const shippingContact = result.details?.shipping?.contact;
 
@@ -472,21 +439,22 @@ export default function CheckoutPage() {
                 );
             }
             appleShipping = {
+                full_name: [
+                    shippingContact.givenName,
+                    shippingContact.familyName
+                ]
+                    .filter(Boolean)
+                    .join(" "),
                 address_line1:
                     shippingContact.addressLines?.[0] || "",
-
                 address_line2:
                     shippingContact.addressLines?.[1] || "",
-
                 city:
                     shippingContact.city || "",
-
                 state:
                     shippingContact.state || "",
-
                 zip:
                     shippingContact.postalCode || "",
-
                 country:
                     shippingContact.countryCode || "US"
             };
@@ -563,271 +531,555 @@ export default function CheckoutPage() {
         }
     };
 
+    const fieldClass = (value) =>
+        `w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 ${submitted && !value
+            ? "border-red-500"
+            : "border-gray-300"
+        }`;
+
     return (
         <>
-            <div className="bg-stone-50 min-h-screen py-16">
-                <div className="max-w-6xl mx-auto px-6">
+            <div className="">
+                {/* Desktop */}
+                <div className="hidden md:block max-w-[900px] mx-auto pb-32">
 
-                    <div className="mb-10 text-center">
-                        <h1 className="text-4xl font-bold tracking-tight">
-                            Secure Checkout
-                        </h1>
+    <div className="grid grid-cols-2 gap-x-16">
 
-                        <p className="text-gray-500 mt-3">
-                            Your payment is processed securely by Square.
-                        </p>
+        {/* LEFT COLUMN */}
+        <div>
+
+            {/* Order Summary */}
+            <OrderSummaryAccordion
+                cart={cart}
+                total={total}
+                isOpen={orderSummaryOpen}
+                onToggle={() => setOrderSummaryOpen((prev) => !prev)}
+            />
+
+            {/* Express checkout */}
+            <div className="flex items-center my-6">
+                <div className="flex-1 border-[#CECECE] border-t" />
+
+                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest whitespace-nowrap">
+                    Express checkout
+                </span>
+
+                <div className="flex-1 border-[#CECECE] border-t" />
+            </div>
+
+            {applePayReady && (
+                <button
+                    type="button"
+                    onClick={handleApplePay}
+                    disabled={loading}
+                    className="
+                        w-full
+                        rounded-[10px]
+                        bg-[#211F22]
+                        text-white
+                        text-[20px]
+                        font-atkinson-bold
+                        tracking-widest
+                        py-3
+                        flex
+                        items-center
+                        justify-center
+                        disabled:opacity-60
+                        disabled:cursor-not-allowed
+                    "
+                >
+                    {loading ? (
+                        "Finalizing your order..."
+                    ) : (
+                        <>
+                            Pay with
+                            <img
+                                src={applePayIcon}
+                                alt="Apple Pay"
+                                className="ml-4"
+                            />
+                        </>
+                    )}
+                </button>
+            )}
+
+            {/* Or */}
+            <div className="flex items-center my-6">
+                <div className="flex-1 border-[#CECECE] border-t" />
+
+                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                    Or
+                </span>
+
+                <div className="flex-1 border-[#CECECE] border-t" />
+            </div>
+
+            {/* Contact */}
+            <div className="tracking-widest">
+
+                <h3 className="font-atkinson-regular text-[14px] mb-3">
+                    Contact
+                </h3>
+
+                <div className="space-y-6">
+
+                    <input
+                        placeholder="Full Name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className={fieldClass(fullName)}
+                        style={{
+                            boxShadow:
+                                "0px 4px 0px rgba(206, 206, 206, 1)"
+                        }}
+                    />
+
+                    <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className={fieldClass(phoneNumber)}
+                        style={{
+                            boxShadow:
+                                "0px 4px 0px rgba(206, 206, 206, 1)"
+                        }}
+                    />
+
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={fieldClass(email)}
+                        style={{
+                            boxShadow:
+                                "0px 4px 0px rgba(206, 206, 206, 1)"
+                        }}
+                    />
+
+                </div>
+
+            </div>
+
+            {/* Payment */}
+            <div className="tracking-widest mt-8">
+
+                <h3 className="font-atkinson-regular text-[14px] mb-3">
+                    Payment
+                </h3>
+
+                <div
+                    ref={cardRef}
+                    className="w-full"
+                />
+
+            </div>
+
+        </div>
+
+
+        {/* RIGHT COLUMN */}
+        <div>
+
+            {/* Discount */}
+            <div className="relative w-full">
+
+                <img
+                    src={cashierTagIcon}
+                    className="
+                        absolute
+                        left-3
+                        top-1/2
+                        -translate-y-1/2
+                        w-4
+                        h-4
+                    "
+                    alt=""
+                />
+
+                <input
+                    type="text"
+                    placeholder="Discount code or gift card"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    className="
+                        w-full
+                        h-[35px]
+                        border-4
+                        rounded-[10px]
+                        bg-[#F5F5F5]
+                        border-[#CECECE]
+                        tracking-widest
+                        text-[12px]
+                        font-atkinson-regular
+                        text-[#9C9C9C]
+                        outline-none
+                        pl-9
+                    "
+                    style={{
+                        boxShadow:
+                            "0px 4px 0px rgba(206, 206, 206, 1)"
+                    }}
+                />
+
+            </div>
+
+
+            {/* Notes */}
+            <div className="relative w-full mt-5">
+
+                <img
+                    src={notesIcon}
+                    className="
+                        absolute
+                        left-3
+                        top-1/2
+                        -translate-y-1/2
+                        w-4
+                        h-4
+                    "
+                    alt=""
+                />
+
+                <input
+                    type="text"
+                    placeholder="Say hi or whatever..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="
+                        w-full
+                        h-[35px]
+                        border-4
+                        rounded-[10px]
+                        bg-[#F5F5F5]
+                        border-[#CECECE]
+                        tracking-widest
+                        text-[12px]
+                        font-atkinson-regular
+                        text-[#9C9C9C]
+                        outline-none
+                        pl-9
+                    "
+                    style={{
+                        boxShadow:
+                            "0px 4px 0px rgba(206, 206, 206, 1)"
+                    }}
+                />
+
+            </div>
+
+
+            {/* Billing Address */}
+            <div className="">
+
+                <BillingAddress
+                    billing={billing}
+                    setBilling={setBilling}
+                    fieldClass={fieldClass}
+                />
+
+            </div>
+
+
+            {/* Shipping */}
+            <div className="mt-8">
+
+                <label className="flex items-center gap-3 text-[12px]">
+                    <input
+                        type="checkbox"
+                        checked={shippingRequested}
+                        onChange={(e) =>
+                            setShippingRequested(e.target.checked)
+                        }
+                        className="
+                            appearance-none
+                            w-[24px]
+                            h-[23px]
+                            border-2
+                            border-black
+                            rounded-[6px]
+                            bg-[#F5F5F5]
+                            checked:bg-[var(--color-pink)]
+                            checked:border-black
+                            relative
+                            cursor-pointer
+                            after:content-['✓']
+                            after:absolute
+                            after:text-black
+                            after:text-[16px]
+                            after:font-bold
+                            after:left-1/2
+                            after:top-1/2
+                            after:-translate-x-1/2
+                            after:-translate-y-1/2
+                            after:opacity-0
+                            checked:after:opacity-100
+                        "
+                        style={{
+                            boxShadow:
+                                "0px 4px 0px rgba(0, 0, 0, 1)"
+                        }}
+                    />
+
+                    Ship my prints/negatives
+                </label>
+
+
+                {shippingRequested && (
+                    <ShippingAddress
+                        shipping={shipping}
+                        setShipping={setShipping}
+                        shippingRequested={shippingRequested}
+                        setShippingRequested={setShippingRequested}
+                        mailingSameAsBilling={mailingSameAsBilling}
+                        setMailingSameAsBilling={setMailingSameAsBilling}
+                        billing={billing}
+                        fieldClass={fieldClass}
+                        submitted={submitted}
+                    />
+                )}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {/* Pay button centered underneath both columns */}
+    <div className="max-w-[500px] mx-auto mt-10">
+
+        <button
+            disabled={loading || !cardReady}
+            onClick={handlePay}
+            className="
+                w-full
+                rounded-xl
+                bg-[var(--color-blue)]
+                border-black
+                border-4
+                text-white
+                py-2
+                text-[20px]
+                font-atkinson-bold
+                tracking-widest
+                hover:bg-gray-800
+                transition
+            "
+            style={{
+                boxShadow:
+                    "0px 4px 0px rgba(0, 0, 0, 1)"
+            }}
+        >
+            {loading
+                ? "Processing..."
+                : `Pay $${total.toFixed(2)}`
+            }
+        </button>
+
+    </div>
+
+</div>
+
+                {/* Mobile */}
+                <div className="md:hidden p-4 flex flex-col justify-center">
+
+                    <OrderSummaryAccordion
+                        cart={cart}
+                        total={total}
+                        isOpen={orderSummaryOpen}
+                        onToggle={() => setOrderSummaryOpen((prev) => !prev)}
+                    />
+
+                    <div className="relative w-[309px] mx-auto">
+                        <img
+                            src={cashierTagIcon}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Discount code or gift card"
+                            value={discountCode}
+                            onChange={(e) => setDiscountCode(e.target.value)}
+                            className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
+                            style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                        />
+                    </div>
+                    <div className="relative w-[309px] mt-5 mx-auto">
+                        <img
+                            src={notesIcon}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Say hi or whatever..."
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
+                            style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                        />
                     </div>
 
-                    <div className="grid lg:grid-cols-2 gap-10">
+                    <div className="flex items-center my-6">
+                        <div className="flex-1 border-[#CECECE] border-t" />
 
-                        {/* Order Summary */}
+                        <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                            Express checkout
+                        </span>
+                        <div className="flex-1 border-[#CECECE] border-t" />
+                    </div>
 
-                        <div className="bg-white rounded-2xl shadow-sm border p-8">
+                    {/* Apple Pay */}
+                    {loading && (
+                        <div className="mb-6 rounded-xl border p-5 text-center">
+                            <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
 
-                            <h2 className="text-xl font-semibold mb-6">
-                                Order Summary
-                            </h2>
+                            <p className="font-semibold">
+                                Processing your payment...
+                            </p>
 
-                            {/* later map over cart items */}
+                            <p className="mt-1 text-sm text-gray-500">
+                                Please don't close this page.
+                            </p>
+                        </div>
+                    )}
+                    {applePayReady && (
+                        <button
+                            type="button"
+                            onClick={handleApplePay}
+                            disabled={loading}
+                            className="mb-6 w-[309px] rounded-[10px] bg-[#211F22] text-white text-[20px] font-atkinson-bold tracking-widest py-3 hover:bg-gray-800 transition flex items-center justify-center mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {loading ? "Finalizing your order..." : (
+                                <>
+                                    Pay with
+                                    <img src={applePayIcon} alt="Apple Pay" className="ml-4" />
+                                </>
+                            )}
+                        </button>
+                    )}
 
-                            <div className="space-y-4">
+                    <div className="flex items-center my-6">
+                        <div className="flex-1 border-[#CECECE] border-t" />
 
-                                {cart.map((item) => (
-                                    <div
-                                        key={item.variation_id}
-                                        className="flex justify-between"
-                                    >
-                                        <div>
-                                            <p>{item.name}</p>
-                                            <p className="text-sm text-gray-500">
-                                                Qty {item.quantity}
-                                            </p>
-                                        </div>
+                        <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                            Or
+                        </span>
+                        <div className="flex-1 border-[#CECECE] border-t" />
+                    </div>
 
-                                        <span>
-                                            ${(item.unitPrice * item.quantity).toFixed(2)}
-                                        </span>
-                                    </div>
-                                ))}
 
-                            </div>
-
-                            <div className="border-t mt-8 pt-6 flex justify-between text-xl font-bold">
-
-                                <span>Total</span>
-
-                                <span>${total.toFixed(2)}</span>
-
-                            </div>
+                    <div className="w-[309px] mx-auto tracking-widest">
+                        <h3 className="font-atkinson-regular text-[14px] mb-3">
+                            Contact
+                        </h3>
+                        <div className="space-y-6">
                             <input
-                                type="text"
-                                placeholder="Additional notes"
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                className='w-[230px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-wider text-[15px] font-atkinson-regular text-[#9C9C9C] tracking-wider outline-none pl-3'
+                                placeholder="Full Name"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                className={fieldClass(fullName)}
+                                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                            />
+                            <input
+                                type="phoneNumber"
+                                placeholder="Phone Number"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                className={fieldClass(phoneNumber)}
+                                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                            />
+
+                            <input
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className={fieldClass(email)}
                                 style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
                             />
                         </div>
 
-                        {/* Payment */}
+                        <h3 className="font-atkinson-regular text-[14px] mb-3 mt-6">
+                            Payment
+                        </h3>
 
-                        <div className="bg-white rounded-2xl shadow-sm border p-8">
+                        <div
+                            ref={cardRef}
+                            className="w-[309px]"
+                        />
 
-                            <h2 className="text-xl font-semibold mb-6">
-                                Payment
-                            </h2>
-
-                            {/* Apple Pay goes here later */}
-                            {loading && (
-                                <div className="mb-6 rounded-xl border bg-stone-50 p-5 text-center">
-                                    <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
-
-                                    <p className="font-semibold">
-                                        Processing your payment...
-                                    </p>
-
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        Please don't close this page.
-                                    </p>
-                                </div>
-                            )}
-                            {applePayReady && (
-                                <button
-                                    type="button"
-                                    onClick={handleApplePay}
-                                    disabled={loading}
-                                    className="mb-6 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
-                                >
-                                    {loading ? "Finalizing your order..." : "Pay with Apple Pay"}
-                                </button>
-                            )}
-
-                            {/* Google Pay */}
-
-                            {/* Divider */}
-                            <h3 className="font-semibold mb-3">
-                                Contact
-                            </h3>
-                            <div className="space-y-3">
-                                <input
-                                    placeholder="Full Name"
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
-                                    className={fieldClass(fullName)}
-                                />
-                                <input
-                                    type="phoneNumber"
-                                    placeholder="Phone Number"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className={fieldClass(phoneNumber)}
-                                />
-
-                                <input
-                                    type="email"
-                                    placeholder="Email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className={fieldClass(email)}
-                                />
-                            </div>
-                            <label className="flex items-center gap-3 mt-6">
-                                <input
-                                    type="checkbox"
-                                    checked={shippingRequested}
-                                    onChange={(e) =>
-                                        setShippingRequested(e.target.checked)
-                                    }
-                                />
-
-                                Ship my prints/negatives
-                            </label>
-
-                            {shippingRequested && (
-                                <div className="space-y-3 mt-4">
-                                    <h2 className="text-[14px] font-semibold mb-2">
-                                        Shipping Address
-                                    </h2>
-                                    <input
-                                        placeholder="Address line 1"
-                                        value={shipping.address_line1}
-                                        onChange={(e) =>
-                                            setShipping({
-                                                ...shipping,
-                                                address_line1: e.target.value
-                                            })
-                                        }
-                                        className={fieldClass(shipping.address_line1)}
-                                    />
-
-                                    <input
-                                        placeholder="Address line 2 (optional)"
-                                        value={shipping.address_line2}
-                                        onChange={(e) =>
-                                            setShipping({
-                                                ...shipping,
-                                                address_line2: e.target.value
-                                            })
-                                        }
-                                        className="border rounded-xl p-3 w-full"
-                                    />
-
-                                    <div className="grid grid-cols-3 gap-3">
-
-                                        <input
-                                            placeholder="City"
-                                            value={shipping.city}
-                                            onChange={(e) =>
-                                                setShipping({
-                                                    ...shipping,
-                                                    city: e.target.value
-                                                })
-                                            }
-                                            className={fieldClass(shipping.city)}
-                                        />
-
-                                        <input
-                                            placeholder="State"
-                                            value={shipping.state}
-                                            onChange={(e) =>
-                                                setShipping({
-                                                    ...shipping,
-                                                    state: e.target.value
-                                                })
-                                            }
-                                            className={fieldClass(shipping.state)}
-                                        />
-
-                                        <input
-                                            placeholder="ZIP"
-                                            value={shipping.zip}
-                                            onChange={(e) =>
-                                                setShipping({
-                                                    ...shipping,
-                                                    zip: e.target.value
-                                                })
-                                            }
-                                            className={fieldClass(shipping.zip)}
-                                        />
-
-                                    </div>
-
-                                </div>
-                            )}
-
-                            <div className="flex items-center my-6">
+                        <BillingAddress
+                            billing={billing}
+                            setBilling={setBilling}
+                            fieldClass={fieldClass}
+                        />
 
 
-                                <div className="flex-1 border-t" />
 
-                                <span className="mx-4 text-gray-400 text-sm">
-                                    Card
-                                </span>
-
-                                <div className="flex-1 border-t" />
-
-                            </div>
-
-                            <div
-                                ref={cardRef}
-                                className="border rounded-xl p-4 bg-white"
-                                style={{ minHeight: "180px" }}
+                        <label className="flex items-center gap-3 mt-6 text-[12px]">
+                            <input
+                                type="checkbox"
+                                checked={shippingRequested}
+                                onChange={(e) => setShippingRequested(e.target.checked)}
+                                className="
+                                    appearance-none
+                                    w-[24px] h-[23px]
+                                    border-2 border-black
+                                    rounded-[6px]
+                                    bg-[#F5F5F5]
+                                    checked:bg-[var(--color-pink)]
+                                    checked:border-black
+                                    relative
+                                    cursor-pointer
+                                    after:content-['✓']
+                                    after:absolute
+                                    after:text-black
+                                    after:border-black
+                                    after:text-[16px]
+                                    after:font-bold
+                                    after:left-1/2
+                                    after:top-1/2
+                                    after:-translate-x-1/2
+                                    after:-translate-y-1/2
+                                    after:opacity-0
+                                    checked:after:opacity-100
+                                "
+                                style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                             />
 
-                            <BillingAddress
+                            Ship my prints/negatives
+                        </label>
+
+
+                        {shippingRequested && (
+                            <ShippingAddress
+                                shipping={shipping}
+                                setShipping={setShipping}
+                                shippingRequested={shippingRequested}
+                                setShippingRequested={setShippingRequested}
+                                mailingSameAsBilling={mailingSameAsBilling}
+                                setMailingSameAsBilling={setMailingSameAsBilling}
                                 billing={billing}
-                                setBilling={setBilling}
                                 fieldClass={fieldClass}
+                                submitted={submitted}
                             />
+                        )}
 
-                            <div className="mt-6 flex items-center text-sm text-gray-500">
-
-                                🔒 Secure payment powered by Square
-
-                            </div>
-
-                            <button
-                                disabled={loading || !cardReady}
-                                onClick={handlePay}
-                                className="mt-8 w-full rounded-xl bg-black text-white py-4 text-lg font-semibold hover:bg-gray-800 transition "
-                            >
-                                {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
-                            </button>
-
-                        </div>
-                        <div className="p-4 bg-yellow-100 text-xs break-all">
-                            <div>Square loaded: {String(!!window.Square)}</div>
-                            <div>HTTPS: {String(location.protocol === "https:")}</div>
-                            <div>Host: {location.hostname}</div>
-                            <div>Card ready: {String(cardReady)}</div>
-                            <div>Apple Pay ready: {String(applePayReady)}</div>
-                            <div>Error: {error}</div>
-                        </div>
-
+                        <button
+                            disabled={loading || !cardReady}
+                            onClick={handlePay}
+                            className="mt-6 mb-8 w-full rounded-xl bg-[var(--color-blue)] border-black border-4 text-white py-2 text-[20px] font-atkinson-bold tracking-widest hover:bg-gray-800 transition "
+                            style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                        >
+                            {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
+                        </button>
                     </div>
-
                 </div>
-            </div >
+
+
+            </div>
             <>
                 {error && (
                     <div className="mt-4 text-red-500 text-center">

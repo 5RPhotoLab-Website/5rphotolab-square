@@ -1,6 +1,5 @@
 import { useState } from "react";
 import ItemCart from "../components/ItemCart.jsx";
-import cashierTagIcon from '../assets/cart/cashierTagIcon.svg';
 import HelpfulInformation from "../components/HelpfulInformation.jsx";
 import { useNavigate } from "react-router-dom";
 import { useCart } from '../context/CartContext';
@@ -151,7 +150,7 @@ const YourCartPage = () => {
                 )}
 
                 {/* Quick Actions */}
-                <div className="flex justify-between gap-10 mt-8">
+                <div className="flex justify-center gap-10 mt-8">
                     <button
                         className='w-[189px] h-[35px] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[12px] font-atkinson-regular'
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
@@ -159,19 +158,11 @@ const YourCartPage = () => {
                     >
                         Add more items
                     </button>
-                    {/* <input
-                        type="text"
-                        placeholder="Any notes?"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        className='w-[195px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-wider text-[12px] font-atkinson-bold text-[#9C9C9C] tracking-wider outline-none pl-3'
-                        style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
-                    /> */}
                 </div>
 
                 <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[14px]">
                     <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
-                    <p>${orderTotal}</p>
+                    <p>${orderTotal.toFixed(2)}</p>
                 </div>
                 <p className="text-[var(--color-pink)] text-[10px] tracking-wider">
                     Additional taxes and fees will be calculated at checkout
