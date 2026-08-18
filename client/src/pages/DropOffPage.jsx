@@ -253,7 +253,7 @@ const DropOffPage = () => {
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2 overflow-x-hidden overflow-y-visible">
-                <img src={dropoffMap} alt="Drop Off Map" className="w-full pl-2 pr-2 mt-5" />
+                <img src={flatMap} alt="Drop Off Map" className="w-full pl-2 pr-2" />
                 <div className="leading-[2] mt-5">
                     <p className="font-atkinson-bold text-[12px] tracking-wider text-center">
                         5R is tucked away in a converted 1850s townhouse on<br />

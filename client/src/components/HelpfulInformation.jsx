@@ -34,7 +34,7 @@ const HelpfulInformation = ({ page, product }) => {
                     </>
                 ) : (
                     <>
-                        <h1 className='font-atkinson-regular text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+                        <h1 className='font-atkinson-bold text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-30 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
                     </>
                 )}
 
@@ -124,7 +124,7 @@ const HelpfulInformation = ({ page, product }) => {
                     </>
                 ) : (
                     <>
-                        <h1 className='font-atkinson-regular text-[16px] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+                        <h1 className='font-atkinson-bold text-[16px] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
                     </>
                 )}
 
