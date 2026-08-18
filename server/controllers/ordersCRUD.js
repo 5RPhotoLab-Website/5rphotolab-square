@@ -502,8 +502,6 @@ const payOrder = async (req, res) => {
 
             buyerEmailAddress: email,
 
-            buyerPhoneNumber: phone_number,
-
             billingAddress: {
                 addressLine1: billing.address_line1,
                 addressLine2: billing.address_line2 || undefined,
