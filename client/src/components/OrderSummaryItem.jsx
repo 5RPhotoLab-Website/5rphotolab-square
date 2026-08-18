@@ -22,11 +22,11 @@ const OrderSummaryItem = ({ cart }) => {
                         className="mt-6"
                     >
                         <div className="flex justify-between">
-                            <p className="font-atkinson-bold text-[12px] tracking-wider">
+                            <p className="font-atkinson-bold text-[12px] md:text-[0.75vw] tracking-wider">
                                 {product.name}
                             </p>
 
-                            <p className="text-[var(--color-pink)] font-atkinson-bold text-[12px] tracking-wider">
+                            <p className="text-[var(--color-pink)] font-atkinson-bold text-[12px] md:text-[0.75vw] tracking-wider">
                                 ${lineTotal}
                             </p>
                         </div>
@@ -36,7 +36,7 @@ const OrderSummaryItem = ({ cart }) => {
                                 <img
                                     src={product.imageUrl}
                                     alt={product.name}
-                                    className="w-[108px] h-[108px] object-cover"
+                                    className="w-[108px] h-[108px] md:w-[6.75vw] md:h-[12.8vh] object-cover"
                                 />
 
                                 <div
@@ -50,6 +50,8 @@ const OrderSummaryItem = ({ cart }) => {
                                         -right-2
                                         min-w-[22px]
                                         h-[22px]
+                                        md:min-w-[1.375vw]
+                                        md:h-[2.4vh]
                                         px-1
                                         rounded-[6px]
                                         bg-[#EEEDED]
@@ -59,6 +61,7 @@ const OrderSummaryItem = ({ cart }) => {
                                         justify-center
                                         font-atkinson-bold
                                         text-[12px]
+                                        md:text-[0.75vw]
                                         border-2
                                         border-black
                                     "
@@ -92,6 +95,7 @@ const OrderSummaryItem = ({ cart }) => {
                                             <h1 className="
                                                 font-atkinson-bold
                                                 text-[12px]
+                                                md:text-[0.75vw]
                                                 tracking-wider
                                                 text-[var(--color-pink)]
                                                 uppercase
@@ -102,6 +106,7 @@ const OrderSummaryItem = ({ cart }) => {
                                             <p className="
                                                 font-atkinson-regular
                                                 text-[12px]
+                                                md:text-[0.75vw]
                                                 tracking-wider
                                             ">
                                                 {value}

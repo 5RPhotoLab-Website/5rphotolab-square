@@ -29,7 +29,7 @@ export default function ShippingAddress({
 
     if (!shippingRequested) {
         return (
-            <label className="flex items-center gap-3 mt-6 text-[12px]">
+            <label className="flex items-center gap-3 mt-6 text-[12px] font-atkinson-regular tracking-widest">
                 <input
                     type="checkbox"
                     checked={shippingRequested}
@@ -57,6 +57,8 @@ export default function ShippingAddress({
                         after:-translate-y-1/2
                         after:opacity-0
                         checked:after:opacity-100
+                        font-atkinson-regular 
+                        tracking-widest
                     "
                     style={{
                         boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)"
@@ -69,16 +71,16 @@ export default function ShippingAddress({
     }
 
     return (
-        <div className="space-y-3 mt-6">
+        <div className="space-y-6 mt-6 font-atkinson-regular tracking-widest">
 
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
 
-                <h2 className="text-[14px] whitespace-nowrap">
+                <h2 className="text-[14px] md:text-[0.875vw] whitespace-nowrap">
                     Shipping Address
                 </h2>
 
-                <label className="flex items-center gap-3 text-[12px] whitespace-nowrap">
+                <label className="flex items-center gap-3 text-[12px] md:text-[0.75vw] whitespace-nowrap">
                     <input
                         type="checkbox"
                         checked={mailingSameAsBilling}
@@ -88,6 +90,7 @@ export default function ShippingAddress({
                         className="
                             appearance-none
                             w-[24px] h-[23px]
+                            md:w-[1.5vw] md:h-[3vh]
                             shrink-0
                             border-2 border-black
                             rounded-[6px]
@@ -138,18 +141,13 @@ export default function ShippingAddress({
                 placeholder="Address line 2 (optional)"
                 value={shipping.address_line2}
                 disabled={mailingSameAsBilling}
-                onChange={(e) =>
-                    updateField("address_line2", e.target.value)
-                }
-                className={`${fieldClass(shipping.address_line2)} ${mailingSameAsBilling ? "opacity-60" : ""
-                    }`}
-                style={{
-                    boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"
-                }}
+                onChange={(e) => updateField("address_line2", e.target.value)}
+                className={`w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 border-gray-300 ${mailingSameAsBilling ? "opacity-60" : "" }`}
+                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
             />
 
             {/* City / State / ZIP */}
-            <div className="flex gap-3">
+            <div className="flex justify-between">
 
                 <input
                     type="text"
@@ -159,7 +157,7 @@ export default function ShippingAddress({
                     onChange={(e) =>
                         updateField("city", e.target.value)
                     }
-                    className={`${fieldClass(shipping.city)} !w-[94px] ${mailingSameAsBilling ? "opacity-60" : ""
+                    className={`${fieldClass(shipping.city)} !w-[94px] md:!w-[5.875vw] ${mailingSameAsBilling ? "opacity-60" : ""
                         }`}
                     style={{
                         boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"
@@ -174,7 +172,7 @@ export default function ShippingAddress({
                     onChange={(e) =>
                         updateField("state", e.target.value)
                     }
-                    className={`${fieldClass(shipping.state)} !w-[94px] ${mailingSameAsBilling ? "opacity-60" : ""
+                    className={`${fieldClass(shipping.state)} !w-[94px] md:!w-[5.875vw] ${mailingSameAsBilling ? "opacity-60" : ""
                         }`}
                     style={{
                         boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"
@@ -189,7 +187,7 @@ export default function ShippingAddress({
                     onChange={(e) =>
                         updateField("zip", e.target.value)
                     }
-                    className={`${fieldClass(shipping.zip)} !w-[94px] ${mailingSameAsBilling ? "opacity-60" : ""
+                    className={`${fieldClass(shipping.zip)} !w-[94px] md:!w-[5.875vw] ${mailingSameAsBilling ? "opacity-60" : ""
                         }`}
                     style={{
                         boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"
