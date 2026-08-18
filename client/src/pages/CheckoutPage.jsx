@@ -948,7 +948,7 @@ export default function CheckoutPage() {
                             type="button"
                             onClick={handleApplePay}
                             disabled={loading}
-                            className="mb-6 w-[309px] rounded-[10px] bg-[#211F22] text-white text-[20px] font-atkinson-bold tracking-widest py-3 hover:bg-gray-800 transition flex items-center justify-center mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="mb-6 mt-6 w-[309px] rounded-[10px] bg-[#211F22] text-white text-[20px] font-atkinson-bold tracking-widest py-3 hover:bg-gray-800 transition flex items-center justify-center mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {loading ? "Finalizing your order..." : (
                                 <>
@@ -961,7 +961,6 @@ export default function CheckoutPage() {
 
                     <div className="flex items-center my-6">
                         <div className="flex-1 border-[#CECECE] border-t" />
-
                         <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
                             Or
                         </span>
