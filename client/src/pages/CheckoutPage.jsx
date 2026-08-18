@@ -22,6 +22,9 @@ export default function CheckoutPage() {
     const navigate = useNavigate();
     const loaded = useSquare();
     const cardRef = useRef(null);
+    const [isDesktop, setIsDesktop] = useState(
+        window.innerWidth >= 768
+    );
     const cardInstance = useRef(null);
     const initializingRef = useRef(false);
     const paymentsRef = useRef(null);
@@ -69,6 +72,20 @@ export default function CheckoutPage() {
         });
     };
 
+    useEffect(() => {
+        const handleResize = () => {
+            setIsDesktop(window.innerWidth >= 768);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener(
+                "resize",
+                handleResize
+            );
+        };
+    }, []);
 
     useEffect(() => {
         if (!loaded || cardInstance.current || initializingRef.current) {
@@ -532,126 +549,250 @@ export default function CheckoutPage() {
     };
 
     const fieldClass = (value) =>
-        `w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 ${submitted && !value
+        `w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 ${submitted && !value
             ? "border-red-500"
             : "border-gray-300"
         }`;
 
     return (
         <>
-            <div className="">
-                {/* Desktop */}
-                <div className="hidden md:block max-w-[900px] mx-auto pb-32">
+            <div className="pt-5">
+                {isDesktop ? (
+                    <div className="hidden md:block max-w-[60vw] mx-auto pb-32">
 
-                    <div className="grid grid-cols-2 gap-x-16">
+                        <div className="grid grid-cols-2 gap-x-40 items-start">
 
-                        {/* LEFT COLUMN */}
-                        <div>
+                            {/* LEFT COLUMN */}
+                            <div>
+                                {/* Express checkout */}
+                                <div className="flex items-center mb-6">
+                                    <div className="flex-1 border-[#CECECE] border-t" />
 
-                            {/* Order Summary */}
-                            <OrderSummaryAccordion
-                                cart={cart}
-                                total={total}
-                                isOpen={orderSummaryOpen}
-                                onToggle={() => setOrderSummaryOpen((prev) => !prev)}
-                            />
+                                    <span className="mx-4 text-[#CECECE] text-[0.625vw] font-atkinson-regular tracking-widest whitespace-nowrap">
+                                        Express checkout
+                                    </span>
 
-                            {/* Express checkout */}
-                            <div className="flex items-center my-6">
-                                <div className="flex-1 border-[#CECECE] border-t" />
+                                    <div className="flex-1 border-[#CECECE] border-t" />
+                                </div>
 
-                                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest whitespace-nowrap">
-                                    Express checkout
-                                </span>
+                                {applePayReady && (
+                                    <button
+                                        type="button"
+                                        onClick={handleApplePay}
+                                        disabled={loading}
+                                        className="
+                                    w-full
+                                    rounded-[10px]
+                                    bg-[#211F22]
+                                    text-white
+                                    text-[1.25vw]
+                                    font-atkinson-bold
+                                    tracking-widest
+                                    py-3
+                                    flex
+                                    items-center
+                                    justify-center
+                                    disabled:opacity-60
+                                    disabled:cursor-not-allowed
+                                "
+                                    >
+                                        {loading ? (
+                                            "Finalizing your order..."
+                                        ) : (
+                                            <>
+                                                Pay with
+                                                <img
+                                                    src={applePayIcon}
+                                                    alt="Apple Pay"
+                                                    className="ml-4"
+                                                />
+                                            </>
+                                        )}
+                                    </button>
+                                )}
 
-                                <div className="flex-1 border-[#CECECE] border-t" />
-                            </div>
+                                {/* Or */}
+                                <div className="flex items-center my-6">
+                                    <div className="flex-1 border-[#CECECE] border-t" />
 
-                            {applePayReady && (
-                                <button
-                                    type="button"
-                                    onClick={handleApplePay}
-                                    disabled={loading}
-                                    className="
-                        w-full
-                        rounded-[10px]
-                        bg-[#211F22]
-                        text-white
-                        text-[20px]
-                        font-atkinson-bold
-                        tracking-widest
-                        py-3
-                        flex
-                        items-center
-                        justify-center
-                        disabled:opacity-60
-                        disabled:cursor-not-allowed
-                    "
-                                >
-                                    {loading ? (
-                                        "Finalizing your order..."
-                                    ) : (
-                                        <>
-                                            Pay with
-                                            <img
-                                                src={applePayIcon}
-                                                alt="Apple Pay"
-                                                className="ml-4"
-                                            />
-                                        </>
+                                    <span className="mx-4 text-[#CECECE] text-[0.625vw] font-atkinson-regular tracking-widest">
+                                        Or
+                                    </span>
+
+                                    <div className="flex-1 border-[#CECECE] border-t" />
+                                </div>
+
+                                {/* Contact */}
+                                <div className="tracking-widest">
+
+                                    <h3 className="font-atkinson-regular text-[0.875vw] mb-3">
+                                        Contact
+                                    </h3>
+
+                                    <div className="space-y-6">
+
+                                        <input
+                                            placeholder="Full Name"
+                                            value={fullName}
+                                            onChange={(e) => setFullName(e.target.value)}
+                                            className={fieldClass(fullName)}
+                                            style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                                        />
+
+                                        <input
+                                            type="tel"
+                                            placeholder="Phone Number"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            className={fieldClass(phoneNumber)}
+                                            style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                                        />
+
+                                        <input
+                                            type="email"
+                                            placeholder="Email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className={fieldClass(email)}
+                                            style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                                        />
+
+                                    </div>
+
+                                </div>
+
+                                {/* Payment */}
+                                <div className="tracking-widest mt-8">
+                                    <h3 className="font-atkinson-regular text-[0.875vw] mb-3">
+                                        Payment
+                                    </h3>
+
+                                    <div
+                                        ref={cardRef}
+                                        className="w-full"
+                                    />
+                                </div>
+
+                                {/* Billing Address */}
+                                <div className="">
+                                    <BillingAddress
+                                        billing={billing}
+                                        setBilling={setBilling}
+                                        fieldClass={fieldClass}
+                                    />
+                                </div>
+
+
+                                {/* Shipping */}
+                                <div className="mt-8">
+
+                                    <label className="flex items-center gap-3 text-[0.75vw] font-atkinson-regular tracking-widest">
+                                        <input
+                                            type="checkbox"
+                                            checked={shippingRequested}
+                                            onChange={(e) =>
+                                                setShippingRequested(e.target.checked)
+                                            }
+                                            className="
+                                            appearance-none
+                                            w-[1.5vw]
+                                            h-[3vh]
+                                            border-2
+                                            border-black
+                                            rounded-[6px]
+                                            bg-[#F5F5F5]
+                                            checked:bg-[var(--color-pink)]
+                                            checked:border-black
+                                            relative
+                                            cursor-pointer
+                                            after:content-['✓']
+                                            after:absolute
+                                            after:text-black
+                                            after:text-[16px]
+                                            after:font-bold
+                                            after:left-1/2
+                                            after:top-1/2
+                                            after:-translate-x-1/2
+                                            after:-translate-y-1/2
+                                            after:opacity-0
+                                            checked:after:opacity-100
+                                            font-atkinson-regular tracking-widest
+                                        "
+                                            style={{
+                                                boxShadow:
+                                                    "0px 4px 0px rgba(0, 0, 0, 1)"
+                                            }}
+                                        />
+
+                                        Ship my prints/negatives
+                                    </label>
+
+
+                                    {shippingRequested && (
+                                        <ShippingAddress
+                                            shipping={shipping}
+                                            setShipping={setShipping}
+                                            shippingRequested={shippingRequested}
+                                            setShippingRequested={setShippingRequested}
+                                            mailingSameAsBilling={mailingSameAsBilling}
+                                            setMailingSameAsBilling={setMailingSameAsBilling}
+                                            billing={billing}
+                                            fieldClass={fieldClass}
+                                            submitted={submitted}
+                                        />
                                     )}
-                                </button>
-                            )}
 
-                            {/* Or */}
-                            <div className="flex items-center my-6">
-                                <div className="flex-1 border-[#CECECE] border-t" />
+                                </div>
 
-                                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
-                                    Or
-                                </span>
-
-                                <div className="flex-1 border-[#CECECE] border-t" />
                             </div>
 
-                            {/* Contact */}
-                            <div className="tracking-widest">
 
-                                <h3 className="font-atkinson-regular text-[14px] mb-3">
-                                    Contact
-                                </h3>
+                            {/* RIGHT COLUMN */}
+                            <div>
+                                {/* Order Summary */}
+                                <OrderSummaryAccordion
+                                    cart={cart}
+                                    total={total}
+                                    isOpen={orderSummaryOpen}
+                                    onToggle={() => setOrderSummaryOpen((prev) => !prev)}
+                                />
 
-                                <div className="space-y-6">
 
-                                    <input
-                                        placeholder="Full Name"
-                                        value={fullName}
-                                        onChange={(e) => setFullName(e.target.value)}
-                                        className={fieldClass(fullName)}
-                                        style={{
-                                            boxShadow:
-                                                "0px 4px 0px rgba(206, 206, 206, 1)"
-                                        }}
+                                {/* Notes */}
+                                <div className="relative w-full mt-5">
+
+                                    <img
+                                        src={notesIcon}
+                                        className="
+                                        absolute
+                                        left-3
+                                        top-1/2
+                                        -translate-y-1/2
+                                        w-4
+                                        h-4
+                                    "
+                                        alt=""
                                     />
 
                                     <input
-                                        type="tel"
-                                        placeholder="Phone Number"
-                                        value={phoneNumber}
-                                        onChange={(e) => setPhoneNumber(e.target.value)}
-                                        className={fieldClass(phoneNumber)}
-                                        style={{
-                                            boxShadow:
-                                                "0px 4px 0px rgba(206, 206, 206, 1)"
-                                        }}
-                                    />
-
-                                    <input
-                                        type="email"
-                                        placeholder="Email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className={fieldClass(email)}
+                                        type="text"
+                                        placeholder="Say hi or whatever..."
+                                        value={notes}
+                                        onChange={(e) => setNotes(e.target.value)}
+                                        className="
+                                        w-full
+                                        h-[4vh]
+                                        border-4
+                                        rounded-[10px]
+                                        bg-[#F5F5F5]
+                                        border-[#CECECE]
+                                        tracking-widest
+                                        text-[0.833vw]
+                                        font-atkinson-regular
+                                        text-[#9C9C9C]
+                                        outline-none
+                                        pl-9
+                                    "
                                         style={{
                                             boxShadow:
                                                 "0px 4px 0px rgba(206, 206, 206, 1)"
@@ -660,34 +801,12 @@ export default function CheckoutPage() {
 
                                 </div>
 
-                            </div>
+                                {/* Discount */}
+                                {/* <div className="relative w-full mt-8">
 
-                            {/* Payment */}
-                            <div className="tracking-widest mt-8">
-
-                                <h3 className="font-atkinson-regular text-[14px] mb-3">
-                                    Payment
-                                </h3>
-
-                                <div
-                                    ref={cardRef}
-                                    className="w-full"
-                                />
-
-                            </div>
-
-                        </div>
-
-
-                        {/* RIGHT COLUMN */}
-                        <div>
-
-                            {/* Discount */}
-                            {/* <div className="relative w-full">
-
-                                <img
-                                    src={cashierTagIcon}
-                                    className="
+                                    <img
+                                        src={cashierTagIcon}
+                                        className="
                                         absolute
                                         left-3
                                         top-1/2
@@ -695,149 +814,44 @@ export default function CheckoutPage() {
                                         w-4
                                         h-4
                                     "
-                                    alt=""
-                                />
+                                        alt=""
+                                    />
 
-                                <input
-                                    type="text"
-                                    placeholder="Discount code or gift card"
-                                    value={discountCode}
-                                    onChange={(e) => setDiscountCode(e.target.value)}
-                                    className="
+                                    <input
+                                        type="text"
+                                        placeholder="Discount code or gift card"
+                                        value={discountCode}
+                                        onChange={(e) => setDiscountCode(e.target.value)}
+                                        className="
                                         w-full
-                                        h-[35px]
+                                        h-[4vh]
                                         border-4
                                         rounded-[10px]
                                         bg-[#F5F5F5]
                                         border-[#CECECE]
                                         tracking-widest
-                                        text-[12px]
+                                        text-[0.833vw]
                                         font-atkinson-regular
                                         text-[#9C9C9C]
                                         outline-none
                                         pl-9
                                     "
-                                    style={{
-                                        boxShadow:
-                                            "0px 4px 0px rgba(206, 206, 206, 1)"
-                                    }}
-                                />
-                            </div> */}
-
-
-                            {/* Notes */}
-                            <div className="relative w-full mt-5">
-
-                                <img
-                                    src={notesIcon}
-                                    className="
-                        absolute
-                        left-3
-                        top-1/2
-                        -translate-y-1/2
-                        w-4
-                        h-4
-                    "
-                                    alt=""
-                                />
-
-                                <input
-                                    type="text"
-                                    placeholder="Say hi or whatever..."
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                    className="
-                        w-full
-                        h-[35px]
-                        border-4
-                        rounded-[10px]
-                        bg-[#F5F5F5]
-                        border-[#CECECE]
-                        tracking-widest
-                        text-[12px]
-                        font-atkinson-regular
-                        text-[#9C9C9C]
-                        outline-none
-                        pl-9
-                    "
-                                    style={{
-                                        boxShadow:
-                                            "0px 4px 0px rgba(206, 206, 206, 1)"
-                                    }}
-                                />
-
-                            </div>
-
-
-                            {/* Billing Address */}
-                            <div className="">
-
-                                <BillingAddress
-                                    billing={billing}
-                                    setBilling={setBilling}
-                                    fieldClass={fieldClass}
-                                />
-
-                            </div>
-
-
-                            {/* Shipping */}
-                            <div className="mt-8">
-
-                                <label className="flex items-center gap-3 text-[12px]">
-                                    <input
-                                        type="checkbox"
-                                        checked={shippingRequested}
-                                        onChange={(e) =>
-                                            setShippingRequested(e.target.checked)
-                                        }
-                                        className="
-                            appearance-none
-                            w-[24px]
-                            h-[23px]
-                            border-2
-                            border-black
-                            rounded-[6px]
-                            bg-[#F5F5F5]
-                            checked:bg-[var(--color-pink)]
-                            checked:border-black
-                            relative
-                            cursor-pointer
-                            after:content-['✓']
-                            after:absolute
-                            after:text-black
-                            after:text-[16px]
-                            after:font-bold
-                            after:left-1/2
-                            after:top-1/2
-                            after:-translate-x-1/2
-                            after:-translate-y-1/2
-                            after:opacity-0
-                            checked:after:opacity-100
-                        "
                                         style={{
                                             boxShadow:
-                                                "0px 4px 0px rgba(0, 0, 0, 1)"
+                                                "0px 4px 0px rgba(206, 206, 206, 1)"
                                         }}
                                     />
+                                </div> */}
 
-                                    Ship my prints/negatives
-                                </label>
-
-
-                                {shippingRequested && (
-                                    <ShippingAddress
-                                        shipping={shipping}
-                                        setShipping={setShipping}
-                                        shippingRequested={shippingRequested}
-                                        setShippingRequested={setShippingRequested}
-                                        mailingSameAsBilling={mailingSameAsBilling}
-                                        setMailingSameAsBilling={setMailingSameAsBilling}
-                                        billing={billing}
-                                        fieldClass={fieldClass}
-                                        submitted={submitted}
-                                    />
-                                )}
+                                {/* Pay button */}
+                                <button
+                                    disabled={loading || !cardReady}
+                                    onClick={handlePay}
+                                    className="mt-14 mb-8 w-full rounded-xl bg-[var(--color-blue)] border-black border-4 text-white py-2 text-[1.25vw] font-atkinson-bold tracking-widest hover:bg-gray-800 transition cursor-pointer"
+                                    style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                                >
+                                    {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
+                                </button>
 
                             </div>
 
@@ -845,53 +859,18 @@ export default function CheckoutPage() {
 
                     </div>
 
+                ) : (
 
-                    {/* Pay button centered underneath both columns */}
-                    <div className="max-w-[500px] mx-auto mt-10">
+                    <div className="md:hidden p-4 flex flex-col justify-center">
 
-                        <button
-                            disabled={loading || !cardReady}
-                            onClick={handlePay}
-                            className="
-                w-full
-                rounded-xl
-                bg-[var(--color-blue)]
-                border-black
-                border-4
-                text-white
-                py-2
-                text-[20px]
-                font-atkinson-bold
-                tracking-widest
-                hover:bg-gray-800
-                transition
-            "
-                            style={{
-                                boxShadow:
-                                    "0px 4px 0px rgba(0, 0, 0, 1)"
-                            }}
-                        >
-                            {loading
-                                ? "Processing..."
-                                : `Pay $${total.toFixed(2)}`
-                            }
-                        </button>
+                        <OrderSummaryAccordion
+                            cart={cart}
+                            total={total}
+                            isOpen={orderSummaryOpen}
+                            onToggle={() => setOrderSummaryOpen((prev) => !prev)}
+                        />
 
-                    </div>
-
-                </div>
-
-                {/* Mobile */}
-                <div className="md:hidden p-4 flex flex-col justify-center">
-
-                    <OrderSummaryAccordion
-                        cart={cart}
-                        total={total}
-                        isOpen={orderSummaryOpen}
-                        onToggle={() => setOrderSummaryOpen((prev) => !prev)}
-                    />
-
-                    {/* <div className="relative w-[309px] mx-auto">
+                        {/* <div className="relative w-[309px] mx-auto">
                         <img
                             src={cashierTagIcon}
                             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
@@ -905,123 +884,123 @@ export default function CheckoutPage() {
                             style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
                         />
                     </div> */}
-                    <div className="relative w-[309px] mt-5 mx-auto">
-                        <img
-                            src={notesIcon}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Say hi or whatever..."
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
-                            style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
-                        />
-                    </div>
-
-                    <div className="flex items-center my-6">
-                        <div className="flex-1 border-[#CECECE] border-t" />
-
-                        <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
-                            Express checkout
-                        </span>
-                        <div className="flex-1 border-[#CECECE] border-t" />
-                    </div>
-
-                    {/* Apple Pay */}
-                    {loading && (
-                        <div className="mb-6 rounded-xl border p-5 text-center">
-                            <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
-
-                            <p className="font-semibold">
-                                Processing your payment...
-                            </p>
-
-                            <p className="mt-1 text-sm text-gray-500">
-                                Please don't close this page.
-                            </p>
-                        </div>
-                    )}
-                    {applePayReady && (
-                        <button
-                            type="button"
-                            onClick={handleApplePay}
-                            disabled={loading}
-                            className="mb-6 mt-6 w-[309px] rounded-[10px] bg-[#211F22] text-white text-[20px] font-atkinson-bold tracking-widest py-3 hover:bg-gray-800 transition flex items-center justify-center mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                            {loading ? "Finalizing your order..." : (
-                                <>
-                                    Pay with
-                                    <img src={applePayIcon} alt="Apple Pay" className="ml-4" />
-                                </>
-                            )}
-                        </button>
-                    )}
-
-                    <div className="flex items-center my-6">
-                        <div className="flex-1 border-[#CECECE] border-t" />
-                        <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
-                            Or
-                        </span>
-                        <div className="flex-1 border-[#CECECE] border-t" />
-                    </div>
-
-
-                    <div className="w-[309px] mx-auto tracking-widest">
-                        <h3 className="font-atkinson-regular text-[14px] mb-3">
-                            Contact
-                        </h3>
-                        <div className="space-y-6">
-                            <input
-                                placeholder="Full Name"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                className={fieldClass(fullName)}
-                                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                        <div className="relative w-[309px] mt-5 mx-auto">
+                            <img
+                                src={notesIcon}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
                             />
                             <input
-                                type="phoneNumber"
-                                placeholder="Phone Number"
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                className={fieldClass(phoneNumber)}
-                                style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
-                            />
-
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className={fieldClass(email)}
+                                type="text"
+                                placeholder="Say hi or whatever..."
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
                                 style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
                             />
                         </div>
 
-                        <h3 className="font-atkinson-regular text-[14px] mb-3 mt-6">
-                            Payment
-                        </h3>
+                        <div className="flex items-center my-6">
+                            <div className="flex-1 border-[#CECECE] border-t" />
 
-                        <div
-                            ref={cardRef}
-                            className="w-[309px]"
-                        />
+                            <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                                Express checkout
+                            </span>
+                            <div className="flex-1 border-[#CECECE] border-t" />
+                        </div>
 
-                        <BillingAddress
-                            billing={billing}
-                            setBilling={setBilling}
-                            fieldClass={fieldClass}
-                        />
+                        {/* Apple Pay */}
+                        {loading && (
+                            <div className="mb-6 rounded-xl border p-5 text-center">
+                                <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
+
+                                <p className="font-semibold">
+                                    Processing your payment...
+                                </p>
+
+                                <p className="mt-1 text-sm text-gray-500">
+                                    Please don't close this page.
+                                </p>
+                            </div>
+                        )}
+                        {applePayReady && (
+                            <button
+                                type="button"
+                                onClick={handleApplePay}
+                                disabled={loading}
+                                className="mb-6 mt-6 w-[309px] rounded-[10px] bg-[#211F22] text-white text-[20px] font-atkinson-bold tracking-widest py-3 hover:bg-gray-800 transition flex items-center justify-center mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                {loading ? "Finalizing your order..." : (
+                                    <>
+                                        Pay with
+                                        <img src={applePayIcon} alt="Apple Pay" className="ml-4" />
+                                    </>
+                                )}
+                            </button>
+                        )}
+
+                        <div className="flex items-center my-6">
+                            <div className="flex-1 border-[#CECECE] border-t" />
+                            <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                                Or
+                            </span>
+                            <div className="flex-1 border-[#CECECE] border-t" />
+                        </div>
+
+
+                        <div className="w-[309px] mx-auto tracking-widest">
+                            <h3 className="font-atkinson-regular text-[14px] mb-3">
+                                Contact
+                            </h3>
+                            <div className="space-y-6">
+                                <input
+                                    placeholder="Full Name"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className={fieldClass(fullName)}
+                                    style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                                />
+                                <input
+                                    type="phoneNumber"
+                                    placeholder="Phone Number"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    className={fieldClass(phoneNumber)}
+                                    style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                                />
+
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className={fieldClass(email)}
+                                    style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
+                                />
+                            </div>
+
+                            <h3 className="font-atkinson-regular text-[14px] mb-3 mt-6">
+                                Payment
+                            </h3>
+
+                            <div
+                                ref={cardRef}
+                                className="w-[309px]"
+                            />
+
+                            <BillingAddress
+                                billing={billing}
+                                setBilling={setBilling}
+                                fieldClass={fieldClass}
+                            />
 
 
 
-                        <label className="flex items-center gap-3 mt-6 text-[12px]">
-                            <input
-                                type="checkbox"
-                                checked={shippingRequested}
-                                onChange={(e) => setShippingRequested(e.target.checked)}
-                                className="
+                            <label className="flex items-center gap-3 mt-6 text-[12px]">
+                                <input
+                                    type="checkbox"
+                                    checked={shippingRequested}
+                                    onChange={(e) => setShippingRequested(e.target.checked)}
+                                    className="
                                     appearance-none
                                     w-[24px] h-[23px]
                                     border-2 border-black
@@ -1044,40 +1023,41 @@ export default function CheckoutPage() {
                                     after:opacity-0
                                     checked:after:opacity-100
                                 "
+                                    style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+                                />
+
+                                Ship my prints/negatives
+                            </label>
+
+
+                            {shippingRequested && (
+                                <ShippingAddress
+                                    shipping={shipping}
+                                    setShipping={setShipping}
+                                    shippingRequested={shippingRequested}
+                                    setShippingRequested={setShippingRequested}
+                                    mailingSameAsBilling={mailingSameAsBilling}
+                                    setMailingSameAsBilling={setMailingSameAsBilling}
+                                    billing={billing}
+                                    fieldClass={fieldClass}
+                                    submitted={submitted}
+                                />
+                            )}
+
+                            <button
+                                disabled={loading || !cardReady}
+                                onClick={handlePay}
+                                className="mt-6 mb-8 w-full rounded-xl bg-[var(--color-blue)] border-black border-4 text-white py-2 text-[20px] font-atkinson-bold tracking-widest hover:bg-gray-800 transition "
                                 style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
-                            />
-
-                            Ship my prints/negatives
-                        </label>
-
-
-                        {shippingRequested && (
-                            <ShippingAddress
-                                shipping={shipping}
-                                setShipping={setShipping}
-                                shippingRequested={shippingRequested}
-                                setShippingRequested={setShippingRequested}
-                                mailingSameAsBilling={mailingSameAsBilling}
-                                setMailingSameAsBilling={setMailingSameAsBilling}
-                                billing={billing}
-                                fieldClass={fieldClass}
-                                submitted={submitted}
-                            />
-                        )}
-
-                        <button
-                            disabled={loading || !cardReady}
-                            onClick={handlePay}
-                            className="mt-6 mb-8 w-full rounded-xl bg-[var(--color-blue)] border-black border-4 text-white py-2 text-[20px] font-atkinson-bold tracking-widest hover:bg-gray-800 transition "
-                            style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
-                        >
-                            {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
-                        </button>
+                            >
+                                {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
 
 
-            </div>
+            </div >
             <>
                 {error && (
                     <div className="mt-4 text-red-500 text-center">

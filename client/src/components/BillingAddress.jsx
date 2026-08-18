@@ -51,8 +51,8 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
     }, [billing.country]);
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-[14px] mb-3">
+        <div className="space-y-6 font-atkinson-regular tracking-widest">
+            <h2 className="text-[14px] md:text-[0.875vw] mb-3 ">
                 Billing Address
             </h2>
 
@@ -109,12 +109,12 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                         e.target.value
                     )
                 }
-                className={fieldClass(billing.address_line2)}
+                className="w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 border-gray-300"
                 style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
 
             />
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between">
                 {/* City */}
                 <input
                     type="text"
@@ -126,7 +126,7 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                             e.target.value
                         )
                     }
-                    className={`${fieldClass(billing.city)} !w-[94px]`}
+                    className={`${fieldClass(billing.city)} !w-[94px] md:!w-[5.875vw]`}
                     style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
 
                 />
@@ -141,7 +141,7 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                                 e.target.value
                             )
                         }
-                        className={`${fieldClass(billing.city)} !w-[94px]`}
+                        className={`${fieldClass(billing.city)} !w-[94px] md:!w-[5.875vw]`}
                         style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
 
                     >
@@ -169,7 +169,7 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                                 e.target.value
                             )
                         }
-                        className={`${fieldClass(billing.city)} !w-[94px]`}
+                        className={`${fieldClass(billing.city)} !w-[94px] md:!w-[5.875vw]`}
                         style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
 
                     />
@@ -188,7 +188,7 @@ const BillingAddress = ({ billing, setBilling, fieldClass }) => {
                             e.target.value
                         )
                     }
-                    className={`${fieldClass(billing.city)} !w-[94px]`}
+                    className={`${fieldClass(billing.city)} !w-[94px] md:!w-[5.875vw]`}
                     style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
 
                 />
