@@ -4,7 +4,7 @@ const InfoPage = () => {
     return (
         <div className="bg-[#F5F5F5] ">
             {/* Desktop */}
-            <div className="hidden md:flex flex-col items-center justify-center max-w-[75vw] mx-auto pb-[13vh]">
+            <div className="hidden md:flex flex-col items-center justify-center max-w-[75vw] mx-auto pb-[6vh] pt-[1vh]">
                 <div className="border-4 rounded-[10px] w-full text-[18px] font-atkinson-regular tracking-wider leading-[1.7]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
 
                     <div className='flex relative justify-start px-20 py-5 gap-[7vw]'>

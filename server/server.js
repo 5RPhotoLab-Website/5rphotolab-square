@@ -8,6 +8,7 @@ import ordersRouter from './routes/ordersRoutes.js';
 import cartsRouter from './routes/cartRoutes.js';
 import productsRouter from './routes/productsSquareRoutes.js';
 import webhookRouter from './routes/webhookRoutes.js';
+import discountsRouter from './routes/discountsSquareRoutes.js';
 import cookieParser from "cookie-parser";
 import rateLimit from 'express-rate-limit';
 
@@ -43,6 +44,7 @@ app.use('/api/orders/checkout', checkoutLimiter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/cart', cartsRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/discounts', discountsRouter);
 
 app.get('/', (req, res) => {
   res.send('Backend API is running');
