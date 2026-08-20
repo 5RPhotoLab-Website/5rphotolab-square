@@ -88,6 +88,14 @@ export default function CheckoutPage() {
         };
     }, []);
 
+    const discountAmount = appliedDiscount?.amountMoney?.amount
+        ? appliedDiscount.amountMoney.amount / 100
+        : appliedDiscount?.percentage
+            ? total * (Number(appliedDiscount.percentage) / 100)
+            : 0;
+
+    const discountedTotal = Math.max(0, total - discountAmount);
+
     useEffect(() => {
         if (!loaded || cardInstance.current || initializingRef.current) {
             return;
@@ -114,7 +122,7 @@ export default function CheckoutPage() {
                         requestBillingContact: true,
                         requestShippingContact: true,
                         total: {
-                            amount: total.toFixed(2),
+                            amount: discountedTotal.toFixed(2),
                             label: "5R Photo Lab"
                         }
                     });
@@ -238,11 +246,11 @@ export default function CheckoutPage() {
 
         paymentRequestRef.current.update({
             total: {
-                amount: total.toFixed(2),
+                amount: discountedTotal.toFixed(2),
                 label: "5R Photo Lab"
             }
         });
-    }, [total]);
+    }, [discountedTotal]);
 
 
     useEffect(() => {
@@ -612,84 +620,12 @@ export default function CheckoutPage() {
             : "border-gray-300"
         }`;
 
-    const contact = {
-        fullName,
-        setFullName,
-
-        phoneNumber,
-        setPhoneNumber,
-
-        email,
-        setEmail,
-    };
-
-    const billingData = {
-        billing,
-        setBilling,
-    };
-
-    const shippingData = {
-        shipping,
-        setShipping,
-
-        shippingRequested,
-        setShippingRequested,
-
-        mailingSameAsBilling,
-        setMailingSameAsBilling,
-    };
-
-    const payment = {
-        cardRef,
-
-        cardReady,
-        applePayReady,
-
-        loading,
-
-        handlePay,
-        handleApplePay,
-    };
-
-    const discountAmount = appliedDiscount?.amountMoney?.amount
-        ? appliedDiscount.amountMoney.amount / 100
-        : appliedDiscount?.percentage
-            ? total * (Number(appliedDiscount.percentage) / 100)
-            : 0;
-
-    const discountedTotal = Math.max(0, total - discountAmount);
-
-    const discount = {
-        discountCode,
-        setDiscountCode,
-        appliedDiscount,
-        setAppliedDiscount,
-        discountLoading,
-        discountError,
-        setDiscountError,
-        handleApplyDiscount,
-        discountedTotal
-    }
-
-    const checkoutProps = {
-        cart,
-        total,
-
-        orderSummaryOpen,
-        setOrderSummaryOpen,
-
-        notes,
-        setNotes,
-
-        contact,
-        billingData,
-        shippingData,
-        payment,
-        discount,
-
-        submitted,
-        fieldClass,
-    };
+    const contact = { fullName, setFullName, phoneNumber, setPhoneNumber, email, setEmail };
+    const billingData = { billing, setBilling };
+    const shippingData = { shipping, setShipping, shippingRequested, setShippingRequested, mailingSameAsBilling, setMailingSameAsBilling };
+    const payment = { cardRef, cardReady, applePayReady, loading, handlePay, handleApplePay };
+    const discount = { discountCode, setDiscountCode, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal };
+    const checkoutProps = { cart, total, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
 
     return (
         <>
