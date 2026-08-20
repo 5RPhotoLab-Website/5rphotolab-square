@@ -176,11 +176,11 @@ const MobileCheckout = ({
                     </div>
                 )}
 
-                {/* {appliedDiscount && (
+                {appliedDiscount && (
                     <div className="mt-2 text-[12px] tracking-widest text-[var(--color-orange)]">
-                        Discount applied: {appliedDiscount.code}
+                        Discount applied
                     </div>
-                )} */}
+                )}
             </div>
 
 
