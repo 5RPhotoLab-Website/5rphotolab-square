@@ -80,8 +80,8 @@ const createOrdersTable = async () => {
     // `;
     const createOrdersTableQuery = `
        ALTER TABLE orders
-ADD COLUMN subtotal_amount NUMERIC(10,2),
-ADD COLUMN discount_amount NUMERIC(10,2) DEFAULT 0;
+ADD COLUMN discount_used BOOLEAN DEFAULT FALSE,
+ADD COLUMN discount_name TEXT
     `;
     try {
         const res = await pool.query(createOrdersTableQuery)

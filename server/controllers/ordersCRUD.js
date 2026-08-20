@@ -235,6 +235,8 @@ const payOrder = async (req, res) => {
                         shipping_country,
                         subtotal_amount,
                         discount_amount,
+                        discount_used,
+                        discount_name,
                         total_amount,
                         payment_status,
                         square_payment_idempotency_key,
@@ -250,7 +252,7 @@ const payOrder = async (req, res) => {
                         billing_country
                     )
                     VALUES
-                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24 )
+                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26 )
                     RETURNING *
                 `,
                 [
@@ -265,6 +267,8 @@ const payOrder = async (req, res) => {
                     shipping?.country ?? null,
                     totalAmount, // subtotal_amount
                     0,           // discount_amount
+                    Boolean(verifiedDiscount),
+                    verifiedDiscount?.name ?? null,
                     totalAmount, // total_amount (temporary, before Square discount)
                     "PENDING",
                     squarePaymentIdempotencyKey,
@@ -370,8 +374,8 @@ const payOrder = async (req, res) => {
         });
 
         const squareOrder = orderResponse.order;
+        console.log("Square applied discounts:", squareOrder.discounts);
         const finalTotalAmount = Number(squareOrder.totalMoney.amount) / 100;
-
         const discountAmount = Math.max(0, totalAmount - finalTotalAmount);
 
         //
@@ -382,13 +386,17 @@ const payOrder = async (req, res) => {
             UPDATE orders
             SET
                 square_order_id = $1,
-                discount_amount = $2,
-                total_amount = $3,
+                discount_used = $2,
+                discount_name = $3,
+                discount_amount = $4,
+                total_amount = $5,
                 updated_at = NOW()
-            WHERE id = $4
+            WHERE id = $6
             `,
             [
                 squareOrder.id,
+                Boolean(verifiedDiscount),
+                verifiedDiscount?.name ?? null,
                 discountAmount,
                 finalTotalAmount,
                 localOrder.id
