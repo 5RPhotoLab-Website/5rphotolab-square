@@ -27,7 +27,7 @@ const YourCartPage = () => {
     return (
         <div className="bg-[#F5F5F5]">
             {/* Desktop */}
-            <div className="hidden md:flex flex-col items-center justify-center max-w-[76vw] mx-auto pb-[35vh]">
+            <div className="hidden md:flex flex-col items-center justify-center max-w-[72vw] mx-auto pb-[35vh]">
                 {/* Header */}
                 <div className="flex w-full items-center justify-center font-atkinson-bold tracking-wider mt-5">
                     {cart.length === 0 ? (

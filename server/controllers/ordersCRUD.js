@@ -2,76 +2,7 @@ import { pool } from "../config/database.js";
 import { squareClient, squareEnv } from "../config/square.js";
 import { randomUUID } from "crypto";
 import { sendOrderConfirmation, sendAdminNotification } from "./emailService.js";
-
-// POST /orders/checkout PAYMENTS LINK API
-// const createCheckout = async (req, res) => {
-//     try {
-//         const session_id = req.headers["x-session-id"];
-//         if (!session_id) return res.status(400).json({ error: "Missing session" });
-
-//         const { notes } = req.body;
-
-//         // Pull cart
-//         const cartResult = await pool.query(
-//             `SELECT * FROM carts WHERE session_id = $1 LIMIT 1`,
-//             [session_id]
-//         );
-//         if (cartResult.rows.length === 0 || cartResult.rows[0].cart_data.products.length === 0) {
-//             return res.status(400).json({ error: "Cart is empty" });
-//         }
-
-//         const cart = cartResult.rows[0];
-//         const products = cart.cart_data.products;
-
-//         const lineItems = products.map((p) => ({
-//             catalogObjectId: p.variation_id,
-//             quantity: String(p.quantity),
-//         }));
-
-//         const totalAmount = products.reduce((sum, p) => sum + p.unitPrice * p.quantity, 0);
-
-//         const orderResult = await pool.query(
-//             `INSERT INTO orders 
-//                 (session_id, total_amount, payment_status, notes)
-//              VALUES ($1,$2,'PENDING',$3)
-//              RETURNING *`,
-//             [
-//                 session_id,
-//                 totalAmount,
-//                 notes || null
-//             ]
-//         );
-
-//         const order = orderResult.rows[0];
-
-
-//         const response = await squareClient.checkout.paymentLinks.create({
-//             idempotencyKey: randomUUID(),
-//             order: {
-//                 locationId: squareEnv.locationId,
-//                 lineItems,
-//             },
-//             checkoutOptions: {
-//                 redirectUrl: `${process.env.CLIENT_URL}/order/confirmation?orderId=${order.id}`,
-//                 askForShippingAddress: true,
-//             },
-//         });
-
-//         if (!response.paymentLink) {
-//             return res.status(500).json({ error: "Failed to create checkout link" });
-//         }
-
-//         await pool.query(
-//             `UPDATE orders SET square_order_id = $1, updated_at = NOW() WHERE id = $2`,
-//             [response.paymentLink.orderId, order.id]
-//         );
-
-//         res.status(201).json({ checkoutUrl: response.paymentLink.url, orderId: order.id });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: error.message });
-//     }
-// };
+import { getValidatedDiscount } from "./discountsSquare.js";
 
 
 // GET /orders/:orderId PAYMENTS API
@@ -95,49 +26,6 @@ const getOrderById = async (req, res) => {
     }
 };
 
-// GET /orders/:orderId/items PAYMENTS API
-// const getOrderItems = async (req, res) => {
-//     try {
-//         const { orderId } = req.params;
-//         const session_id = req.headers["x-session-id"];
-
-//         // First get your DB order to verify session and get square_order_id
-//         const result = await pool.query(
-//             `SELECT * FROM orders WHERE id = $1 AND session_id = $2`,
-//             [orderId, session_id]
-//         );
-
-//         if (result.rows.length === 0) {
-//             return res.status(404).json({ error: "Order not found" });
-//         }
-
-//         const order = result.rows[0];
-//         if (!order.square_order_id) {
-//             return res.status(404).json({ error: "No Square order found" });
-//         }
-
-//         // Fetch from Square Orders API
-//         const response = await squareClient.orders.get({ orderId: order.square_order_id });
-
-//         const lineItems = response.order.lineItems || [];
-
-//         const items = lineItems.map(item => ({
-//             name: item.name,
-//             quantity: item.quantity,
-//             unitPrice: item.basePriceMoney ? (Number(item.basePriceMoney.amount) / 100).toFixed(2) : "0.00",
-//             totalPrice: item.totalMoney ? (Number(item.totalMoney.amount) / 100).toFixed(2) : "0.00"
-//         }));
-
-//         const squareTotal = response.order.totalMoney
-//             ? (Number(response.order.totalMoney.amount) / 100).toFixed(2)
-//             : null;
-
-//         res.status(200).json({ items, squareTotal });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: error.message });
-//     }
-// };
 
 // GET /orders/:orderId/items WEB PAYMENTS SDK
 const getOrderItems = async (req, res) => {
@@ -201,7 +89,8 @@ const payOrder = async (req, res) => {
 
     try {
         const session_id = req.headers["x-session-id"];
-        const { sourceId, full_name, email, billing, shipping, phone_number, notes } = req.body;
+        const { sourceId, full_name, email, billing, shipping, phone_number, notes, discountCode } = req.body;
+
         if (!email?.trim()) {
             return res.status(400).json({
                 error: "Email is required."
@@ -250,6 +139,13 @@ const payOrder = async (req, res) => {
         }
 
         const products = cartResult.rows[0].cart_data.products;
+
+        // Verify discount 
+        let verifiedDiscount = null;
+
+        if (discountCode?.trim()) {
+            verifiedDiscount = await getValidatedDiscount(discountCode);
+        }
 
         //
         // Recalculate total
@@ -326,35 +222,37 @@ const payOrder = async (req, res) => {
         try {
             const orderResult = await client.query(
                 `
-            INSERT INTO orders
-            (
-                session_id,
-                email,
-                shipping_requested,
-                shipping_address_line1,
-                shipping_address_line2,
-                shipping_city,
-                shipping_state,
-                shipping_zip,
-                shipping_country,
-                total_amount,
-                payment_status,
-                square_payment_idempotency_key,
-                square_order_idempotency_key,
-                phone_number,
-                notes,
-                full_name,
-                billing_address_line1,
-                billing_address_line2,
-                billing_city,
-                billing_state,
-                billing_zip,
-                billing_country
-            )
-            VALUES
-            ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22 )
-            RETURNING *
-            `,
+                    INSERT INTO orders
+                    (
+                        session_id,
+                        email,
+                        shipping_requested,
+                        shipping_address_line1,
+                        shipping_address_line2,
+                        shipping_city,
+                        shipping_state,
+                        shipping_zip,
+                        shipping_country,
+                        subtotal_amount,
+                        discount_amount,
+                        total_amount,
+                        payment_status,
+                        square_payment_idempotency_key,
+                        square_order_idempotency_key,
+                        phone_number,
+                        notes,
+                        full_name,
+                        billing_address_line1,
+                        billing_address_line2,
+                        billing_city,
+                        billing_state,
+                        billing_zip,
+                        billing_country
+                    )
+                    VALUES
+                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24 )
+                    RETURNING *
+                `,
                 [
                     session_id,
                     email,
@@ -365,7 +263,9 @@ const payOrder = async (req, res) => {
                     shipping?.state ?? null,
                     shipping?.zip ?? null,
                     shipping?.country ?? null,
-                    totalAmount,
+                    totalAmount, // subtotal_amount
+                    0,           // discount_amount
+                    totalAmount, // total_amount (temporary, before Square discount)
                     "PENDING",
                     squarePaymentIdempotencyKey,
                     squareOrderIdempotencyKey,
@@ -392,22 +292,22 @@ const payOrder = async (req, res) => {
 
                 await client.query(
                     `
-        INSERT INTO order_items
-        (
-            order_id,
-            catalog_item_id,
-            variation_id,
-            product_name,
-            unit_price,
-            quantity,
-            line_total,
-            modifiers
-        )
-        VALUES
-        (
-            $1,$2,$3,$4,$5,$6,$7,$8
-        )
-        `,
+                    INSERT INTO order_items
+                    (
+                        order_id,
+                        catalog_item_id,
+                        variation_id,
+                        product_name,
+                        unit_price,
+                        quantity,
+                        line_total,
+                        modifiers
+                    )
+                    VALUES
+                    (
+                        $1,$2,$3,$4,$5,$6,$7,$8
+                    )
+                    `,
                     [
                         localOrder.id,
                         product.product_id,
@@ -439,6 +339,17 @@ const payOrder = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
+                ...(verifiedDiscount?.catalogDiscountId
+                    ? {
+                        discounts: [
+                            {
+                                uid: "checkout-discount",
+                                catalogObjectId: verifiedDiscount.catalogDiscountId,
+                                scope: "ORDER"
+                            }
+                        ]
+                    }
+                    : {}),
                 metadata: notes ? { customer_notes: notes } : undefined,
                 fulfillments: [{
                     type: "SHIPMENT",
@@ -459,20 +370,27 @@ const payOrder = async (req, res) => {
         });
 
         const squareOrder = orderResponse.order;
+        const finalTotalAmount = Number(squareOrder.totalMoney.amount) / 100;
+
+        const discountAmount = Math.max(0, totalAmount - finalTotalAmount);
 
         //
-        // Save Square Order ID immediately.
+        // Save Square Order ID and final total after discount applied immediately.
         //
         await client.query(
             `
             UPDATE orders
             SET
                 square_order_id = $1,
+                discount_amount = $2,
+                total_amount = $3,
                 updated_at = NOW()
-            WHERE id = $2
+            WHERE id = $4
             `,
             [
                 squareOrder.id,
+                discountAmount,
+                finalTotalAmount,
                 localOrder.id
             ]
         );

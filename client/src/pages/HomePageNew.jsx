@@ -1,4 +1,4 @@
-import filmyOnlyIcon from '../assets/homepage/filmyOnlyIcon.png';
+import filmyOnlyIcon from '../assets/homepage/filmyOnlyIcon.svg';
 import Labmap from '../assets/homepage/Labmap.png';
 import LabmapDesktop from '../assets/homepage/LabmapDesktop.svg';
 import globe from '../assets/homepage/globe.svg';
@@ -11,14 +11,32 @@ const HomePageNew = () => {
     return (
         <div className='bg-[#F5F5F5]'>
             {/* Desktop */}
-            <div className="hidden md:flex justify-center">
+            <div className="hidden md:flex justify-center pb-[5vh]">
                 <div className='space-y-10'>
-                    <div className='relative z-10 max-w-[40vw] h-[28vh] border-4 rounded-[10px] flex flex-col items-center justify-center mx-auto bg-[var(--color-white)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
-                        <h1 className='w-auto px-20 py-1 border-4 rounded-[10px] font-atkinson-bold text-[1.042vw] text-center bg-[var(--color-yellow)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>EXPERT FILM SERVICES<br />PRO DEVELOP AND SCAN<br />BOUTIQUE EXPERIENCE</h1>
-                        <div className='flex justify-between items-center mt-4 space-x-5 mx-auto px-35'>
-                            <img src={filmyOnlyIcon} alt="Filmy Icon" className='w-[88px] h-[88px] ml-2' />
-                            <p className='font-atkinson-bold text-[0.7vw] tracking-wider text-left leading-4.5 mr-2'>
-                                5R Photo Lab processes C-41 color and B&W film in 35mm, 120, 110, APS, and disposable cameras, offering digital files and prints. We digitize old negatives, slides, and photos. And yes, 5R Photo Lab sells film! </p>
+                    <div className="relative z-10 w-[45vw] min-h-[28vh] border-4 rounded-[10px] flex flex-col items-center justify-center mx-auto bg-[var(--color-white)] px-[2vw] py-[2vh]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                        <h1 className="max-w-full px-[3vw] py-1 border-4 rounded-[10px] font-atkinson-bold text-[1.375vw] text-center tracking-widest bg-[var(--color-yellow)] shrink-0" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                            EXPERT FILM SERVICES
+                            <br />
+                            PRO DEVELOP AND SCAN
+                            <br />
+                            BOUTIQUE EXPERIENCE
+                        </h1>
+
+                        <div className="flex items-center mt-4 gap-[1.5vw] w-[26vw]">
+
+                            <img
+                                src={filmyOnlyIcon}
+                                alt="Filmy Icon"
+                                className="shrink-0"
+                            />
+
+                            <p className="flex-1 min-w-0 font-atkinson-bold text-[0.75vw] tracking-wider text-left leading-[1.6rem]">
+                                5R Photo Lab processes C-41 color and B&W
+                                film in 35mm, 120, 110, APS, and disposable
+                                cameras, offering digital files and prints.
+                                We digitize old negatives, slides, and photos.
+                                And yes, 5R Photo Lab sells film!
+                            </p>
                         </div>
                     </div>
                     <div className="relative flex justify-between items-center gap-8 cursor-pointer pb-[12vw]">
@@ -26,7 +44,7 @@ const HomePageNew = () => {
                         <img
                             src={globe}
                             alt="Map"
-                            className="absolute left-1/2 top-40 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none w-[21.25vw]"
+                            className="absolute left-1/2 top-[10vw] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none w-[21.25vw]"
                         />
                         <div className="relaitve z-10 w-[10vw] h-[7.604vw] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
                             <h1 className='font-bubblicious text-[var(--color-orange)] text-[2.604vw] tracking-widest'>NYC</h1>

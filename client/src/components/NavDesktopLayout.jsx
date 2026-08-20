@@ -37,7 +37,7 @@ const NavDesktopLayout = ({ products, colorProducts, merchandiseProducts }) => {
                         </button>
                     </div>
 
-                    <p className="text-[15px] font-atkinson-bold tracking-wider mt-1 -ml-2">
+                    <p className="text-[15px] md:text-[0.9vw] font-atkinson-bold tracking-wider mt-1 -ml-2">
                         HEAVEN FOR LIGHTS, SHADOWS AND MEMORIES
                     </p>
 
@@ -47,7 +47,6 @@ const NavDesktopLayout = ({ products, colorProducts, merchandiseProducts }) => {
             {/* MAIN LAYOUT */}
             <div className="flex-1">
 
-                {/* LEFT NAV */}
                 <div className="flex relative max-w-[40vw] gap-32 items-center justify-center mx-auto mb-10 mt-5">
                     <button className="w-[4.844vw] h-[3.5vh] border-3 rounded-[10px] bg-[var(--color-orange)] tracking-wider text-[0.677vw] cursor-pointer whitespace-nowrap" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                         onClick={() => navigate("/")}>
@@ -72,7 +71,6 @@ const NavDesktopLayout = ({ products, colorProducts, merchandiseProducts }) => {
                     {/* <Link to="/accessible-site"><p className='text-center text-[0.625vw] font-arial bg-white max-w-[5vw] mx-auto underline cursor-pointer'>Accessible site</p></Link> */}
                 </div>
 
-                {/* RIGHT CONTENT */}
                 <div className="flex-1">
                     <Outlet context={{ colorProducts, merchandiseProducts }} />
                 </div>

@@ -79,10 +79,9 @@ const createOrdersTable = async () => {
     //     );
     // `;
     const createOrdersTableQuery = `
-        ALTER TABLE orders
-ADD COLUMN IF NOT EXISTS square_payment_idempotency_key VARCHAR(45);
-ALTER TABLE orders
-ADD COLUMN IF NOT EXISTS square_order_idempotency_key VARCHAR(45);
+       ALTER TABLE orders
+ADD COLUMN subtotal_amount NUMERIC(10,2),
+ADD COLUMN discount_amount NUMERIC(10,2) DEFAULT 0;
     `;
     try {
         const res = await pool.query(createOrdersTableQuery)
