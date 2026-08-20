@@ -26,10 +26,9 @@ const OrderedConfirmationItems = ({ items }) => {
                                     {item.product_name}
                                 </p>
 
-                                {/* <p className="font-atkinson-regular">
-                                    ${parseFloat(item.unit_price).toFixed(2)}
+                                <p className="font-atkinson-regular"> ${parseFloat(item.unit_price).toFixed(2)}
                                     {item.quantity > 1 && ` × ${item.quantity}`}
-                                </p> */}
+                                </p>
                             </div>
 
                             <p className="font-atkinson-bold text-[var(--color-pink)]">
