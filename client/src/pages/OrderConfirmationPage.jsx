@@ -46,6 +46,8 @@ const OrderConfirmationPage = () => {
 
                 const data = await res.json();
                 setOrder(data);
+                console.log("ORDER DATA:", data);
+                console.log("PAYMENT STATUS:", data.payment_status);
 
                 if (data.payment_status === "PAID" || data.payment_status === "COMPLETED") {
                     refreshCart();
@@ -53,6 +55,7 @@ const OrderConfirmationPage = () => {
                     const itemsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/items`, {
                         headers: { "x-session-id": sessionId }
                     });
+                    console.log("ITEMS RESPONSE STATUS:", itemsRes.status);
                     if (itemsRes.ok) {
                         const itemsData = await itemsRes.json();
 
@@ -60,6 +63,8 @@ const OrderConfirmationPage = () => {
                         setSquareTotal(itemsData.squareTotal);
 
                         const purchaseValue = Number(data.total_amount);
+
+                        console.log("PURCHASE TRACKED REF:", purchaseTracked.current);
 
                         if (!purchaseTracked.current) {
                             purchaseTracked.current = true;
