@@ -59,6 +59,8 @@ const OrderConfirmationPage = () => {
                         setItems(itemsData.items || []);
                         setSquareTotal(itemsData.squareTotal);
 
+                        const purchaseValue = Number(data.total_amount);
+
                         if (!purchaseTracked.current) {
                             purchaseTracked.current = true;
 
@@ -69,7 +71,7 @@ const OrderConfirmationPage = () => {
                                         String(item.id)
                                     ),
                                     content_type: "product",
-                                    value: parseFloat(itemsData.squareTotal),
+                                    value: purchaseValue,
                                     currency: "USD",
                                 });
                             }
@@ -78,18 +80,57 @@ const OrderConfirmationPage = () => {
                             if (typeof window.gtag === "function") {
                                 window.gtag("event", "purchase", {
                                     transaction_id: String(data.id),
-                                    value: parseFloat(itemsData.squareTotal),
+                                    value: purchaseValue,
                                     currency: "USD",
                                     items: itemsData.items.map(item => ({
                                         item_id: String(item.id),
                                         item_name: item.product_name,
-                                        price: parseFloat(item.unit_price),
+                                        price: Number(item.unit_price),
                                         quantity: item.quantity,
                                     })),
                                 });
                             }
                         }
+
+                        //     if (!purchaseTracked.current) {
+                        //     purchaseTracked.current = true;
+
+                        //     // Meta
+                        //     if (typeof window.fbq === "function") {
+                        //         window.fbq("track", "Purchase", {
+                        //             content_ids: itemsData.items.map(item =>
+                        //                 String(item.id)
+                        //             ),
+                        //             content_type: "product",
+                        //             value: parseFloat(itemsData.squareTotal),
+                        //             currency: "USD",
+                        //         });
+                        //     }
+
+                        //     // Google
+                        //     if (typeof window.gtag === "function") {
+                        //         window.gtag("event", "purchase", {
+                        //             transaction_id: String(data.id),
+                        //             value: parseFloat(itemsData.squareTotal),
+                        //             currency: "USD",
+                        //             items: itemsData.items.map(item => ({
+                        //                 item_id: String(item.id),
+                        //                 item_name: item.product_name,
+                        //                 price: parseFloat(item.unit_price),
+                        //                 quantity: item.quantity,
+                        //             })),
+                        //         });
+                        //     }                       
+                        // }
+
+                        console.log("PURCHASE TRACKING", {
+                            orderId: data.id,
+                            orderTotal: data.total_amount,
+                            squareTotal: itemsData.squareTotal,
+                            trackingValue: Number(data.total_amount),
+                        });
                     }
+
                     return;
                 }
 
