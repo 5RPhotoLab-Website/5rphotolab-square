@@ -43,9 +43,10 @@ const OrderSummaryAccordion = ({ cart, total, isOpen, onToggle }) => {
                 <div ref={contentRef}>
                     <OrderSummaryItem cart={cart} />
                 </div>
+
+
             </div>
-
-
+            
         </div>
     )
 }

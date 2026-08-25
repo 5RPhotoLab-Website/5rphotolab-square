@@ -190,7 +190,7 @@ const payOrder = async (req, res) => {
 
         //
         // Determine which address Square should use
-        // as the fulfillment/shipping address.
+        // as the fulfillment/shipping address. And which should be taxed
         //
         const recipientAddress = shipping?.requested
             ? {
@@ -209,6 +209,14 @@ const payOrder = async (req, res) => {
                 postalCode: billing.zip,
                 country: billing.country
             };
+
+        const taxAddress = shipping?.requested
+            ? shipping
+            : billing;
+
+        const isNY =
+            taxAddress?.country === "US" &&
+            taxAddress?.state?.toUpperCase() === "NY";
 
         //
         // ---------------------------------------------------------
@@ -343,6 +351,18 @@ const payOrder = async (req, res) => {
             order: {
                 locationId: squareEnv.locationId,
                 lineItems,
+                ...(isNY
+                    ? {
+                        taxes: [
+                            {
+                                uid: "NY-SALES-TAX",
+                                name: "Sales Tax",
+                                percentage: "8.875",
+                                scope: "ORDER"
+                            }
+                        ]
+                    }
+                    : {}),
                 ...(verifiedDiscount?.catalogDiscountId
                     ? {
                         discounts: [

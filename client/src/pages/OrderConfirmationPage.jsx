@@ -12,7 +12,6 @@ const OrderConfirmationPage = () => {
     const orderId = searchParams.get("orderId");
     // const isTestMode = searchParams.get("test") === "true";
     const [items, setItems] = useState([]);
-    const [squareTotal, setSquareTotal] = useState(null);
     const [order, setOrder] = useState(null);
     const [error, setError] = useState(null);
 
@@ -60,7 +59,6 @@ const OrderConfirmationPage = () => {
                         const itemsData = await itemsRes.json();
 
                         setItems(itemsData.items || []);
-                        setSquareTotal(itemsData.squareTotal);
 
                         const purchaseValue = Number(data.total_amount);
 
@@ -97,43 +95,11 @@ const OrderConfirmationPage = () => {
                             }
                         }
 
-                        //     if (!purchaseTracked.current) {
-                        //     purchaseTracked.current = true;
-
-                        //     // Meta
-                        //     if (typeof window.fbq === "function") {
-                        //         window.fbq("track", "Purchase", {
-                        //             content_ids: itemsData.items.map(item =>
-                        //                 String(item.id)
-                        //             ),
-                        //             content_type: "product",
-                        //             value: parseFloat(itemsData.squareTotal),
-                        //             currency: "USD",
-                        //         });
-                        //     }
-
-                        //     // Google
-                        //     if (typeof window.gtag === "function") {
-                        //         window.gtag("event", "purchase", {
-                        //             transaction_id: String(data.id),
-                        //             value: parseFloat(itemsData.squareTotal),
-                        //             currency: "USD",
-                        //             items: itemsData.items.map(item => ({
-                        //                 item_id: String(item.id),
-                        //                 item_name: item.product_name,
-                        //                 price: parseFloat(item.unit_price),
-                        //                 quantity: item.quantity,
-                        //             })),
-                        //         });
-                        //     }                       
-                        // }
-
-                        console.log("PURCHASE TRACKING", {
-                            orderId: data.id,
-                            orderTotal: data.total_amount,
-                            squareTotal: itemsData.squareTotal,
-                            trackingValue: Number(data.total_amount),
-                        });
+                        // console.log("PURCHASE TRACKING", {
+                        //     orderId: data.id,
+                        //     orderTotal: data.total_amount,
+                        //     trackingValue: Number(data.total_amount),
+                        // });
                     }
 
                     return;
@@ -201,7 +167,6 @@ const OrderConfirmationPage = () => {
     //             },
     //         ]);
 
-    //         setSquareTotal("42.00");
 
     //         return;
     //     }
@@ -249,7 +214,6 @@ const OrderConfirmationPage = () => {
     //                     const itemsData = await itemsRes.json();
 
     //                     setItems(itemsData.items || []);
-    //                     setSquareTotal(itemsData.squareTotal);
 
     //                     // Your tracking code here
     //                 }
@@ -350,7 +314,7 @@ const OrderConfirmationPage = () => {
 
                     <div className="flex justify-between mt-6">
                         <span>Total</span>
-                        <span className="text-[var(--color-pink)] font-atkinson-bold">${squareTotal || parseFloat(order.total_amount).toFixed(2)}</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">${parseFloat(order.total_amount).toFixed(2)}</span>
                     </div>
 
 
@@ -413,7 +377,7 @@ const OrderConfirmationPage = () => {
 
                     <div className="flex justify-between mt-6">
                         <span>Total</span>
-                        <span className="text-[var(--color-pink)] font-atkinson-bold">${squareTotal || parseFloat(order.total_amount).toFixed(2)}</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">${parseFloat(order.total_amount).toFixed(2)}</span>
                     </div>
 
                     {order.square_receipt_url && (

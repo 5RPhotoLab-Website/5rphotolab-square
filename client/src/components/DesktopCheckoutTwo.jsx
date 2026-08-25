@@ -7,7 +7,7 @@ import notesIcon from "../assets/checkout/notesIcon.svg";
 import applePayIcon from "../assets/checkout/applePayIcon.svg";
 import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
 
-const DesktopCheckoutTwo = ({ cart, total, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass }) => {
+const DesktopCheckoutTwo = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass }) => {
     const { fullName, setFullName, phoneNumber, setPhoneNumber, email, setEmail } = contact;
 
     const { billing, setBilling } = billingData;
@@ -16,14 +16,16 @@ const DesktopCheckoutTwo = ({ cart, total, orderSummaryOpen, setOrderSummaryOpen
 
     const { cardRef, cardReady, applePayReady, loading, handlePay, handleApplePay } = payment;
 
-    const { discountCode, setDiscountCode, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal } = discount;
+    const { discountCode, setDiscountCode, discountAmount, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal } = discount;
 
     return (
         <div className="hidden md:block max-w-[30vw] mx-auto flex flex-col justify-center pb-[6vh]">
             {/* Order Summary */}
             <OrderSummaryAccordion
                 cart={cart}
-                total={discountedTotal}
+                total={checkoutTotal}
+                discountedTotal={discountedTotal}
+                estimatedTax={estimatedTax}
                 isOpen={orderSummaryOpen}
                 onToggle={() =>
                     setOrderSummaryOpen((prev) => !prev)
@@ -278,6 +280,55 @@ const DesktopCheckoutTwo = ({ cart, total, orderSummaryOpen, setOrderSummaryOpen
 
             </div>
 
+            {/* <div className="mt-15 space-y-2 md:text-[0.75vw] tracking-widest">
+                <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>${discountedTotal.toFixed(2)}</span>
+                </div>
+
+                {estimatedTax > 0 && (
+                    <div className="flex justify-between">
+                        <span>NY Sales Tax (8.875%)</span>
+                        <span>${estimatedTax.toFixed(2)}</span>
+                    </div>
+                )}
+
+                <div className="border-t border-[#CECECE] pt-2 flex justify-between font-atkinson-bold">
+                    <span>Total</span>
+                    <span>${checkoutTotal.toFixed(2)}</span>
+                </div>
+            </div> */}
+
+            <div className="mt-15 space-y-2 text-[0.75vw] tracking-widest">
+                {/* Original subtotal */}
+                <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>${discountedTotal.toFixed(2)}</span>
+                </div>
+
+                {/* Discount */}
+                {discountAmount > 0 && (
+                    <div className="flex justify-between">
+                        <span>Discount</span>
+                        <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                )}
+
+                {/* NY Tax */}
+                {estimatedTax > 0 && (
+                    <div className="flex justify-between">
+                        <span>NY Sales Tax (8.875%)</span>
+                        <span>${estimatedTax.toFixed(2)}</span>
+                    </div>
+                )}
+
+                {/* Final total */}
+                <div className="border-t border-[#CECECE] pt-2 flex justify-between font-atkinson-bold">
+                    <span>Total</span>
+                    <span>${checkoutTotal.toFixed(2)}</span>
+                </div>
+            </div>
+
 
 
 
@@ -293,7 +344,7 @@ const DesktopCheckoutTwo = ({ cart, total, orderSummaryOpen, setOrderSummaryOpen
             >
                 {loading
                     ? "Processing..."
-                    : `Pay $${discountedTotal.toFixed(2)}`}
+                    : `Pay $${checkoutTotal.toFixed(2)}`}
             </button>
 
 
