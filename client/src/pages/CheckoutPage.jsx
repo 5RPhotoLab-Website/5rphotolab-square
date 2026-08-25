@@ -57,7 +57,7 @@ export default function CheckoutPage() {
         city: "",
         state: "",
         zip: "",
-        country: ""
+        country: "US"
     });
     const [submitted, setSubmitted] = useState(false);
     const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
@@ -96,6 +96,20 @@ export default function CheckoutPage() {
 
     const discountedTotal = Math.max(0, total - discountAmount);
 
+    const taxAddress = shippingRequested
+        ? shipping
+        : billing;
+
+    const isNY =
+        taxAddress?.country === "US" &&
+        taxAddress?.state?.trim().toUpperCase() === "NY";
+
+    const estimatedTax = isNY
+        ? discountedTotal * 0.08875
+        : 0;
+
+    const checkoutTotal = discountedTotal + estimatedTax;
+
     useEffect(() => {
         if (!loaded || cardInstance.current || initializingRef.current) {
             return;
@@ -122,10 +136,38 @@ export default function CheckoutPage() {
                         requestBillingContact: true,
                         requestShippingContact: true,
                         total: {
-                            amount: discountedTotal.toFixed(2),
+                            amount: checkoutTotal.toFixed(2),
                             label: "5R Photo Lab"
                         }
                     });
+
+                    paymentRequest.addEventListener(
+                        "shippingcontactchanged",
+                        (contact) => {
+                            const isNY =
+                                contact.countryCode === "US" &&
+                                contact.state?.trim().toUpperCase() === "NY";
+
+                            const tax = isNY
+                                ? discountedTotal * 0.08875
+                                : 0;
+
+                            const newTotal = discountedTotal + tax;
+
+                            return {
+                                taxLineItems: [
+                                    {
+                                        label: "Sales Tax",
+                                        amount: tax.toFixed(2)
+                                    }
+                                ],
+                                total: {
+                                    amount: newTotal.toFixed(2),
+                                    label: "5R Photo Lab"
+                                }
+                            };
+                        }
+                    );
 
                     paymentRequestRef.current = paymentRequest;
 
@@ -246,11 +288,11 @@ export default function CheckoutPage() {
 
         paymentRequestRef.current.update({
             total: {
-                amount: discountedTotal.toFixed(2),
+                amount: checkoutTotal.toFixed(2),
                 label: "5R Photo Lab"
             }
         });
-    }, [discountedTotal]);
+    }, [checkoutTotal, total]);
 
 
     useEffect(() => {
@@ -624,8 +666,8 @@ export default function CheckoutPage() {
     const billingData = { billing, setBilling };
     const shippingData = { shipping, setShipping, shippingRequested, setShippingRequested, mailingSameAsBilling, setMailingSameAsBilling };
     const payment = { cardRef, cardReady, applePayReady, loading, handlePay, handleApplePay };
-    const discount = { discountCode, setDiscountCode, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal };
-    const checkoutProps = { cart, total, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
+    const discount = { discountCode, setDiscountCode, discountAmount, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal };
+    const checkoutProps = { cart, checkoutTotal, estimatedTax, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
 
     return (
         <>

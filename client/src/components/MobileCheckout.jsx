@@ -11,7 +11,7 @@ import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
 
 const MobileCheckout = ({
     cart,
-    total,
+    checkoutTotal, estimatedTax,
 
     orderSummaryOpen,
     setOrderSummaryOpen,
@@ -63,6 +63,7 @@ const MobileCheckout = ({
     const {
         discountCode,
         setDiscountCode,
+        discountAmount,
         appliedDiscount,
         setAppliedDiscount,
         discountLoading,
@@ -390,6 +391,37 @@ const MobileCheckout = ({
                 )}
 
 
+                <div className="mt-10 space-y-2 text-[12px] tracking-widest">
+                    {/* Original subtotal */}
+                    <div className="flex justify-between">
+                        <span>Subtotal</span>
+                        <span>${discountedTotal.toFixed(2)}</span>
+                    </div>
+
+                    {/* Discount */}
+                    {discountAmount > 0 && (
+                        <div className="flex justify-between">
+                            <span>Discount</span>
+                            <span>-${discountAmount.toFixed(2)}</span>
+                        </div>
+                    )}
+
+                    {/* NY Tax */}
+                    {estimatedTax > 0 && (
+                        <div className="flex justify-between">
+                            <span>NY Sales Tax (8.875%)</span>
+                            <span>${estimatedTax.toFixed(2)}</span>
+                        </div>
+                    )}
+
+                    {/* Final total */}
+                    <div className="border-t border-[#CECECE] pt-2 flex justify-between font-atkinson-bold">
+                        <span>Total</span>
+                        <span>${checkoutTotal.toFixed(2)}</span>
+                    </div>
+                </div>
+
+
                 {/* Pay */}
                 <button
                     disabled={loading || !cardReady}
@@ -417,7 +449,7 @@ const MobileCheckout = ({
                 >
                     {loading
                         ? "Processing..."
-                        : `Pay $${discountedTotal.toFixed(2)}`}
+                        : `Pay $${checkoutTotal.toFixed(2)}`}
                 </button>
 
             </div>
