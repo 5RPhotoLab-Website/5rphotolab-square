@@ -61,17 +61,6 @@ export default function CheckoutPage() {
     });
     const [submitted, setSubmitted] = useState(false);
     const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
-    const [openAccordion, setOpenAccordion] = useState(false);
-    const toggleAccordion = (index) => {
-        setOpenAccordion((prev) => {
-            // if already open, remove it (close)
-            if (prev.includes(index)) {
-                return prev.filter((i) => i !== index);
-            }
-            // else add it (open)
-            return [...prev, index];
-        });
-    };
 
     useEffect(() => {
         const handleResize = () => {
