@@ -280,24 +280,6 @@ const DesktopCheckoutTwo = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpe
 
             </div>
 
-            {/* <div className="mt-15 space-y-2 md:text-[0.75vw] tracking-widest">
-                <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${discountedTotal.toFixed(2)}</span>
-                </div>
-
-                {estimatedTax > 0 && (
-                    <div className="flex justify-between">
-                        <span>NY Sales Tax (8.875%)</span>
-                        <span>${estimatedTax.toFixed(2)}</span>
-                    </div>
-                )}
-
-                <div className="border-t border-[#CECECE] pt-2 flex justify-between font-atkinson-bold">
-                    <span>Total</span>
-                    <span>${checkoutTotal.toFixed(2)}</span>
-                </div>
-            </div> */}
 
             <div className="mt-15 space-y-2 text-[0.75vw] tracking-widest">
                 {/* Original subtotal */}
