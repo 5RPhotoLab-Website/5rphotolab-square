@@ -215,7 +215,7 @@ export default function CheckoutPage() {
                                 backgroundColor: "#F5F5F5",
                                 color: "#9C9C9C",
                                 fontFamily: "inherit",
-                                fontSize: "12px",
+                                fontSize: "16px",
                             },
 
                             "input::placeholder": {

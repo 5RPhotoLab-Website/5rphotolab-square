@@ -29,7 +29,7 @@ export default function ShippingAddress({
 
     if (!shippingRequested) {
         return (
-            <label className="flex items-center gap-3 mt-6 text-[12px] font-atkinson-regular tracking-widest">
+            <label className="flex items-center gap-3 mt-6 text-[12px] md:text-[0.75vw] font-atkinson-regular tracking-widest">
                 <input
                     type="checkbox"
                     checked={shippingRequested}
@@ -49,7 +49,7 @@ export default function ShippingAddress({
                         after:content-['✓']
                         after:absolute
                         after:text-black
-                        after:text-[16px]
+                        after:text-[12px]
                         after:font-bold
                         after:left-1/2
                         after:top-1/2
@@ -142,7 +142,7 @@ export default function ShippingAddress({
                 value={shipping.address_line2}
                 disabled={mailingSameAsBilling}
                 onChange={(e) => updateField("address_line2", e.target.value)}
-                className={`w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 border-gray-300 ${mailingSameAsBilling ? "opacity-60" : "" }`}
+                className={`w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[16px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 border-gray-300 ${mailingSameAsBilling ? "opacity-60" : "" }`}
                 style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
             />
 
@@ -157,7 +157,7 @@ export default function ShippingAddress({
                     onChange={(e) =>
                         updateField("city", e.target.value)
                     }
-                    className={`${fieldClass(shipping.city)} !w-[94px] md:!w-[5.875vw] ${mailingSameAsBilling ? "opacity-60" : ""
+                    className={`${fieldClass(shipping.city)} !w-[110px] md:!w-[8vw] ${mailingSameAsBilling ? "opacity-60" : ""
                         }`}
                     style={{
                         boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"
@@ -172,7 +172,7 @@ export default function ShippingAddress({
                     onChange={(e) =>
                         updateField("state", e.target.value)
                     }
-                    className={`${fieldClass(shipping.state)} !w-[94px] md:!w-[5.875vw] ${mailingSameAsBilling ? "opacity-60" : ""
+                    className={`${fieldClass(shipping.state)} !w-[110px] md:!w-[8vw]  ${mailingSameAsBilling ? "opacity-60" : ""
                         }`}
                     style={{
                         boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"
@@ -187,7 +187,7 @@ export default function ShippingAddress({
                     onChange={(e) =>
                         updateField("zip", e.target.value)
                     }
-                    className={`${fieldClass(shipping.zip)} !w-[94px] md:!w-[5.875vw] ${mailingSameAsBilling ? "opacity-60" : ""
+                    className={`${fieldClass(shipping.zip)} !w-[70px] md:!w-[5vw] ${mailingSameAsBilling ? "opacity-60" : ""
                         }`}
                     style={{
                         boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)"

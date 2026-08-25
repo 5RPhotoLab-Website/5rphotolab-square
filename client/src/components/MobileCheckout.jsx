@@ -118,7 +118,7 @@ const MobileCheckout = ({
                         bg-[#F5F5F5]
                         border-[#CECECE]
                         tracking-widest
-                        text-[12px]
+                        text-[16px]
                         font-atkinson-regular
                         text-[#9C9C9C]
                         outline-none
@@ -140,14 +140,14 @@ const MobileCheckout = ({
                 />
                 <input
                     type="text"
-                    placeholder="Discount code or gift card"
+                    placeholder="Discount code"
                     value={discountCode}
                     onChange={(e) => {
                         setDiscountCode(e.target.value);
                         setAppliedDiscount(null);
                         setDiscountError("");
                     }}
-                    className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
+                    className="w-[309px] h-[35px] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[16px] font-atkinson-regular text-[#9C9C9C] outline-none pl-9"
                     style={{ boxShadow: "0px 4px 0px rgba(206, 206, 206, 1)" }}
                 />
 
@@ -160,7 +160,7 @@ const MobileCheckout = ({
                         right-2
                         top-1/2
                         -translate-y-1/2
-                        text-[12px]
+                        text-[16px]
                         text-[#9C9C9C]
                         font-atkinson-bold
                         tracking-widest
@@ -329,7 +329,7 @@ const MobileCheckout = ({
 
 
                 {/* Shipping */}
-                <label className="flex items-center gap-3 mt-6 text-[12px]">
+                <label className="flex items-center gap-3 mt-6 text-[16px]">
 
                     <input
                         type="checkbox"
