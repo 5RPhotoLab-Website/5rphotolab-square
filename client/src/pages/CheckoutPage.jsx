@@ -28,6 +28,8 @@ export default function CheckoutPage() {
     const paymentsRef = useRef(null);
     const applePayInstance = useRef(null);
     const paymentRequestRef = useRef(null);
+    const discountedTotalRef = useRef(0);
+    const checkoutTotalRef = useRef(0);
     const [applePayReady, setApplePayReady] = useState(false);
     const [cardReady, setCardReady] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -100,6 +102,11 @@ export default function CheckoutPage() {
     const checkoutTotal = discountedTotal + estimatedTax;
 
     useEffect(() => {
+        discountedTotalRef.current = discountedTotal;
+        checkoutTotalRef.current = checkoutTotal;
+    }, [discountedTotal, checkoutTotal]);
+
+    useEffect(() => {
         if (!loaded || cardInstance.current || initializingRef.current) {
             return;
         }
@@ -137,19 +144,25 @@ export default function CheckoutPage() {
                                 contact.countryCode === "US" &&
                                 contact.state?.trim().toUpperCase() === "NY";
 
+                            const currentDiscountedTotal =
+                                discountedTotalRef.current;
+
                             const tax = isNY
-                                ? discountedTotal * 0.08875
+                                ? currentDiscountedTotal * 0.08875
                                 : 0;
 
-                            const newTotal = discountedTotal + tax;
+                            const newTotal =
+                                currentDiscountedTotal + tax;
 
                             return {
-                                taxLineItems: [
-                                    {
-                                        label: "Sales Tax",
-                                        amount: tax.toFixed(2)
-                                    }
-                                ],
+                                taxLineItems: tax > 0
+                                    ? [
+                                        {
+                                            label: "Sales Tax",
+                                            amount: tax.toFixed(2)
+                                        }
+                                    ]
+                                    : [],
                                 total: {
                                     amount: newTotal.toFixed(2),
                                     label: "5R Photo Lab"
