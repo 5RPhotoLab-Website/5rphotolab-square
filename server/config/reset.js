@@ -75,13 +75,19 @@ const createOrdersTable = async () => {
     //         billing_city TEXT,
     //         billing_state TEXT,
     //         billing_zip TEXT,
-    //         billing_country TEXT
+    //         billing_country TEXT,
+    //         square_payment_idempotency_key TEXT,
+    //         square_order_idempotency_key TEXT,
+    //         subtotal_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+    //         discount_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+    //         discount_used BOOLEAN DEFAULT FALSE,
+    //         discount_name TEXT,
+    // 
     //     );
     // `;
     const createOrdersTableQuery = `
        ALTER TABLE orders
-ADD COLUMN discount_used BOOLEAN DEFAULT FALSE,
-ADD COLUMN discount_name TEXT
+ADD COLUMN tax_amount NUMERIC(10,2) NOT NULL DEFAULT 0
     `;
     try {
         const res = await pool.query(createOrdersTableQuery)

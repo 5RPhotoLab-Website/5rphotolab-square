@@ -150,7 +150,7 @@ const payOrder = async (req, res) => {
         //
         // Recalculate total
         //
-        const totalAmount = products.reduce(
+        const subtotal = products.reduce(
             (sum, item) => sum + item.unitPrice * item.quantity,
             0
         );
@@ -158,10 +158,6 @@ const payOrder = async (req, res) => {
         //
         // Build Square line items
         //
-        // const lineItems = products.map(product => ({
-        //     catalogObjectId: product.variation_id,
-        //     quantity: String(product.quantity)
-        // }));
         const lineItems = products.map(product => {
             const squareModifiers = Object.values(product.modifiers || {})
                 .filter(modifier => modifier?.modifierId)
@@ -243,6 +239,7 @@ const payOrder = async (req, res) => {
                         shipping_country,
                         subtotal_amount,
                         discount_amount,
+                        tax_amount,
                         discount_used,
                         discount_name,
                         total_amount,
@@ -260,7 +257,7 @@ const payOrder = async (req, res) => {
                         billing_country
                     )
                     VALUES
-                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26 )
+                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27 )
                     RETURNING *
                 `,
                 [
@@ -273,11 +270,12 @@ const payOrder = async (req, res) => {
                     shipping?.state ?? null,
                     shipping?.zip ?? null,
                     shipping?.country ?? null,
-                    totalAmount, // subtotal_amount
+                    subtotal, // subtotal_amount
                     0,           // discount_amount
+                    0,          // tax_amount temporary
                     Boolean(verifiedDiscount),
                     verifiedDiscount?.name ?? null,
-                    totalAmount, // total_amount (temporary, before Square discount)
+                    subtotal, // total_amount (temporary, before Square discount)
                     "PENDING",
                     squarePaymentIdempotencyKey,
                     squareOrderIdempotencyKey,
@@ -394,9 +392,11 @@ const payOrder = async (req, res) => {
         });
 
         const squareOrder = orderResponse.order;
-        console.log("Square applied discounts:", squareOrder.discounts);
         const finalTotalAmount = Number(squareOrder.totalMoney.amount) / 100;
-        const discountAmount = Math.max(0, totalAmount - finalTotalAmount);
+
+        const taxAmount = Number(squareOrder.totalTaxMoney?.amount || 0) / 100;
+
+        const discountAmount = Number(squareOrder.totalDiscountMoney?.amount || 0) / 100;
 
         //
         // Save Square Order ID and final total after discount applied immediately.
@@ -410,8 +410,9 @@ const payOrder = async (req, res) => {
                 discount_name = $3,
                 discount_amount = $4,
                 total_amount = $5,
+                tax_amount = $6,
                 updated_at = NOW()
-            WHERE id = $6
+            WHERE id = $7
             `,
             [
                 squareOrder.id,
@@ -419,6 +420,7 @@ const payOrder = async (req, res) => {
                 verifiedDiscount?.name ?? null,
                 discountAmount,
                 finalTotalAmount,
+                taxAmount,
                 localOrder.id
             ]
         );
