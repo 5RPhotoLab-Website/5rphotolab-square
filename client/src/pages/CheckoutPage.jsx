@@ -659,7 +659,7 @@ export default function CheckoutPage() {
     };
 
     const fieldClass = (value) =>
-        `w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[12px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 ${submitted && !value
+        `w-[309px] md:w-full h-[35px] md:h-[4vh] border-4 rounded-[10px] bg-[#F5F5F5] border-[#CECECE] tracking-widest text-[16px] md:text-[0.75vw] font-atkinson-regular text-[#9C9C9C] outline-none pl-2 ${submitted && !value
             ? "border-red-500"
             : "border-gray-300"
         }`;
