@@ -363,6 +363,15 @@ export default function CheckoutPage() {
         }
     };
 
+    const getNameParts = (name) => {
+        const parts = name.trim().split(/\s+/);
+
+        return {
+            givenName: parts[0] || "",
+            familyName: parts.slice(1).join(" ") || ""
+        };
+    };
+
 
 
     const handlePay = async () => {
@@ -414,13 +423,84 @@ export default function CheckoutPage() {
                 setError("Payment form isn't ready yet.");
                 return;
             }
-            const result = await cardInstance.current.tokenize();
+            // const result = await cardInstance.current.tokenize();
+            const { givenName, familyName } = getNameParts(fullName);
 
-            if (result.status !== "OK") {
-                setError(
-                    result.errors?.[0]?.message ??
-                    "Please check your payment information."
+            const verificationDetails = {
+                amount: checkoutTotal.toFixed(2),
+                currencyCode: "USD",
+                intent: "CHARGE",
+                customerInitiated: true,
+                sellerKeyedIn: false,
+
+                billingContact: {
+                    givenName,
+                    familyName,
+                    email,
+                    phone: phoneNumber,
+
+                    addressLines: [
+                        billing.address_line1,
+                        billing.address_line2
+                    ].filter(Boolean),
+
+                    city: billing.city,
+                    state: billing.state,
+                    countryCode: billing.country,
+                    postalCode: billing.zip
+                }
+            };
+
+            // const result = await cardInstance.current.tokenize(
+            //     verificationDetails
+            // );
+
+            // if (result.status !== "OK") {
+            //     setError(
+            //         result.errors?.[0]?.message ??
+            //         "Please check your payment information."
+            //     );
+            //     return;
+            // }
+            let result;
+
+            try {
+                result = await cardInstance.current.tokenize(
+                    verificationDetails
                 );
+            } catch (verificationError) {
+                console.error(
+                    "Square buyer verification/tokenization failed:",
+                    verificationError
+                );
+
+                if (
+                    verificationError?.name === "VerifyBuyerError"
+                ) {
+                    setError(
+                        "Your card could not be verified. Please try again or use a different payment method."
+                    );
+                } else {
+                    setError(
+                        verificationError?.message ||
+                        "We couldn't verify your payment information. Please try again."
+                    );
+                }
+
+                return;
+            }
+
+            if (!result || result.status !== "OK") {
+                console.error(
+                    "Square tokenization failed:",
+                    result?.errors
+                );
+
+                setError(
+                    result?.errors?.[0]?.message ??
+                    "Please check your payment information and try again."
+                );
+
                 return;
             }
 
@@ -451,7 +531,17 @@ export default function CheckoutPage() {
 
                 if (contentType?.includes("application/json")) {
                     const json = await response.json();
-                    throw new Error(json.error);
+
+                    if (json.code === "VERIFICATION_REQUIRED") {
+                        setError(
+                            "Your card requires additional verification. Please try again."
+                        );
+                        return;
+                    }
+
+                    throw new Error(
+                        json.error || "Unable to process payment."
+                    );
                 }
 
                 throw new Error(await response.text());
@@ -585,6 +675,72 @@ export default function CheckoutPage() {
                     shippingContact.countryCode || "US"
             };
 
+            const { givenName, familyName } = getNameParts(fullName);
+
+            const verificationDetails = {
+                amount: checkoutTotal.toFixed(2),
+                currencyCode: "USD",
+                intent: "CHARGE",
+
+                billingContact: {
+                    givenName,
+                    familyName,
+                    email,
+                    phone: phoneNumber,
+
+                    addressLines: [
+                        billing.address_line1,
+                        billing.address_line2
+                    ].filter(Boolean),
+
+                    city: billing.city,
+                    state: billing.state,
+                    countryCode: billing.country,
+                    postalCode: billing.zip
+                }
+            };
+
+            // const verificationResult =
+            //     await paymentsRef.current.verifyBuyer(
+            //         result.token,
+            //         verificationDetails
+            //     );
+
+            let verificationResult;
+
+            try {
+                verificationResult =
+                    await paymentsRef.current.verifyBuyer(
+                        result.token,
+                        verificationDetails
+                    );
+            } catch (verificationError) {
+                console.error(
+                    "Apple Pay buyer verification failed:",
+                    verificationError
+                );
+
+                if (
+                    verificationError?.name === "VerifyBuyerError"
+                ) {
+                    setError("Your card could not be verified. Please try again or use a different payment method.");
+                } else {
+                    setError(
+                        verificationError?.message ||
+                        "We couldn't verify your payment information. Please try again."
+                    );
+                }
+
+                return;
+            }
+
+            if (!verificationResult?.token) {
+                setError("We couldn't verify your payment. Please try again.");
+                return;
+            }
+
+            const verificationToken = verificationResult.token;
+
             //
             // Send the EXACT SAME backend request
             // that card payments use.
@@ -600,6 +756,7 @@ export default function CheckoutPage() {
 
                     body: JSON.stringify({
                         sourceId: result.token,
+                        verificationToken,
 
                         full_name: fullName,
                         phone_number: phoneNumber,

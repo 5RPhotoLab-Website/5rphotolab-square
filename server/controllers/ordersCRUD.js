@@ -79,6 +79,23 @@ const getOrderItems = async (req, res) => {
     }
 };
 
+async function cancelUnknownSquarePayment(idempotencyKey) {
+    try {
+        await squareClient.payments.cancelByIdempotencyKey({
+            idempotencyKey
+        });
+
+        return true;
+    } catch (error) {
+        console.error(
+            "Could not resolve unknown Square payment:",
+            error
+        );
+
+        return false;
+    }
+}
+
 // POST /orders/pay
 const payOrder = async (req, res) => {
     const client = await pool.connect();
@@ -86,10 +103,11 @@ const payOrder = async (req, res) => {
     let localOrder = null;
     let squareOrder = null;
     let payment = null;
+    let paymentCreateAttempted = false;
 
     try {
         const session_id = req.headers["x-session-id"];
-        const { sourceId, full_name, email, billing, shipping, phone_number, notes, discountCode } = req.body;
+        const { sourceId, verificationToken, full_name, email, billing, shipping, phone_number, notes, discountCode } = req.body;
 
         if (!email?.trim()) {
             return res.status(400).json({
@@ -436,6 +454,7 @@ const payOrder = async (req, res) => {
         // The idempotency key was generated BEFORE the Square call
         // and saved in our DB.
         //
+        paymentCreateAttempted = true;
         const paymentResponse = await squareClient.payments.create({
 
             sourceId,
@@ -445,6 +464,10 @@ const payOrder = async (req, res) => {
             orderId: squareOrder.id,
 
             amountMoney: squareOrder.totalMoney,
+
+            ...(verificationToken
+                ? { verificationToken }
+                : {}),
 
             receiptEmail: email,
 
@@ -529,6 +552,55 @@ const payOrder = async (req, res) => {
         console.error("PAY ORDER ERROR:", err);
         console.error(err.stack);
 
+        if (paymentCreateAttempted && !payment?.id) {
+
+            console.error(
+                "Payment result is unknown. Attempting Square cancellation by idempotency key."
+            );
+
+            const resolved = await cancelUnknownSquarePayment(
+                localOrder.square_payment_idempotency_key
+            );
+
+            if (!resolved) {
+                await client.query(
+                    `
+                UPDATE orders
+                SET
+                    payment_status = 'PAYMENT_UNKNOWN',
+                    updated_at = NOW()
+                WHERE id = $1
+                `,
+                    [localOrder.id]
+                );
+
+                return res.status(503).json({
+                    success: false,
+                    code: "PAYMENT_STATUS_UNKNOWN",
+                    error:
+                        "We could not confirm your payment status. Please contact us before trying again."
+                });
+            }
+
+            await client.query(
+                `
+            UPDATE orders
+            SET
+                payment_status = 'FAILED',
+                updated_at = NOW()
+            WHERE id = $1
+            `,
+                [localOrder.id]
+            );
+
+            return res.status(402).json({
+                success: false,
+                code: "PAYMENT_FAILED",
+                error:
+                    "Your payment was not completed. Please try again."
+            });
+        }
+
         //
         // IMPORTANT:
         //
@@ -536,7 +608,6 @@ const payOrder = async (req, res) => {
         // the frontend that the payment definitely failed.
         //
         if (payment?.id) {
-
             //
             // We know Square returned a payment.
             // The payment exists, so keep the local order
