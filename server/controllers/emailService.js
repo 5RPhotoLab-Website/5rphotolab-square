@@ -81,7 +81,7 @@ export async function sendOrderConfirmation(order, payment) {
     await resend.emails.send({
         from: "5R Photo Lab <info@5rphotolab.com>",
         to: order.email,
-        subject: "Thanks for your order!",
+        subject: `Thanks for your order! #${order.id}`,
         html: emailHtml(payment.receiptUrl),
     });
 }
