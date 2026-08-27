@@ -196,7 +196,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
         if (typeof window.fbq === "function") {
             window.fbq("track", "AddToCart", {
                 content_ids: [
-                    String(product.variationId || product.id)
+                    String(product.variationId)
                 ],
                 content_name: product.name,
                 content_type: "product",
@@ -214,9 +214,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                 value: lineTotal.toFixed(2),
                 items: [
                     {
-                        item_id: String(
-                            product.variationId || product.id
-                        ),
+                        item_id: String(product.variationId),
                         item_name: product.name,
                         price: unitPrice,
                         quantity,

@@ -64,11 +64,13 @@ const OrderConfirmationPage = () => {
                         if (!purchaseTracked.current) {
                             purchaseTracked.current = true;
 
-                            // Meta
+                            // ==========================================
+                            // META PIXEL - PURCHASE
+                            // ==========================================
                             if (typeof window.fbq === "function") {
                                 window.fbq("track", "Purchase", {
                                     content_ids: itemsData.items.map(item =>
-                                        String(item.id)
+                                        String(item.variation_id)
                                     ),
                                     content_type: "product",
                                     value: purchaseValue,
@@ -76,14 +78,16 @@ const OrderConfirmationPage = () => {
                                 });
                             }
 
-                            // Google
+                            // ==========================================
+                            // GOOGLE - PURCHASE
+                            // ==========================================
                             if (typeof window.gtag === "function") {
                                 window.gtag("event", "purchase", {
                                     transaction_id: String(data.id),
                                     value: purchaseValue,
                                     currency: "USD",
                                     items: itemsData.items.map(item => ({
-                                        item_id: String(item.id),
+                                        item_id: String(item.variation_id),
                                         item_name: item.product_name,
                                         price: Number(item.unit_price),
                                         quantity: item.quantity,
