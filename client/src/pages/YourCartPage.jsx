@@ -166,7 +166,7 @@ const YourCartPage = () => {
                 {/* Checkout Actions */}
                 <div className="mt-4 flex justify-between mb-8">
                     <button
-                        className='w-[245px] h-[35px] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[12px] font-atkinson-regular disabled:opacity-50'
+                        className='w-[55vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[12px] font-atkinson-regular disabled:opacity-50'
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                         onClick={handleCheckout}
                         disabled={loading || cart.length === 0}
@@ -176,7 +176,7 @@ const YourCartPage = () => {
                         </span>
                     </button>
                     <button
-                        className='w-[146px] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
+                        className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                         onClick={() => navigate('/mail-in')}
                     >

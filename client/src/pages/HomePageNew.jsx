@@ -68,17 +68,17 @@ const HomePageNew = () => {
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
-                <div className='w-[396px] h-[240px] border-4 rounded-[10px] flex flex-col items-center mt-4 bg-[var(--color-white)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
-                    <button className='w-auto px-10 py-1 border-4 rounded-[10px] font-atkinson-bold text-[20px] bg-[var(--color-yellow)] mt-3 tracking-wider' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>EXPERT FILM SERVICES<br />PRO DEVELOP AND SCAN<br />BOUTIQUE EXPERIENCE</button>
+                <div className=' relative w-[92vw] border-4 rounded-[10px] flex flex-col items-center mt-4 bg-[var(--color-white)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                    <button className='max-w-full px-[6vw] py-1 border-4 rounded-[10px] font-atkinson-bold text-[20px] bg-[var(--color-yellow)] mt-3 tracking-wider' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>EXPERT FILM SERVICES<br />PRO DEVELOP AND SCAN<br />BOUTIQUE EXPERIENCE</button>
                     <div className='flex justify-between items-center mt-4 gap-4'>
-                        <img src={filmyOnlyIcon} alt="Filmy Icon" className='w-[88px] h-[88px]' />
-                        <p className='font-atkinson-bold text-[10px] tracking-wider text-left w-[240px] leading-4.5'>
+                        <img src={filmyOnlyIcon} alt="Filmy Icon" className='w-[88px] h-[88px] mb-2' />
+                        <p className='font-atkinson-bold text-[10px] tracking-wider text-left w-[240px] leading-4.5 mb-2'>
                             5R Photo Lab processes C-41 color and B&W film in 35mm, 120, 110, APS, and disposable cameras, offering digital files and prints. We digitize old negatives, slides, and photos. And yes, 5R Photo Lab sells film! </p>
                     </div>
                 </div>
 
-                <div className="w-full flex justify-center gap-4 mt-6">
-                    <div className="w-[188px] h-[146px] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
+                <div className="w-full flex justify-between px-2 mt-6">
+                    <div className="w-[41.778vw] h-[146px] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
                         <h1 className='font-bubblicious text-[var(--color-orange)] text-[50px] tracking-widest'>NYC</h1>
                         <div className='text-[15px] font-atkinson-bold text-center tracking-wider -mt-1'>
                             <p>DROP-OFF</p>
@@ -86,7 +86,7 @@ const HomePageNew = () => {
                         </div>
                     </div>
 
-                    <div className="w-[188px] h-[146px] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/mail-in")}>
+                    <div className="w-[41.778vw] h-[146px] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/mail-in")}>
                         <h1 className='font-bubblicious text-[var(--color-orange)] text-[50px] tracking-widest'>MAIL</h1>
                         <div className='text-[15px] font-atkinson-bold text-center tracking-wider -mt-1'>
                             <p>START YOUR</p>

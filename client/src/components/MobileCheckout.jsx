@@ -160,7 +160,7 @@ const MobileCheckout = ({
                         right-2
                         top-1/2
                         -translate-y-1/2
-                        text-[16px]
+                        text-[13px]
                         text-[#9C9C9C]
                         font-atkinson-bold
                         tracking-widest
@@ -191,7 +191,7 @@ const MobileCheckout = ({
 
                 <div className="flex-1 border-[#CECECE] border-t" />
 
-                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                <span className="mx-4 text-[#CECECE] text-[12px] font-atkinson-regular tracking-widest">
                     Express checkout
                 </span>
 
@@ -247,7 +247,7 @@ const MobileCheckout = ({
 
                 <div className="flex-1 border-[#CECECE] border-t" />
 
-                <span className="mx-4 text-[#CECECE] text-[10px] font-atkinson-regular tracking-widest">
+                <span className="mx-4 text-[#CECECE] text-[12px] font-atkinson-regular tracking-widest">
                     Or
                 </span>
 
@@ -391,7 +391,7 @@ const MobileCheckout = ({
                 )}
 
 
-                <div className="mt-10 space-y-2 text-[12px] tracking-widest">
+                <div className="mt-10 space-y-2 text-[12px] tracking-widest font-atkinson-regular">
                     {/* Original subtotal */}
                     <div className="flex justify-between">
                         <span>Subtotal</span>

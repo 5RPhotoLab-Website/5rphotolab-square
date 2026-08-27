@@ -281,7 +281,7 @@ const DesktopCheckoutTwo = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpe
             </div>
 
 
-            <div className="mt-15 space-y-2 text-[0.75vw] tracking-widest">
+            <div className="mt-15 space-y-2 text-[0.75vw] tracking-widest font-atkinson-regular">
                 {/* Original subtotal */}
                 <div className="flex justify-between">
                     <span>Subtotal</span>
