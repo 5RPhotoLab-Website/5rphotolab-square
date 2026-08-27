@@ -41,15 +41,15 @@ const NavMobileLayout = ({ products, colorProducts, merchandiseProducts }) => {
           </button>
         </div>
 
-        <p className='text-[15.5px] font-atkinson-bold tracking-wider text-center mt-1'>HEAVEN FOR LIGHTS, SHADOWS AND MEMORIES</p>
+        <p className='text-[3.6vw] font-atkinson-bold tracking-wider text-center mt-1'>HEAVEN FOR LIGHTS, SHADOWS AND MEMORIES</p>
         <div className='flex relative justify-between mt-5 p-2'>
-          <button className="w-[93px] py-1 border-3 rounded-[10px] bg-[var(--color-orange)] tracking-wider text-[13px]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+          <button className="w-[20vw] py-1 border-3 rounded-[10px] bg-[var(--color-orange)] tracking-wider text-[2.889vw]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
             onClick={() => navigate("/")}>HOME</button>
-          <button className="w-[93px] border-3 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[13px]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+          <button className="w-[20vw] border-3 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[2.889vw]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
             onClick={() => navigate("/mail-in")}>MAIL-IN</button>
-          <button className="w-[93px] border-3 rounded-[10px] bg-[#13C5C8] tracking-wider text-[13px]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+          <button className="w-[20vw] border-3 rounded-[10px] bg-[#13C5C8] tracking-wider text-[2.889vw]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
             onClick={() => navigate("/drop-off")}>DROP-OFF</button>
-          <button className="w-[93px] border-3 rounded-[10px] bg-[#E1388D] tracking-wider text-[13px]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
+          <button className="w-[20vw] border-3 rounded-[10px] bg-[#E1388D] tracking-wider text-[2.889vw]  flex items-center justify-center" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
             onClick={() => navigate("/info")}>INFO</button>
         </div>
       </div>

@@ -363,14 +363,14 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
                 <div className="mt-8 flex justify-between mb-8">
                     <button
-                        className={`w-[245px] h-[35px] border-4 rounded-[10px] tracking-wider text-[12px] font-atkinson-regular space-x-3 ${isAdded ? 'bg-white' : 'bg-[var(--color-blue)]'}`}
+                        className={`w-[55vw] h-[35px] border-4 rounded-[10px] tracking-wider text-[12px] font-atkinson-regular space-x-3 ${isAdded ? 'bg-white' : 'bg-[var(--color-blue)]'}`}
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                         onClick={handleAddToCart}
                     >
                         <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>{isAdded ? "ADDED TO CART" : "ADD TO CART"}</span>
                         <span className={`${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>${calculateLineTotal().toFixed(2)}</span>
                     </button>
-                    <button className='w-[146px] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
+                    <button className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                         onClick={() => navigate('/mail-in')}>Continue Shopping</button>
                 </div>

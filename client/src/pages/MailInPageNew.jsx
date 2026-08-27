@@ -36,7 +36,7 @@ const MailInPageNew = () => {
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
-                <div className="inline-flex px-14.5 py-4 border-4 rounded-[10px] tracking-wider text-[20px] font-atkinson-bold mt-5 bg-[var(--color-green)] tracking-wider"
+                <div className="text-center w-[92vw] py-4 border-4 rounded-[10px] tracking-wider  text-[20px] font-atkinson-bold mt-5 bg-[var(--color-green)] tracking-wider whitespace-nowrap"
                     style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     onClick={() => navigate("/mail-in/how-to-mail-in")}>HOW TO SHIP YOUR FILM</div>
                 <div className="grid grid-cols-2 grid-rows-4 mt-6">
