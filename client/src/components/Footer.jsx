@@ -1,4 +1,4 @@
-import fiveRIcon from '../assets/footer/5ricon.svg';
+import fiveRIcon from '../assets/footer/5ricon.png';
 import igIcon from '../assets/footer/instagramIcon.svg';
 import emailAtIcon from '../assets/footer/emailAtIcon.svg';
 import { Link } from 'react-router-dom';
@@ -92,7 +92,7 @@ const Footer = () => {
                     <img src={fiveRIcon} alt="5R Photo Lab Icon" className='mb-5' />
                 </div> */}
                 <div className='flex relative items-center gap-10 px-8 py-8'>
-                    <div className="flex flex-col text-[10px] text-[var(--color-dark-gray)] text-left tracking-widest">
+                    <div className="flex flex-col text-[10px] text-[var(--color-dark-gray)] text-left tracking-widest  whitespace-nowrap">
                         <p onClick={() => window.open("https://share.google/G27Rvit6vwDAQEpx3", "_blank")}>
                             31 Washington Square West<br />
                             Suite 3R-C, New York, NY 10011
