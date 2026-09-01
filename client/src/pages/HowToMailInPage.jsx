@@ -55,14 +55,14 @@ const HowToMailInPage = () => {
 
 
             {/* Mobile */}
-            <div className="md:hidden flex flex-col items-center p-2 mb-10">
-                <div className="relative w-[396px]">
+            <div className="md:hidden flex flex-col items-center p-2 mb-10 mt-8">
+                <div className="relative w-[92vw]">
                     {/* Floating header */}
                     <div
                         className="absolute top-0 left-0 z-10 border-4 bg-[var(--color-green)] rounded-[10px] w-full"
                         style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     >
-                        <h2 className="font-atkinson-bold text-[17px] tracking-wider max-w-[370px] mx-auto leading-[1.4] p-2 text-center">
+                        <h2 className="font-atkinson-bold text-[4vw] tracking-wider max-w-[93vw] mx-auto leading-[1.4] p-2 text-center">
                             All of our great lab services are available by mail, and getting your film and disposables to us is super easy.
                         </h2>
                     </div>
@@ -74,23 +74,23 @@ const HowToMailInPage = () => {
                     >
 
                         <div className="p-4.5 tracking-wider mt-6">
-                            <p className="font-atkinson-regular text-[17px]"><span className="font-atkinson-bold">1.</span> Write us a little note about your order, including the order number, or fill out the form below. <br /></p>
-                            <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">2.</span> Place your film in a ziploc. <br /></p>
-                            <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">3.</span> Place the bag in a padded envelope or a box with padding along with the form. <br /></p>
-                            <p className="font-atkinson-regular text-[17px] mt-2"><span className="font-atkinson-bold">4.</span> Address it to:</p>
-                            <p className="font-atkinson-regular text-[17px] ml-6 leading-relaxed"><br />
+                            <p className="font-atkinson-regular text-[4vw]"><span className="font-atkinson-bold">1.</span> Write us a little note about your order, including the order number, or fill out the form below. <br /></p>
+                            <p className="font-atkinson-regular text-[4vw] mt-2"><span className="font-atkinson-bold">2.</span> Place your film in a ziploc. <br /></p>
+                            <p className="font-atkinson-regular text-[4vw] mt-2"><span className="font-atkinson-bold">3.</span> Place the bag in a padded envelope or a box with padding along with the form. <br /></p>
+                            <p className="font-atkinson-regular text-[4vw] mt-2"><span className="font-atkinson-bold">4.</span> Address it to:</p>
+                            <p className="font-atkinson-regular text-[4vw] ml-6 leading-relaxed"><br />
                                 5R Photo Lab <br />
                                 31 Washington Square West <br />
                                 Suite 3R-C <br />
                                 New York, NY 10011</p>
                             <br />
-                            <p className="font-atkinson-regular text-[17px] ml-6 leading-relaxed">Be sure to write <span className="font-atkinson-bold underline">Do not X-Ray</span><br />on the package.</p> <br />
-                            <p className="font-atkinson-regular text-[17px]"><span className="font-atkinson-bold">5.</span> Bring the package to your nearest Post Office, FedEx, or UPS - be sure to get a tracking number.</p>
+                            <p className="font-atkinson-regular text-[4vw] ml-6 leading-relaxed">Be sure to write <span className="font-atkinson-bold underline">Do not X-Ray</span><br />on the package.</p> <br />
+                            <p className="font-atkinson-regular text-[4vw]"><span className="font-atkinson-bold">5.</span> Bring the package to your nearest Post Office, FedEx, or UPS - be sure to get a tracking number.</p>
 
                         </div>
 
                         <button
-                            className="border-4 border-black bg-[var(--color-blue)] px-3 py-2 font-atkinson-regular text-[17px] text-black rounded-[10px] mt-5 mb-10 tracking-wider"
+                            className="border-4 border-black bg-[var(--color-blue)] px-3 py-2 font-atkinson-regular text-[4vw] text-black rounded-[10px] mt-5 mb-10 tracking-wider"
                             style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                             onClick={() => window.open(OrderTemplate)}
                         >
