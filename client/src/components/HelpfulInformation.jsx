@@ -60,9 +60,9 @@ const HelpfulInformation = ({ page, product }) => {
                                     <br />
                                     <p>
                                         Be sure to include a note and get a tracking number from your
-                                        carrier. Visit{" "}
+                                        carrier. <br/>Visit{" "} 
                                         <a
-                                            href="https://www.5rphotolab.com/mail-in"
+                                            href="https://www.5rphotolab.com/mail-in/how-to-mail-in"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-[var(--color-orange)] underline"
@@ -152,7 +152,7 @@ const HelpfulInformation = ({ page, product }) => {
                                         Be sure to include a note and get a tracking number from your
                                         carrier. Visit{" "}
                                         <a
-                                            href="https://www.5rphotolab.com/mail-in"
+                                            href="https://www.5rphotolab.com/mail-in/how-to-mail-in"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-[var(--color-orange)] underline"

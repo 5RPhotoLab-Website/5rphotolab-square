@@ -1,11 +1,9 @@
 import filmyOnlyIcon from '../assets/homepage/filmyOnlyIcon.svg';
-import Labmap from '../assets/homepage/Labmap.png';
-import LabmapDesktop from '../assets/homepage/LabmapDesktop.svg';
 import globe from '../assets/homepage/globe.svg';
 import { useNavigate } from 'react-router-dom';
 
 
-const HomePageNew = () => {
+const HomePage = () => {
     const navigate = useNavigate();
 
     return (
@@ -104,4 +102,4 @@ const HomePageNew = () => {
     )
 }
 
-export default HomePageNew;
+export default HomePage;
