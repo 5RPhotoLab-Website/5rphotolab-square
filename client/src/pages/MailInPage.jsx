@@ -30,7 +30,7 @@ const MailInPage = () => {
             {/* Desktop */}
             <div className="hidden md:flex flex-col items-center justify-center pb-[6vh]">
                 <div className="text-[0.781vw] max-w-[70vw] py-2 px-2 font-atkinson-regular tracking-wider text-center border-4 rounded-[10px] bg-[var(--color-yellow)] leading-relaxed mb-8" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
-                    <p className='font-atkinson-bold text-[0.9vw]'>Stop waiting weeks for your photos and start enjoying your pictures ASAP with 5R Photo Lab's mail-in film processing service. </p>
+                    <p className='font-atkinson-bold text-[0.9vw]'>Stop waiting weeks for your photos and start enjoying your pictures ASAP with 5R Photo Lab's mail-in film service. </p>
                     <p>5R Photo Lab offers a seamless mail-in film developing experience with easy ordering, quick turnaround, and unparalleled customer service, all delivered by imaging professionals with decades of combined experience.
                         5R Photo Lab gets to work on your film right when it arrives: Our typical C-41 turnaround is same or next-day for mail-in orders. We digitize film with the gold standard Noritsu HS-1800 scanner, check all scans for dust and hair,
                         and ensure proper orientation and color calibration. We do all this because you deserve better than other labs' assembly line approach to scans. These are your memories. They should be enjoyable - and sharable - right when they arrive at your inbox. </p>
@@ -60,7 +60,7 @@ const MailInPage = () => {
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
                 <div className="text-[14px] py-2 px-2 font-atkinson-regular tracking-wider text-center border-4 rounded-[10px] bg-[var(--color-yellow)] leading-relaxed" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
-                    <p className='font-atkinson-bold text-[16px]'>Stop waiting weeks for your photos and start enjoying your pictures ASAP with 5R Photo Lab's mail-in film processing service. </p>
+                    <p className='font-atkinson-bold text-[16px]'>Stop waiting weeks for your photos and start enjoying your pictures ASAP with 5R Photo Lab's mail-in film service. </p>
                     <p>5R Photo Lab offers a seamless mail-in film developing experience with easy ordering, quick turnaround, and unparalleled customer service, all delivered by imaging professionals with decades of combined experience.<br/>
                         5R Photo Lab gets to work on your film right when it arrives: Our typical C-41 turnaround is same or next-day for mail-in orders. We digitize film with the gold standard Noritsu HS-1800 scanner, check all scans for dust and hair,
                         and ensure proper orientation and color calibration. <br/>We do all this because you deserve better than other labs' assembly line approach to scans. These are your memories. They should be enjoyable - and sharable - right when they arrive at your inbox. </p>
