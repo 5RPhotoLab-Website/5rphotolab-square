@@ -1,7 +1,5 @@
 import { Outlet } from "react-router-dom";
-// import NavMobile from "./NavMobile";
 import navTitle from '../assets/navbar/navTitle.svg';
-import navTitleNoFilmy from '../assets/navbar/navTitleNoFilmy.svg';
 import cartIcon from '../assets/navbar/cartIcon.svg';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from '../context/CartContext';

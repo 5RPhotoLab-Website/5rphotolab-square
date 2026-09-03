@@ -3,9 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useRoutes } from 'react-router-dom';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import ErrorPage from './pages/ErrorPage';
-import Footer from './components/Footer';
-import HomePageNew from './pages/HomePageNew';
-import MailInPageNew from './pages/MailInPageNew';
+import HomePage from './pages/HomePage';
+import MailInPage from './pages/MailInPage';
 import HowToMailInPage from './pages/HowToMailInPage';
 import DropOffPage from './pages/DropOffPage';
 import YourCartPage from './pages/YourCartPage';
@@ -84,12 +83,12 @@ function App() {
       children: [
         {
           path: "/",
-          element: <HomePageNew />
+          element: <HomePage />
         },
         {
           path: "/mail-in",
           element: (
-            <MailInPageNew />
+            <MailInPage />
           )
         },
         {

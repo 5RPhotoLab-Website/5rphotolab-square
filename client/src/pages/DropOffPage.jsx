@@ -29,7 +29,7 @@ const DropOffPage = () => {
 
                     <div className='flex justify-between p-5'>
                         <div>
-                            <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.833vw] w-full tracking-wider text-center mt-5">3STANDARD TURNAROUND TIME FOR C-41 IS TWO DAYS,<br />B&W IS APPROXIMATELY FIVE DAYS</h1>
+                            <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.833vw] w-full tracking-wider text-center mt-5">STANDARD TURNAROUND TIME FOR C-41 IS TWO DAYS,<br />B&W IS APPROXIMATELY FIVE DAYS</h1>
                             <div className="flex justify-between items-start gap-20">
                                 <div className='w-[18.229vw]'>
                                     <div className='flex justify-between mt-4'>

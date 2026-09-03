@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 import DesktopCheckout from "../components/DesktopCheckout";
-import DesktopCheckoutTwo from "../components/DesktopCheckoutTwo";
 import MobileCheckout from "../components/MobileCheckout";
 
 
@@ -832,7 +831,7 @@ export default function CheckoutPage() {
         <>
             <div className="pt-5">
                 {isDesktop ? (
-                    <DesktopCheckoutTwo {...checkoutProps} />
+                    <DesktopCheckout {...checkoutProps} />
                 ) : (
                     <MobileCheckout {...checkoutProps} />
                 )}
