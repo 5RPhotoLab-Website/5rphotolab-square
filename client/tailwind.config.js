@@ -6,7 +6,8 @@ export default {
       colors: {
         mainBackground: "#7FFF00",
         purple: "#8a2be2",
-        pink: "#ff1493",
+        // pink: "#ff1493",
+        pink: "#d5006d",
         whiteCustom: "#f5f5f5",
         blue: "#01B2FE",
         orange: "#FF5C2C",

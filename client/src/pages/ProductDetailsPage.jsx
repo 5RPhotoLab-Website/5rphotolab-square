@@ -250,7 +250,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                                 <p className="font-atkinson-bold text-[1vw] tracking-wider">
                                     {product.name}
                                 </p>
-                                <p className="font-atkinson-regular text-[0.7vw] tracking-wider mt-4">
+                                <p className="font-atkinson-regular text-[0.8vw] tracking-wider mt-4">
                                     ${product.price}
                                 </p>
 
@@ -264,7 +264,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
                         <div className="mt-8 flex justify-between">
                             <button
-                                className={`w-[13vw] h-[4vh] border-4 rounded-[10px] tracking-wider text-[0.625vw] font-atkinson-regular cursor-pointer ${isAdded ? "bg-white" : "bg-[var(--color-blue)]"}`}
+                                className={`w-[13vw] py-[0.5vh] border-4 rounded-[10px] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer ${isAdded ? "bg-white" : "bg-[var(--color-blue)]"}`}
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                                 onClick={handleAddToCart}
                             >
@@ -277,7 +277,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                             </button>
 
                             <button
-                                className="w-[8vw] h-[4vh] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[0.625vw] font-atkinson-regular cursor-pointer"
+                                className="px-[1.5vw] py-[0.5vh] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer"
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                                 onClick={() => navigate('/mail-in')}
                             >
@@ -321,7 +321,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
             {/* Mobile */}
             <div className="md:hidden p-4">
-                <div className='flex relative space-x-5 mt-8'>
+                <div className='flex relative space-x-5 mt-4'>
                     <img src={product.imageUrl} alt="" className='w-[192px] h-[192px]' />
                     <div className='flex flex-col'>
                         <p className='font-atkinson-bold text-[16px] tracking-wider'>{product.name}</p>
@@ -336,7 +336,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                     </div>
                 </div>
 
-                <div className="mt-8 flex justify-between mb-8">
+                {/* <div className="mt-8 flex justify-between mb-8">
                     <button
                         className={`w-[55vw] h-[35px] border-4 rounded-[10px] tracking-wider text-[12px] font-atkinson-regular space-x-3 ${isAdded ? 'bg-white' : 'bg-[var(--color-blue)]'}`}
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
@@ -348,7 +348,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                     <button className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
                         style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                         onClick={() => navigate('/mail-in')}>Continue Shopping</button>
-                </div>
+                </div> */}
 
 
                 {productType && (
@@ -376,7 +376,53 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                     <HelpfulInformation page="product-details" product={product} />
                 </div>
 
+                {/* Mobile Fixed Add to Cart Bar */}
+                <div className="fixed bottom-0 left-0 right-0 z-50  px-3 py-3 ">
+                    <div className="flex items-center gap-2">
 
+                        {/* X / Back */}
+                        <button
+                            onClick={() => navigate('/mail-in')}
+                            className="w-[42px] h-[42px] flex items-center justify-center border-4 rounded-[10px] bg-[#CECECE] text-[20px] font-bold"
+                            style={{
+                                boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)"
+                            }}
+                            aria-label="Back to mail-in"
+                        >
+                            ×
+                        </button>
+
+                        {/* Add to Cart */}
+                        <button
+                            className={`flex-1 h-[42px] border-4 rounded-[10px] tracking-wider text-[13px] font-atkinson-regular ${isAdded ? 'bg-white' : 'bg-[var(--color-blue)]'
+                                }`}
+                            style={{
+                                boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)"
+                            }}
+                            onClick={handleAddToCart}
+                        >
+                            <span
+                                className={`font-atkinson-bold ${isAdded
+                                        ? 'text-[var(--color-blue)]'
+                                        : 'text-black'
+                                    }`}
+                            >
+                                {isAdded ? "ADDED TO CART" : "ADD TO CART"}
+                            </span>
+
+                            <span
+                                className={
+                                    isAdded
+                                        ? 'text-[var(--color-blue)]'
+                                        : 'text-black'
+                                }
+                            >
+                                {" "}${calculateLineTotal().toFixed(2)}
+                            </span>
+                        </button>
+
+                    </div>
+                </div>
             </div>
         </div>
 
