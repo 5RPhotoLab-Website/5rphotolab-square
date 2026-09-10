@@ -36,7 +36,7 @@ const YourCartPage = () => {
                         <h1 className="text-[1.641vw] text-[#211F22] ml-auto">Your Cart</h1>
                     )}
                     {totalItems > 0 && (
-                        <p className="ml-auto text-[0.625vw] text-[var(--color-pink)]">
+                        <p className="ml-auto text-[0.8vw] text-[var(--color-pink)]">
                             {totalItems} {totalItems === 1 ? "ITEM" : "ITEMS"}
                         </p>
                     )}
@@ -46,7 +46,7 @@ const YourCartPage = () => {
                     <div className="w-[29.167vw] ml-30 pt-5">
                         <div className={`pr-5 ${shouldScroll ? "max-h-[50vh] overflow-y-auto" : ""}`}>
                             {cart.length === 0 ? (
-                                <p className="mt-10 text-center font-atkinson-bold">
+                                <p className="mt-10 text-center font-atkinson-bold text-[1vw]">
                                     Your cart is empty
                                 </p>
                             ) : (
@@ -68,7 +68,7 @@ const YourCartPage = () => {
                         {/* Quick Actions */}
                         <div className="flex justify-center gap-10 mt-8">
                             <button
-                                className='w-[9.844vw] h-[3.5vh] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[0.625vw] font-atkinson-regular cursor-pointer'
+                                className='w-[9.844vw] h-[3.5vh] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer'
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                                 onClick={() => navigate('/mail-in')}
                             >
@@ -76,18 +76,18 @@ const YourCartPage = () => {
                             </button>
                         </div>
 
-                        <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.729vw]">
+                        <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.8vw]">
                             <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
                             <p>${orderTotal.toFixed(2)}</p>
                         </div>
-                        <p className="text-[var(--color-pink)] text-[0.521vw] tracking-wider">
+                        <p className="text-[var(--color-pink)] text-[0.6vw] tracking-wider">
                             Additional taxes and fees will be calculated at checkout
                         </p>
 
                         {/* Checkout Actions */}
                         <div className="mt-14 flex justify-between mb-8 gap-5">
                             <button
-                                className='w-[12.76vw] h-[3.5vh] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[0.625vw] font-atkinson-regular disabled:opacity-50 cursor-pointer'
+                                className='w-[13vw] py-[0.5vh] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[0.8vw] font-atkinson-regular disabled:opacity-50 cursor-pointer'
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                                 onClick={handleCheckout}
                                 disabled={loading || cart.length === 0}
@@ -97,7 +97,7 @@ const YourCartPage = () => {
                                 </span>
                             </button>
                             <button
-                                className='w-[7.604vw] h-[3.5vh] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[0.625vw] font-atkinson-regular cursor-pointer'
+                                className='px-[1.5vw] py-[0.5vh] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer'
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                                 onClick={() => navigate('/mail-in')}
                             >

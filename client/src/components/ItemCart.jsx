@@ -57,17 +57,17 @@ const ItemCart = ({ product, addProduct, removeProduct }) => {
         <div className="mt-8">
             <div className="flex justify-between">
                 <div className="tracking-wider cursor-pointer" onClick={() => navigate(`/products/get/${product.product_id}`)}>
-                    <p className='font-atkinson-bold text-[12px] md:text-[0.625vw]'>{product.name}</p>
-                    <p className='font-atkinson-regular text-[12px] md:text-[0.625vw]'>{product.quantity > 1
+                    <p className='font-atkinson-bold text-[12px] md:text-[0.8vw]'>{product.name}</p>
+                    <p className='font-atkinson-regular text-[12px] md:text-[0.8vw]'>{product.quantity > 1
                         ? `$${(product.catalogPrice)} × ${product.quantity} `
                         : `$${(product.catalogPrice)}`}</p>
                 </div>
-                <p className="text-[var(--color-pink)] font-atkinson-bold text-[12px] md:text-[0.625vw] tracking-wider">${lineTotal}</p>
+                <p className="text-[var(--color-pink)] font-atkinson-bold text-[12px] md:text-[0.8vw] tracking-wider">${lineTotal}</p>
             </div>
 
             <div className='flex mt-3 space-x-7'>
                 <div className='flex flex-col items-center -space-y-6'>
-                    <img src={product.imageUrl} alt={product.name} className="w-[105px] h-[105px] cursor-pointer" onClick={() => navigate(`/products/get/${product.product_id}`)} />
+                    <img src={product.imageUrl} alt={product.name} className="w-[110px] h-[110px] cursor-pointer" onClick={() => navigate(`/products/get/${product.product_id}`)} />
                     <ItemCounter
                         quantity={product.quantity}
                         onIncrease={() =>
@@ -99,11 +99,11 @@ const ItemCart = ({ product, addProduct, removeProduct }) => {
                         return (
                             <div key={key} className="mt-1">
 
-                                <h1 className="font-atkinson-bold text-[12px] md:text-[0.625vw] tracking-wider text-[var(--color-pink)] uppercase">
+                                <h1 className="font-atkinson-bold text-[12px] md:text-[0.8vw] tracking-wider text-[var(--color-pink)] uppercase">
                                     {title}
                                 </h1>
 
-                                <p className="font-atkinson-regular text-[12px] md:text-[0.625vw] tracking-wider">
+                                <p className="font-atkinson-regular text-[12px] md:text-[0.8vw] tracking-wider">
                                     {value}
 
                                     {priceAdd > 0 &&

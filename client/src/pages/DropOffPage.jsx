@@ -16,14 +16,14 @@ const DropOffPage = () => {
                         and film purchasing. Finding us can be tricky the first<br /> time, but you won't forget. If you want to prepare for your<br /> visit, check out this <a href="https://www.instagram.com/p/DROwbbYjq8U/" target="_blank" className="underline">video</a>.
                     </p>
                     <img src={flatMap} alt="Drop-off Map" className="w-[30.938vw] h-auto" />
-
                 </div>
+
                 <div className="border-4 rounded-[10px] w-full p-3" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
-                    <div className='bg-[var(--color-yellow)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.833vw] tracking-wider py-2 mt-5' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                    <div className='bg-[var(--color-yellow)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[1.2vw] tracking-wider py-2 mt-5' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                         WE PROCESS C-41 AND B&W FILM ONLY
                     </div>
 
-                    <div className='bg-[var(--color-green)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.833vw] tracking-wider py-2 mt-10' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                    <div className='bg-[var(--color-green)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.9vw] tracking-wider py-2 mt-10' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                         STANDARD RESOLUTION 3130X2075 PX
                     </div>
 
@@ -40,7 +40,7 @@ const DropOffPage = () => {
                                         <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider mt-2'>35mm Dev&Print Only</h2>
                                     </div>
                                     <div className='relative'>
-                                        <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
+                                        <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2 w-[2vw]" />
                                         <div className='flex justify-between w-[15.8vw] ml-auto'>
                                             <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>Disposable Cameras, 24-27 Exp.</h2>
                                             <p className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>$23.99</p>
@@ -54,7 +54,7 @@ const DropOffPage = () => {
                                         <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider mt-2'>35mm Half-Frame Dev&Scan</h2>
                                     </div>
                                     <div className='relative'>
-                                        <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
+                                        <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2 w-[2vw]" />
                                         <div className='flex justify-between w-[15.8vw] ml-auto'>
                                             <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>Diptychs</h2>
                                             <p className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>$24.99</p>
@@ -125,7 +125,7 @@ const DropOffPage = () => {
 
 
 
-                    <div className='bg-[var(--color-green)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.833vw] tracking-wider py-2 mt-5' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                    <div className='bg-[var(--color-green)] rounded-[10px] -mx-10 border-4 text-center font-atkinson-bold text-[0.9vw] tracking-wider py-2 mt-5' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                         UPGRADE TO HI-RES 6774X4492 PX FOR $6.99
                     </div>
 
@@ -136,7 +136,7 @@ const DropOffPage = () => {
                                 <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider'>4X6 Prints</h2>
                             </div>
                             <div className='relative'>
-                                <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
+                                <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2 w-[2vw]" />
                                 <div className='flex justify-between w-[15.8vw] ml-auto'>
                                     <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>24-27 Exp.</h2>
                                     <p className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>$08.99</p>
@@ -155,7 +155,7 @@ const DropOffPage = () => {
                                 <p className='font-atkinson-regular text-[0.729vw] tracking-wider mt-2'>$14.99</p>
                             </div>
                             <div className='relative'>
-                                <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
+                                <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2 w-[2vw]" />
                                 <div className='flex justify-between w-[15.8vw] ml-auto'>
                                     <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>or $9.99 for 10+ prints</h2>
                                 </div>
@@ -193,7 +193,7 @@ const DropOffPage = () => {
                                     <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider'>Mounted Slides</h2>
                                 </div>
                                 <div className='relative'>
-                                    <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
+                                    <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2 w-[2vw]" />
                                     <div className='flex justify-between w-[17.5vw] ml-auto'>
                                         <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3 whitespace-nowrap'>$5 each, minimum 5 slides</h2>
                                     </div>
@@ -205,7 +205,7 @@ const DropOffPage = () => {
                                     <h2 className='font-atkinson-bold text-[0.729vw] tracking-wider'>Standard Prints</h2>
                                 </div>
                                 <div className='relative'>
-                                    <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2" />
+                                    <img src={arrowRight} alt="Arrow Right" className="absolute left-0 top-4 -translate-y-1/2 w-[2vw]" />
                                     <div className='flex justify-between w-[17.5vw] ml-auto'>
                                         <h2 className='font-atkinson-regular text-[0.729vw] tracking-wider mt-3'>8x10 and smaller: $5 each, minimum 5 prints</h2>
                                     </div>

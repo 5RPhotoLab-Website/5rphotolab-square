@@ -50,7 +50,7 @@ const InfoPage = () => {
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
-                <div className="border-4 rounded-[10px] w-[92vw] mt-8 mb-8 p-4 text-[13px] font-atkinson-regular tracking-wider leading-[1.7]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                <div className="border-4 rounded-[10px] w-[92vw] mt-4 mb-8 p-4 text-[13px] font-atkinson-regular tracking-wider leading-[1.7]" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                     <p className="mt-5 text-[3.111vw]">We develop, scan, and print film and disposable <br /> cameras in NYC's Greenwich Village neighborhood.</p>
                     <p className="mt-5 text-[3.111vw]">We process color <span className="text-[var(--color-pink)] font-atkinson-bold">C-41</span>, <span className="text-[var(--color-pink)] font-atkinson-bold">B&W</span>, <span className="text-[var(--color-pink)] font-atkinson-bold">35mm</span>, <span className="text-[var(--color-pink)] font-atkinson-bold">110</span>, and <br /><span className="text-[var(--color-pink)] font-atkinson-bold">medium format</span> films. </p>
                     <div className='relative mt-1'>

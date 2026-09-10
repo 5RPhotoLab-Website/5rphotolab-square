@@ -69,7 +69,7 @@ const OptionGroup = ({
                             className={
                                 mobile
                                     ? "text-[12px]"
-                                    : "text-[0.625vw]"
+                                    : "text-[0.8vw]"
                             }
                         >
                             {option.name}
@@ -99,7 +99,7 @@ const OptionGroup = ({
             {/* Desktop */}
             <div className="hidden md:block">
 
-                <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.625vw] tracking-wider mt-5 uppercase">
+                <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.8vw] tracking-wider mt-5 uppercase">
                     {title}
                     {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
                 </h1>

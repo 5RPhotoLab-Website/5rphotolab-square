@@ -55,7 +55,7 @@ const HowToMailInPage = () => {
 
 
             {/* Mobile */}
-            <div className="md:hidden flex flex-col items-center p-2 mb-10 mt-8">
+            <div className="md:hidden flex flex-col items-center p-2 mb-10 mt-4">
                 <div className="relative w-[92vw]">
                     {/* Floating header */}
                     <div

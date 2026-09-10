@@ -22,19 +22,19 @@ const HelpfulInformation = ({ page, product }) => {
             <div className="hidden md:block">
                 {page === "product-details" ? (
                     <>
-                        <h1 className='font-atkinson-bold text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+                        <h1 className='font-atkinson-bold text-[0.9vw] text-[var(--color-orange)] flex relative gap-2 mt-10 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
 
-                        <h2 className='font-atkinson-bold text-[0.729vw] text-[var(--color-orange)] tracking-wider'>
+                        <h2 className='font-atkinson-bold text-[0.8vw] text-[var(--color-orange)] mt-[1vh] tracking-wider'>
                             Description
                         </h2>
 
-                        <p className='font-atkinson-regular text-[0.625vw] tracking-wider'>
+                        <p className='font-atkinson-regular text-[0.8vw] tracking-wider mt-[0.5vh]'>
                             {product.description || "No description available for this product."}
                         </p>
                     </>
                 ) : (
                     <>
-                        <h1 className='font-atkinson-bold text-[0.833vw] text-[var(--color-orange)] flex relative gap-2 mt-30 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
+                        <h1 className='font-atkinson-bold text-[0.9vw] text-[var(--color-orange)] flex relative gap-2 mt-30 tracking-wider'>Helpful Information <img src={infoIcon} alt="Info Icon" /></h1>
                     </>
                 )}
 

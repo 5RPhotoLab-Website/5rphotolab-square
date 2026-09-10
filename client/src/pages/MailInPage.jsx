@@ -43,7 +43,7 @@ const MailInPage = () => {
                         products.map((product) => (
                             <div key={product.id} className='p-3 cursor-pointer' onClick={() => navigate(`/products/get/${product.id}`)}>
                                 <img src={product.imageUrl} alt={product.name.replace(/^Color\s+/, "")} />
-                                <p className='font-atkinson-bold text-[0.833vw] tracking-wider'>{product.name.replace(/^Color\s+/, "")}</p>
+                                <p className='font-atkinson-bold text-[0.833vw] tracking-wider mt-[1vh]'>{product.name.replace(/^Color\s+/, "")}</p>
                                 <p className='font-atkinson-regular text-[0.7vw] tracking-wider'>${product.price}</p>
                             </div>
                         ))
@@ -51,7 +51,7 @@ const MailInPage = () => {
                         <h3 className="py-10">{'Loading....'}</h3>
                     }
                 </div>
-                <div className="inline-flex px-10 py-4 border-4 rounded-[10px] tracking-wider text-[0.781vw] font-atkinson-bold bg-[var(--color-green)] cursor-pointer"
+                <div className="inline-flex px-10 py-4 mt-5 border-4 rounded-[10px] tracking-wider text-[0.9vw] font-atkinson-bold bg-[var(--color-green)] cursor-pointer"
                     style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}
                     onClick={() => navigate("/mail-in/how-to-mail-in")}>
                     HOW TO SHIP YOUR FILM
@@ -61,13 +61,13 @@ const MailInPage = () => {
 
             {/* Mobile */}
             <div className="md:hidden flex flex-col items-center p-2">
-                <div className="text-[3.6vw] py-2 px-2 font-atkinson-regular tracking-wider text-center border-4 rounded-[10px] bg-[var(--color-yellow)] leading-relaxed" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
+                <div className="w-[92vw] text-[3.6vw] py-2 px-2 mt-4 font-atkinson-regular tracking-wider text-center border-4 rounded-[10px] bg-[var(--color-yellow)] leading-relaxed" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                     <p className='font-atkinson-bold text-[4.3vw]'>Stop waiting weeks for your photos and start enjoying your pictures ASAP with 5R Photo Lab's mail-in film service. </p>
                     <p className='mt-3'>5R Photo Lab offers a seamless mail-in film developing experience with <span className="font-atkinson-bold">easy ordering</span>, <span className="font-atkinson-bold">quick turnaround</span>, and <span className="font-atkinson-bold">unparalleled customer service</span>, all delivered by imaging professionals with decades of combined experience.<br/>
                         5R Photo Lab gets to work on your film right when it arrives: Our typical C-41 turnaround is <span className="font-atkinson-bold">same or next-day for mail-in orders</span>. We digitize film with the gold standard Noritsu HS-1800 scanner, check all scans for dust and hair,
-                        and ensure proper orientation and color calibration. We do all this because <span className="font-atkinson-bold">you deserve better</span> than other labs' assembly line approach to scans.<br/> These are your memories. They should be enjoyable - and sharable - right when they arrive at your inbox.
+                        and ensure proper orientation and color calibration. We do all this because <br/><span className="font-atkinson-bold">you deserve better</span> than other labs' assembly line approach to scans.<br/> These are your memories. They should be enjoyable - and sharable - right when they arrive at your inbox.
                         Got a question? We're very friendly, so go ahead and give us a call, shoot us a text, or send us an email! Need info on shipping film? Click <a href="/mail-in/how-to-mail-in" className="text-[var(--color-purple)] underline">here</a>. 
-                        If you're ready to <span className="font-atkinson-bold">start your order</span> just scroll down. We can't wait to process your film! </p>
+                        If you're ready to <span className="font-atkinson-bold">start your order</span> just scroll down.<br /> We can't wait to process your film! </p>
                 </div>
                 <div className="grid grid-cols-2 grid-rows-4 mt-6">
                     {products && products.length > 0 ?
