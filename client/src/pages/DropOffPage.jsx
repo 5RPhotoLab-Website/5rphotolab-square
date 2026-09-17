@@ -8,7 +8,7 @@ const DropOffPage = () => {
             {/* Desktop */}
             <div className="hidden md:flex flex-col items-center mx-auto max-w-[73vw] pb-[6vh]">
                 <div className="flex justify-between items-center w-full">
-                    <p className="font-atkinson-bold text-[1vw] tracking-wider leading-7">
+                    <p className="font-atkinson-bold text-[1vw] tracking-wider leading-10 text-left">
                         5R is tucked away in a converted 1850s townhouse on<br />
                         the west side of Washington Square Park. Our hidden<br />
                         gem of a film lab is open from 10 AM to 8 PM seven days<br />
@@ -255,7 +255,7 @@ const DropOffPage = () => {
             <div className="md:hidden flex flex-col items-center p-2 overflow-x-hidden overflow-y-visible">
                 <img src={flatMap} alt="Drop Off Map" className="w-full pl-2 pr-2" />
                 <div className="leading-[2] mt-5">
-                    <p className="font-atkinson-bold text-[12px] tracking-wider text-center">
+                    <p className="font-atkinson-bold text-[12px] tracking-wider text-center]">
                         5R is tucked away in a converted 1850s townhouse on<br />
                         the west side of Washington Square Park. Our hidden<br />
                         gem of a film lab is open from 10 AM to 8 PM seven days<br />
