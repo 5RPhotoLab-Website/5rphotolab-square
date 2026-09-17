@@ -129,6 +129,10 @@ function App() {
           element: <CheckoutPage />
         },
         {
+          path: "/accessible-site",
+          element: <AccessibleSitePage />
+        },
+        {
           path: "*",
           element: <ErrorPage />
         }

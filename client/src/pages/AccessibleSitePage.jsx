@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const AccessibleSitePage = () => {
     return (
-        <div className='pb-[50vh] max-w-[60vw] mx-auto items-center justify-center mt-20'>
+        <div className='pb-[3vh] max-w-[60vw] mx-auto items-center justify-center mt-10'>
             <div className="space-y-7" style={{ backgroundColor: 'white', fontFamily: 'Arial', fontSize: '12px' }} role="main">
                 <header>
                     <h1 tabIndex="0" className='font-bold'>Welcome to 5R Photo Lab!</h1>

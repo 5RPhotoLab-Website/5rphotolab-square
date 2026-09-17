@@ -1,6 +1,7 @@
 import fiveRIcon from '../assets/footer/5ricon.png';
 import igIcon from '../assets/footer/instagramIcon.svg';
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import AccessibleSitePage from '../pages/AccessibleSitePage';
 
 
 const Footer = () => {
@@ -59,7 +60,11 @@ const Footer = () => {
                         <div className="flex justify-center">
                             <img src={fiveRIcon} alt="5R Photo Lab Icon" />
                         </div>
+                        {/* Column 7 */}
+                        <div>
+                            <Link to="/accessible-site" className="text-[12px] text-black tracking-widest underline cursor-pointer">Accessible Site</Link>
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,9 +81,10 @@ const Footer = () => {
                         <a href="tel:+16463194106" className=" block"> +1 (646) 319 - 4106</a>
                         <a href="mailto:info@5rphotolab.com" className="block">info@5rphotolab.com</a>
                     </div>
-                    <div className='flex flex-col gap-4'>
+                    <div className='flex flex-col gap-2 items-center justify-center'>
                         <img src={fiveRIcon} alt="5R Photo Lab Icon" className='w-[18vw]' />
                         <img src={igIcon} alt="Instagram Icon" className='w-[6vw] mx-auto' onClick={() => window.open("https://www.instagram.com/5rphotolab/?hl=en", "_blank")} />
+                        <Link to="/accessible-site" className="text-[3vw] text-black tracking-widest underline cursor-pointer">Accessible Site</Link>
                     </div>
                 </div>
             </div>
