@@ -40,7 +40,6 @@ const Footer = () => {
                         {/* Column 4 */}
                         <div>
                             <a href="mailto:info@5rphotolab.com" className="block">info@5rphotolab.com</a>
-
                         </div>
                         {/* Column 5 */}
                         <div className="flex justify-center">
