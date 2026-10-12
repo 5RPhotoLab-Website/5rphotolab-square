@@ -44,14 +44,13 @@ const HomePage = () => {
                             alt="Map"
                             className="absolute left-1/2 top-[10vw] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none w-[21.25vw]"
                         />
-                        <div className="relaitve z-10 w-[10vw] h-[7.604vw] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
+                        <div className="relative z-10 w-[10vw] h-[7.604vw] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/drop-off")}>
                             <h1 className='font-bubblicious text-[var(--color-orange)] text-[2.604vw] tracking-widest'>NYC</h1>
                             <div className='text-[0.781vw] font-atkinson-bold text-center tracking-wider -mt-1'>
                                 <p>DROP-OFF</p>
                                 <p>IN-PERSON</p>
                             </div>
                         </div>
-
                         <div className="relative z-10 w-[10vw] h-[7.604vw] border-4 rounded-[10px] flex flex-col items-center justify-center bg-white" style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }} onClick={() => navigate("/mail-in")}>
                             <h1 className='font-bubblicious text-[var(--color-orange)] text-[2.604vw] tracking-widest'>MAIL</h1>
                             <div className='text-[0.781vw] font-atkinson-bold text-center tracking-wider -mt-1'>
@@ -61,6 +60,15 @@ const HomePage = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* idea for future design modifications */}
+                {/* <div>
+                    <img
+                        src={globe}
+                        alt="Map"
+                        className="absolute left-[70%] top-0  z-0 pointer-events-none w-[50vw]"
+                    />
+                </div> */}
             </div>
 
 
