@@ -1,7 +1,7 @@
-import fiveRIcon from '../assets/footer/5ricon.png';
+// import fiveRIcon from '../assets/footer/5ricon.png';
+import fiveRIcon from '../assets/footer/5ricon.svg';
 import igIcon from '../assets/footer/instagramIcon.svg';
 import { Link, useLocation } from "react-router-dom";
-import AccessibleSitePage from '../pages/AccessibleSitePage';
 
 
 const Footer = () => {
@@ -57,12 +57,11 @@ const Footer = () => {
                         </div>
                         {/* Column 6 */}
                         <div className="flex justify-center">
-                            <img src={fiveRIcon} alt="5R Photo Lab Icon" />
+                            <img src={fiveRIcon} alt="5R Photo Lab Icon" className="w-[50px]" />
                         </div>
                         {/* Column 7 */}
                         <div>
                             <Link to="/accessible-site" className="text-[12px] text-black tracking-widest underline cursor-pointer">Accessible Site</Link>
-
                         </div>
                     </div>
                 </div>
