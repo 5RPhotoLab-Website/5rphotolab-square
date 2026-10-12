@@ -1,6 +1,5 @@
-// import fiveRIcon from '../assets/footer/5ricon.png';
-import fiveRIcon from '../assets/footer/5ricon.svg';
-import igIcon from '../assets/footer/instagramIcon.svg';
+import fiveRIcon from '../assets/footer/5ricon.svg?url';
+import igIcon from '../assets/footer/instagramIcon.svg?url';
 import { Link, useLocation } from "react-router-dom";
 
 
