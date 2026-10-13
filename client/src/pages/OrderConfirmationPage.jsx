@@ -58,41 +58,84 @@ const OrderConfirmationPage = () => {
 
                         setItems(itemsData.items || []);
 
+                        // const purchaseValue = Number(data.total_amount);
+                        // const purchaseKey = `meta_purchase_${data.id}`;
+
+
+                        // if (!purchaseTracked.current && !sessionStorage.getItem(purchaseKey)) {
+                        //     purchaseTracked.current = true;
+
+                        //     // ==========================================
+                        //     // META PIXEL - PURCHASE
+                        //     // ==========================================
+                        //     if (typeof window.fbq === "function") {
+                        //         window.fbq("track", "Purchase", {
+                        //             content_ids: itemsData.items.map(item =>
+                        //                 String(item.variation_id)
+                        //             ),
+                        //             content_type: "product",
+                        //             value: purchaseValue,
+                        //             currency: "USD",
+                        //         });
+                        //     }
+
+                        //     // ==========================================
+                        //     // GOOGLE - PURCHASE
+                        //     // ==========================================
+                        //     if (typeof window.gtag === "function") {
+                        //         window.gtag("event", "purchase", {
+                        //             transaction_id: String(data.id),
+                        //             value: purchaseValue,
+                        //             currency: "USD",
+                        //             items: itemsData.items.map(item => ({
+                        //                 item_id: String(item.variation_id),
+                        //                 item_name: item.product_name,
+                        //                 price: Number(item.unit_price),
+                        //                 quantity: item.quantity,
+                        //             })),
+                        //         });
+                        //     }
+                        // }
                         const purchaseValue = Number(data.total_amount);
-                        const purchaseKey = `meta_purchase_${data.id}`;
+                        const purchaseKey = `purchase_tracked_${data.id}`;
 
-                        console.trace("MY REACT PURCHASE EVENT", {
-                            orderId: data.id,
-                            value: purchaseValue,
-                        });
-
-
-                        if (!purchaseTracked.current && !sessionStorage.getItem(purchaseKey)) {
+                        if (
+                            !purchaseTracked.current &&
+                            !sessionStorage.getItem(purchaseKey)
+                        ) {
                             purchaseTracked.current = true;
 
-                            // ==========================================
-                            // META PIXEL - PURCHASE
-                            // ==========================================
+                            console.trace("MY REACT PURCHASE EVENT", {
+                                orderId: data.id,
+                                value: purchaseValue,
+                            });
+
                             if (typeof window.fbq === "function") {
-                                window.fbq("track", "Purchase", {
-                                    content_ids: itemsData.items.map(item =>
-                                        String(item.variation_id)
-                                    ),
-                                    content_type: "product",
-                                    value: purchaseValue,
-                                    currency: "USD",
-                                });
+                                window.fbq(
+                                    "track",
+                                    "Purchase",
+                                    {
+                                        content_ids: (itemsData.items || []).map(item =>
+                                            String(item.variation_id)
+                                        ),
+                                        content_type: "product",
+                                        value: purchaseValue,
+                                        currency: "USD",
+                                    },
+                                    {
+                                        eventID: `purchase_${data.id}`,
+                                    }
+                                );
+
+                                console.log("META PURCHASE SENT:", data.id);
                             }
 
-                            // ==========================================
-                            // GOOGLE - PURCHASE
-                            // ==========================================
                             if (typeof window.gtag === "function") {
                                 window.gtag("event", "purchase", {
                                     transaction_id: String(data.id),
                                     value: purchaseValue,
                                     currency: "USD",
-                                    items: itemsData.items.map(item => ({
+                                    items: (itemsData.items || []).map(item => ({
                                         item_id: String(item.variation_id),
                                         item_name: item.product_name,
                                         price: Number(item.unit_price),
@@ -100,6 +143,8 @@ const OrderConfirmationPage = () => {
                                     })),
                                 });
                             }
+
+                            sessionStorage.setItem(purchaseKey, "true");
                         }
                     }
 
