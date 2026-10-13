@@ -55,6 +55,11 @@ const OrderConfirmationPage = () => {
 
                     if (itemsRes.ok) {
                         const itemsData = await itemsRes.json();
+                        console.log("Purchase items:", itemsData.items);
+                        console.log(
+                            "Purchase variation IDs:",
+                            itemsData.items.map(item => item.variation_id)
+                        );
 
                         setItems(itemsData.items || []);
 
@@ -69,9 +74,13 @@ const OrderConfirmationPage = () => {
                             // ==========================================
                             if (typeof window.fbq === "function") {
                                 window.fbq("track", "Purchase", {
-                                    content_ids: itemsData.items.map(item =>
-                                        String(item.variation_id)
-                                    ),
+                                    // content_ids: itemsData.items.map(item =>
+                                    //     String(item.variation_id)
+                                    // ),
+                                    content_ids: itemsData.items
+                                        .map(item => item.variation_id)
+                                        .filter(id => id != null && id !== "")
+                                        .map(String),
                                     content_type: "product",
                                     value: purchaseValue,
                                     currency: "USD",
