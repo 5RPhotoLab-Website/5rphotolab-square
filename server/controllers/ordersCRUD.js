@@ -53,11 +53,15 @@ const getOrderItems = async (req, res) => {
             `
             SELECT
                 id,
+                order_id,
+                catalog_item_id,
+                variation_id,
                 product_name,
                 unit_price,
                 quantity,
                 line_total,
-                modifiers
+                modifiers,
+                created_at
             FROM order_items
             WHERE order_id = $1
             ORDER BY id

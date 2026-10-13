@@ -74,13 +74,9 @@ const OrderConfirmationPage = () => {
                             // ==========================================
                             if (typeof window.fbq === "function") {
                                 window.fbq("track", "Purchase", {
-                                    // content_ids: itemsData.items.map(item =>
-                                    //     String(item.variation_id)
-                                    // ),
-                                    content_ids: itemsData.items
-                                        .map(item => item.variation_id)
-                                        .filter(id => id != null && id !== "")
-                                        .map(String),
+                                    content_ids: itemsData.items.map(item =>
+                                        String(item.variation_id)
+                                    ),
                                     content_type: "product",
                                     value: purchaseValue,
                                     currency: "USD",
