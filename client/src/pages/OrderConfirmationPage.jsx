@@ -105,11 +105,6 @@ const OrderConfirmationPage = () => {
                         ) {
                             purchaseTracked.current = true;
 
-                            console.trace("MY REACT PURCHASE EVENT", {
-                                orderId: data.id,
-                                value: purchaseValue,
-                            });
-
                             if (typeof window.fbq === "function") {
                                 window.fbq(
                                     "track",

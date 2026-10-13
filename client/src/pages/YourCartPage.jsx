@@ -65,17 +65,6 @@ const YourCartPage = () => {
                     </div>
 
                     <div className="ml-auto max-w-[26.042vw]">
-                        {/* Quick Actions */}
-                        <div className="flex justify-center gap-10 mt-8">
-                            <button
-                                className='w-[9.844vw] h-[3.5vh] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer'
-                                style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                                onClick={() => navigate('/mail-in')}
-                            >
-                                Add more items
-                            </button>
-                        </div>
-
                         <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.8vw]">
                             <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
                             <p>${orderTotal.toFixed(2)}</p>
@@ -97,11 +86,11 @@ const YourCartPage = () => {
                                 </span>
                             </button>
                             <button
-                                className='px-[1.5vw] py-[0.5vh] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer'
+                                className='w-[9.844vw] py-[0.5vh] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[0.8vw] font-atkinson-regular cursor-pointer'
                                 style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
                                 onClick={() => navigate('/mail-in')}
                             >
-                                Continue Shopping
+                                Add more items
                             </button>
                         </div>
                     </div>
@@ -142,15 +131,25 @@ const YourCartPage = () => {
                 )}
 
                 {/* Quick Actions */}
-                <div className="flex justify-center gap-10 mt-8">
-                    <button
-                        className='w-[189px] h-[35px] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[12px] font-atkinson-regular'
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={() => navigate('/mail-in')}
-                    >
-                        Add more items
-                    </button>
-                </div>
+                    <div className="mt-10 flex justify-between mb-8">
+                        <button
+                            className='w-[55vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[12px] font-atkinson-regular disabled:opacity-50'
+                            style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
+                            onClick={handleCheckout}
+                            disabled={loading || cart.length === 0}
+                        >
+                            <span className='font-atkinson-bold text-white'>
+                                {loading ? "Redirecting..." : "Continue to payment"}
+                            </span>
+                        </button>
+                        <button
+                            className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[12px] font-atkinson-regular'
+                            style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
+                            onClick={() => navigate('/mail-in')}
+                        >
+                            Add more items
+                        </button>
+                    </div>
 
                 <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[14px]">
                     <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
@@ -161,28 +160,6 @@ const YourCartPage = () => {
                 </p>
 
                 <HelpfulInformation />
-
-
-                {/* Checkout Actions */}
-                <div className="mt-4 flex justify-between mb-8">
-                    <button
-                        className='w-[55vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[12px] font-atkinson-regular disabled:opacity-50'
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={handleCheckout}
-                        disabled={loading || cart.length === 0}
-                    >
-                        <span className='font-atkinson-bold text-white'>
-                            {loading ? "Redirecting..." : "Continue to payment"}
-                        </span>
-                    </button>
-                    <button
-                        className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={() => navigate('/mail-in')}
-                    >
-                        Continue Shopping
-                    </button>
-                </div>
 
             </div>
         </div>
