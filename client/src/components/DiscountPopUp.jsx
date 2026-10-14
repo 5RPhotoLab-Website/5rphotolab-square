@@ -3,16 +3,16 @@ import { useState, useEffect } from "react";
 
 
 const DiscountPopUp = () => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
-    // useEffect(() => {
-    //     const hasSeenPopup = localStorage.getItem("discount_popup_seen");
+    useEffect(() => {
+        const hasSeenPopup = localStorage.getItem("discount_popup_seen");
 
-    //     if (!hasSeenPopup) {
-    //         setIsOpen(true);
-    //         localStorage.setItem("discount_popup_seen", "true");
-    //     }
-    // }, []);
+        if (!hasSeenPopup) {
+            setIsOpen(true);
+            localStorage.setItem("discount_popup_seen", "true");
+        }
+    }, []);
 
     if (!isOpen) return null;
     

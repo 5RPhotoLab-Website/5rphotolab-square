@@ -70,8 +70,6 @@ const HomePage = () => {
                         className="absolute left-[70%] top-0  z-0 pointer-events-none w-[50vw]"
                     />
                 </div> */}
-
-                <DiscountPopUp />
             </div>
 
 
@@ -105,9 +103,9 @@ const HomePage = () => {
                 </div>
 
                 <img src={globe} alt="Map" className="w-full relative z-0 mt-10 mb-10" />
-
-                <DiscountPopUp />
             </div>
+
+             <DiscountPopUp />
 
         </div>
 
