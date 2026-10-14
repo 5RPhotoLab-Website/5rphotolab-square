@@ -3,25 +3,41 @@ import { useState, useEffect } from "react";
 
 
 const DiscountPopUp = () => {
+
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        const hasSeenPopup = localStorage.getItem("discount_popup_seen");
+        try {
+            const hasSeenPopup = localStorage.getItem("discount_popup_seen");
 
-        if (!hasSeenPopup) {
+            if (hasSeenPopup !== "true") {
+                setIsOpen(true);
+            }
+        } catch (error) {
+            // Still show the popup if storage is unavailable
             setIsOpen(true);
-            localStorage.setItem("discount_popup_seen", "true");
         }
     }, []);
 
+    const handleClose = () => {
+        setIsOpen(false);
+
+        try {
+            localStorage.setItem("discount_popup_seen", "true");
+        } catch (error) {
+            console.warn("Could not save popup preference:", error);
+        }
+    };
+
+
     if (!isOpen) return null;
-    
+
     return (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-32px)] max-w-[80vw] md:max-w-[18vw] h-[400px] bg-[var(--color-blue)] border-black border-4 flex flex-col items-center justify-center gap-10 z-[9999]">
             {/* Close button */}
             <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="absolute top-3 right-2 cursor-pointer"
                 aria-label="Close discount popup"
             >
