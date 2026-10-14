@@ -1,6 +1,7 @@
 import filmyOnlyIcon from '../assets/homepage/filmyOnlyIcon.svg';
 import globe from '../assets/homepage/globe.svg';
 import { useNavigate } from 'react-router-dom';
+import DiscountPopUp from '../components/DiscountPopUp';
 
 
 const HomePage = () => {
@@ -69,6 +70,8 @@ const HomePage = () => {
                         className="absolute left-[70%] top-0  z-0 pointer-events-none w-[50vw]"
                     />
                 </div> */}
+
+                <DiscountPopUp />
             </div>
 
 
@@ -103,6 +106,7 @@ const HomePage = () => {
 
                 <img src={globe} alt="Map" className="w-full relative z-0 mt-10 mb-10" />
 
+                <DiscountPopUp />
             </div>
 
         </div>
