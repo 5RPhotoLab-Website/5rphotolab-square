@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 
 
 const DiscountPopUp = () => {
-
     const [isOpen, setIsOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+
 
     useEffect(() => {
         try {
@@ -12,15 +13,27 @@ const DiscountPopUp = () => {
 
             if (hasSeenPopup !== "true") {
                 setIsOpen(true);
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setIsVisible(true);
+                    });
+                });
             }
         } catch (error) {
-            // Still show the popup if storage is unavailable
             setIsOpen(true);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setIsVisible(true);
+                });
+            });
         }
     }, []);
 
     const handleClose = () => {
-        setIsOpen(false);
+        // Start fade-out animation
+        setIsVisible(false);
 
         try {
             localStorage.setItem("discount_popup_seen", "true");
@@ -29,11 +42,34 @@ const DiscountPopUp = () => {
         }
     };
 
+    // Remove popup after fade-out finishes
+    const handleTransitionEnd = (event) => {
+        if (
+            event.target === event.currentTarget &&
+            event.propertyName === "opacity" &&
+            !isVisible
+        ) {
+            setIsOpen(false);
+        }
+    };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-32px)] max-w-[80vw] md:max-w-[18vw] h-[400px] bg-[var(--color-blue)] border-black border-4 flex flex-col items-center justify-center gap-10 z-[9999]">
+        // <div className="fixed top-1/2 right-15  -translate-y-1/2 w-[calc(100vw-32px)] max-w-[80vw] md:max-w-[18vw] h-[400px] bg-[var(--color-blue)] border-black border-4 flex flex-col items-center justify-center gap-10 z-[9999]">
+
+        <div
+            onTransitionEnd={handleTransitionEnd}
+            className={`
+                fixed top-1/2 right-15 -translate-y-1/2
+                w-[calc(100vw-32px)] max-w-[80vw] md:max-w-[18vw]
+                h-[400px] bg-[var(--color-blue)]
+                border-black border-4
+                flex flex-col items-center justify-center gap-10
+                z-[9999]
+                transition-opacity duration-1000 ease-in-out
+                ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}
+            `}>
             {/* Close button */}
             <button
                 type="button"
