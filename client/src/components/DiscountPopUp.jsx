@@ -56,12 +56,11 @@ const DiscountPopUp = () => {
     if (!isOpen) return null;
 
     return (
-        // <div className="fixed top-1/2 right-15  -translate-y-1/2 w-[calc(100vw-32px)] max-w-[80vw] md:max-w-[18vw] h-[400px] bg-[var(--color-blue)] border-black border-4 flex flex-col items-center justify-center gap-10 z-[9999]">
-
         <div
             onTransitionEnd={handleTransitionEnd}
             className={`
-                fixed top-1/2 right-15 -translate-y-1/2
+                fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                md:left-auto md:right-10 md:translate-x-0
                 w-[calc(100vw-32px)] max-w-[80vw] md:max-w-[18vw]
                 h-[400px] bg-[var(--color-blue)]
                 border-black border-4
