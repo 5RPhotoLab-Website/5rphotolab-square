@@ -10,20 +10,9 @@ const OrderConfirmationPage = () => {
     const navigate = useNavigate();
     const { sessionId, refreshCart } = useCart();
     const orderId = searchParams.get("orderId");
-    // const isTestMode = searchParams.get("test") === "true";
     const [items, setItems] = useState([]);
     const [order, setOrder] = useState(null);
     const [error, setError] = useState(null);
-
-    const testOrder = {
-        id: 999999,
-        payment_status: "COMPLETED",
-        email: "test@example.com",
-        phone_number: "555-555-5555",
-        total_amount: "42.00",
-        created_at: new Date().toISOString(),
-        square_receipt_url: "http://localhost:5173/",
-    };
 
 
     useEffect(() => {
@@ -57,45 +46,6 @@ const OrderConfirmationPage = () => {
                         const itemsData = await itemsRes.json();
 
                         setItems(itemsData.items || []);
-
-                        // const purchaseValue = Number(data.total_amount);
-                        // const purchaseKey = `meta_purchase_${data.id}`;
-
-
-                        // if (!purchaseTracked.current && !sessionStorage.getItem(purchaseKey)) {
-                        //     purchaseTracked.current = true;
-
-                        //     // ==========================================
-                        //     // META PIXEL - PURCHASE
-                        //     // ==========================================
-                        //     if (typeof window.fbq === "function") {
-                        //         window.fbq("track", "Purchase", {
-                        //             content_ids: itemsData.items.map(item =>
-                        //                 String(item.variation_id)
-                        //             ),
-                        //             content_type: "product",
-                        //             value: purchaseValue,
-                        //             currency: "USD",
-                        //         });
-                        //     }
-
-                        //     // ==========================================
-                        //     // GOOGLE - PURCHASE
-                        //     // ==========================================
-                        //     if (typeof window.gtag === "function") {
-                        //         window.gtag("event", "purchase", {
-                        //             transaction_id: String(data.id),
-                        //             value: purchaseValue,
-                        //             currency: "USD",
-                        //             items: itemsData.items.map(item => ({
-                        //                 item_id: String(item.variation_id),
-                        //                 item_name: item.product_name,
-                        //                 price: Number(item.unit_price),
-                        //                 quantity: item.quantity,
-                        //             })),
-                        //         });
-                        //     }
-                        // }
                         const purchaseValue = Number(data.total_amount);
                         const purchaseKey = `purchase_tracked_${data.id}`;
 
@@ -163,122 +113,6 @@ const OrderConfirmationPage = () => {
         poll();
     }, [orderId, sessionId]);
 
-    // useEffect(() => {
-    //     if (isTestMode) {
-    //         setOrder({
-    //             id: 999999,
-    //             payment_status: "COMPLETED",
-    //             email: "test@example.com",
-    //             phone_number: "555-555-5555",
-    //             total_amount: "42.00",
-    //             created_at: new Date().toISOString(),
-    //             square_receipt_url: "http://localhost:5173/",
-    //         });
-
-    //         setItems([
-    //             {
-    //                 id: 1,
-    //                 product_name: "35mm Film Development",
-    //                 unit_price: "12.00",
-    //                 quantity: 2,
-    //                 line_total: "24.00",
-    //                 modifiers: {
-    //                     "Film Type": {
-    //                         name: "Color",
-    //                         priceAdd: 0,
-    //                     },
-    //                     "Scan Resolution": {
-    //                         name: "High Resolution",
-    //                         priceAdd: 5,
-    //                     },
-    //                 },
-    //             },
-    //             {
-    //                 id: 2,
-    //                 product_name: "Physical Prints",
-    //                 unit_price: "18.00",
-    //                 quantity: 1,
-    //                 line_total: "18.00",
-    //                 modifiers: {
-    //                     "Print Size": {
-    //                         name: "4x6",
-    //                         priceAdd: 0,
-    //                     },
-    //                 },
-    //             },
-    //         ]);
-
-
-    //         return;
-    //     }
-
-    //     if (!orderId || !sessionId) return;
-
-    //     let attempts = 0;
-    //     const maxAttempts = 30;
-
-    //     const poll = async () => {
-    //         try {
-    //             const res = await fetch(
-    //                 `${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}`,
-    //                 {
-    //                     headers: {
-    //                         "x-session-id": sessionId
-    //                     }
-    //                 }
-    //             );
-
-    //             if (!res.ok) {
-    //                 setError("Order not found.");
-    //                 return;
-    //             }
-
-    //             const data = await res.json();
-    //             setOrder(data);
-
-    //             if (
-    //                 data.payment_status === "PAID" ||
-    //                 data.payment_status === "COMPLETED"
-    //             ) {
-    //                 refreshCart();
-
-    //                 const itemsRes = await fetch(
-    //                     `${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/items`,
-    //                     {
-    //                         headers: {
-    //                             "x-session-id": sessionId
-    //                         }
-    //                     }
-    //                 );
-
-    //                 if (itemsRes.ok) {
-    //                     const itemsData = await itemsRes.json();
-
-    //                     setItems(itemsData.items || []);
-
-    //                     // Your tracking code here
-    //                 }
-
-    //                 return;
-    //             }
-
-    //             attempts++;
-
-    //             if (attempts < maxAttempts) {
-    //                 setTimeout(poll, 2000);
-    //             } else {
-    //                 setError(
-    //                     "Your payment is still processing. Please refresh this page in a minute."
-    //                 );
-    //             }
-
-    //         } catch (err) {
-    //             setError("Something went wrong loading your order.");
-    //         }
-    //     };
-
-    //     poll();
-    // }, [orderId, sessionId, isTestMode]);
 
     if (error) return (
         <div className="p-4 mt-10 text-center pt-[25vh] pb-[30vh]">

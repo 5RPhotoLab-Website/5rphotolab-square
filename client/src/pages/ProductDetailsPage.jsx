@@ -148,7 +148,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
     // -----------------------------------------
     // ADD TO CART
     // -----------------------------------------
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!product) return;
 
         // Build modifiers from the currently selected options.
@@ -175,6 +175,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
         const unitPrice = calculateUnitPriceAfterModifiers();
         const lineTotal = unitPrice * quantity;
+        const metaEventId = crypto.randomUUID();
 
         const cartProduct = {
             product_id: product.id,
@@ -185,10 +186,16 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
             quantity,
             modifiers,
             variation_id: product.variationId,
+            metaEventId,
         };
 
         // Add to your actual cart
-        addProduct(cartProduct);
+        const added = await addProduct(cartProduct);
+
+        if (!added) {
+            console.error("Product was not added to cart");
+            return;
+        }
 
         // ==========================================
         // META PIXEL - ADD TO CART
@@ -202,7 +209,9 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                 content_type: "product",
                 value: lineTotal.toFixed(2),
                 currency: "USD",
-            });
+            },
+                { eventID: metaEventId }
+            );
         }
 
         // ==========================================
@@ -403,8 +412,8 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                         >
                             <span
                                 className={`font-atkinson-bold ${isAdded
-                                        ? 'text-[var(--color-blue)]'
-                                        : 'text-black'
+                                    ? 'text-[var(--color-blue)]'
+                                    : 'text-black'
                                     }`}
                             >
                                 {isAdded ? "ADDED TO CART" : "ADD TO CART"}
