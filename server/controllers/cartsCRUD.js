@@ -1,6 +1,7 @@
 // server/controllers/cartsCRUD.js
 import { pool } from "../config/database.js";
 import { v4 as uuidv4 } from "uuid";
+import { sendMetaEvent } from "../services/metaConversions.js";
 
 // Helper: get or create cart by session_id
 const getOrCreateCart = async (session_id) => {
@@ -63,7 +64,7 @@ const addProductToCart = async (req, res) => {
 
     const cart = await getOrCreateCart(session_id);
 
-    const { product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers, variation_id } = req.body;
+    const { product_id, name, quantity, catalogPrice, unitPrice, imageUrl, modifiers, variation_id, metaEventId } = req.body;
     if (!product_id || !quantity || !catalogPrice || !name || !unitPrice || !imageUrl || !modifiers || !variation_id) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -95,6 +96,32 @@ const addProductToCart = async (req, res) => {
        RETURNING *`,
       [{ products }, cart.id]
     );
+
+
+    if (
+      Number(quantity) > 0 &&
+      typeof metaEventId === "string" &&
+      /^[a-zA-Z0-9_-]{1,100}$/.test(metaEventId)
+    ) {
+      void sendMetaEvent({
+        eventName: "AddToCart",
+        eventId: metaEventId,
+
+        // No email available at this stage.
+        email: null,
+
+        value: Number(unitPrice) * Number(quantity),
+        currency: "USD",
+        contentIds: [variation_id],
+
+        clientIp: req.ip,
+        userAgent: req.headers["user-agent"],
+        eventSourceUrl: req.get("origin") || undefined,
+      }).catch((error) => {
+        console.error("META ADD TO CART ERROR:", error);
+      });
+    }
+
 
     res.status(201).json({ cart: updatedCart.rows[0] });
   } catch (error) {

@@ -38,8 +38,34 @@ export const CartProvider = ({ children }) => {
     }, [sessionId]);
 
     // Add or update a product
+    // const addProduct = async (product) => {
+    //     if (!sessionId) return;
+
+    //     try {
+    //         const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "x-session-id": sessionId,
+    //             },
+    //             body: JSON.stringify(product),
+    //         });
+
+    //         if (res.ok) {
+    //             const data = await res.json();
+
+    //             // ✅ Replace entire cart from backend
+    //             setCart(data.cart.cart_data.products || []);
+    //         }
+    //     } catch (err) {
+    //         console.error("Failed to add product:", err);
+    //     }
+    // };
+
     const addProduct = async (product) => {
-        if (!sessionId) return;
+        if (!sessionId) {
+            return false;
+        }
 
         try {
             const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
@@ -51,16 +77,23 @@ export const CartProvider = ({ children }) => {
                 body: JSON.stringify(product),
             });
 
-            if (res.ok) {
-                const data = await res.json();
-
-                // ✅ Replace entire cart from backend
-                setCart(data.cart.cart_data.products || []);
+            if (!res.ok) {
+                console.error("Failed to add product:", res.status);
+                return false;
             }
+
+            const data = await res.json();
+
+            setCart(data.cart?.cart_data?.products || []);
+
+            return true;
+
         } catch (err) {
             console.error("Failed to add product:", err);
+            return false;
         }
     };
+
 
     const refreshCart = async () => {
         if (!sessionId) return;
@@ -77,7 +110,7 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-     // Remove a product
+    // Remove a product
     const removeProduct = async (product_id, modifiers) => {
         if (!sessionId) return;
 
