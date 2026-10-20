@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import navTitle from '../assets/navbar/navTitle.svg';
+import navTitleVector from '../assets/navbar/navTitleVector.svg';
 import cartIcon from '../assets/navbar/cartIcon.svg';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from '../context/CartContext';
@@ -20,8 +21,13 @@ const NavMobileLayout = ({ products, colorProducts, merchandiseProducts }) => {
       {/* Mobile */}
       <div className="p-2">
         <div className='relative flex justify-center p-2'>
-          <img
+          {/* <img
             src={navTitle}
+            className={isHome ? "pt-2" : ""}
+            alt="5R Photo Lab"
+          /> */}
+          <img
+            src={navTitleVector}
             className={isHome ? "pt-2" : ""}
             alt="5R Photo Lab"
           />

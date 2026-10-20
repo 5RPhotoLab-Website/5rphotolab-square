@@ -1,4 +1,5 @@
 import navTitle from '../assets/navbar/navTitle.svg';
+import navTitleVector from '../assets/navbar/navTitleVector.svg';
 import cartIcon from '../assets/navbar/cartIcon.svg';
 import { useNavigate } from "react-router-dom";
 import { useCart } from '../context/CartContext';
@@ -21,7 +22,9 @@ const NavDesktopLayout = ({ products, colorProducts, merchandiseProducts }) => {
                 <div className="relative w-full max-w-[40vw] flex flex-col items-center">
 
                     <div className="relative w-full flex justify-center">
-                        <img src={navTitle} alt="5R Photo Lab" className="w-[24vw]"/>
+                        {/* <img src={navTitle} alt="5R Photo Lab" className="w-[24vw]"/> */}
+                        <img src={navTitleVector} alt="5R Photo Lab" className="w-[24vw]"/>
+
 
                         <button
                             className="absolute -right-[2.9vw] -bottom-[1vw] cursor-pointer"

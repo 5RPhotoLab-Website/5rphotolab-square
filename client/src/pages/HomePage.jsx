@@ -1,4 +1,6 @@
+import filmyOnlyIconVector from '../assets/homepage/filmyOnlyIconVector.svg';
 import filmyOnlyIcon from '../assets/homepage/filmyOnlyIcon.svg';
+
 import globe from '../assets/homepage/globe.svg';
 import { useNavigate } from 'react-router-dom';
 import DiscountPopUp from '../components/DiscountPopUp';
@@ -23,11 +25,9 @@ const HomePage = () => {
 
                         <div className="flex items-center mt-4 gap-[1.5vw] w-[26vw]">
 
-                            <img
-                                src={filmyOnlyIcon}
-                                alt="Filmy Icon"
-                                className="shrink-0"
-                            />
+                            {/* <img src={filmyOnlyIcon} alt="Filmy Icon" /> */}
+                            <img src={filmyOnlyIconVector} alt="Filmy Icon" className='w-[9vw]' />
+
 
                             <p className="flex-1 min-w-0 font-atkinson-bold text-[0.75vw] tracking-wider text-left leading-[1.6rem]">
                                 5R Photo Lab processes C-41 color and B&W
@@ -78,7 +78,8 @@ const HomePage = () => {
                 <div className=' relative w-[92vw] border-4 rounded-[10px] flex flex-col items-center mt-4 bg-[var(--color-white)]' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>
                     <button className='max-w-full px-[6vw] py-1 border-4 rounded-[10px] font-atkinson-bold text-[20px] bg-[var(--color-yellow)] mt-3 tracking-wider' style={{ boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)" }}>EXPERT FILM SERVICES<br />PRO DEVELOP AND SCAN<br />BOUTIQUE EXPERIENCE</button>
                     <div className='flex justify-between items-center mt-4 gap-4'>
-                        <img src={filmyOnlyIcon} alt="Filmy Icon" className='w-[88px] h-[88px] mb-2' />
+                        <img src={filmyOnlyIconVector} alt="Filmy Icon" className='w-[28vw] mb-2' />
+                        {/* <img src={filmyOnlyIcon} alt="Filmy Icon" className='w-[88px] h-[88px] mb-2' /> */}
                         <p className='font-atkinson-bold text-[10px] tracking-wider text-left w-[240px] leading-4.5 mb-2'>
                             5R Photo Lab processes C-41 color and B&W film in 35mm, 120, 110, APS, and disposable cameras, offering digital files and prints. We digitize old negatives, slides, and photos. And yes, 5R Photo Lab sells film! </p>
                     </div>
@@ -105,7 +106,7 @@ const HomePage = () => {
                 <img src={globe} alt="Map" className="w-full relative z-0 mt-10 mb-10" />
             </div>
 
-             <DiscountPopUp />
+            <DiscountPopUp />
 
         </div>
 
