@@ -3,6 +3,7 @@ import { squareClient, squareEnv } from "../config/square.js";
 import { randomUUID } from "crypto";
 import { sendOrderConfirmation, sendAdminNotification } from "./emailService.js";
 import { getValidatedDiscount } from "./discountsSquare.js";
+import { sendMetaEvent } from "../services/metaConversions.js";
 
 
 // GET /orders/:orderId PAYMENTS API
@@ -519,6 +520,7 @@ const payOrder = async (req, res) => {
 
             localOrder = finalOrderResult.rows[0];
 
+
             //
             // Empty cart
             //
@@ -536,6 +538,41 @@ const payOrder = async (req, res) => {
         } catch (err) {
             await client.query("ROLLBACK");
             throw err;
+        }
+
+        // ==========================================
+        // META CONVERSIONS API - PURCHASE
+        // ==========================================
+
+        if (payment.status === "COMPLETED") {
+            const purchaseEventId = `purchase_${localOrder.id}`;
+
+            void sendMetaEvent({
+                eventName: "Purchase",
+                eventId: purchaseEventId,
+
+                // Customer information
+                email,
+                phone: phone_number,
+
+                // Purchase information
+                value: Number(localOrder.total_amount),
+                currency: "USD",
+                contentIds: products.map((product) =>
+                    String(product.variation_id)
+                ),
+
+                // Matching information
+                clientIp: req.ip,
+                userAgent: req.headers["user-agent"],
+
+                eventSourceUrl: process.env.FRONTEND_URL
+                    ? `${process.env.FRONTEND_URL}/order/confirmation?orderId=${localOrder.id}`
+                    : undefined,
+
+            }).catch((error) => {
+                console.error("META PURCHASE CAPI ERROR:", error);
+            });
         }
 
 

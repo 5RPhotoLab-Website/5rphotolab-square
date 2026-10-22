@@ -12,10 +12,31 @@ const hashEmail = (email) => {
         .digest("hex");
 };
 
+
+const hashPhone = (phone) => {
+    if (!phone || typeof phone !== "string") return null;
+
+    let normalized = phone.replace(/\D/g, "");
+
+    if (normalized.length === 10) {
+        normalized = `1${normalized}`;
+    }
+
+    if (!/^\d{11}$/.test(normalized) || !normalized.startsWith("1")) {
+        return null;
+    }
+
+    return createHash("sha256")
+        .update(normalized)
+        .digest("hex");
+};
+
+
 export const sendMetaEvent = async ({
     eventName,
     eventId,
     email,
+    phone,
     value,
     currency = "USD",
     contentIds = [],
@@ -32,9 +53,11 @@ export const sendMetaEvent = async ({
     }
 
     const emailHash = hashEmail(email);
+    const phoneHash = hashPhone(phone);
 
     const userData = {
         ...(emailHash ? { em: [emailHash] } : {}),
+        ...(phoneHash ? { ph: [phoneHash] } : {}),
         ...(clientIp ? { client_ip_address: clientIp } : {}),
         ...(userAgent ? { client_user_agent: userAgent } : {}),
     };
