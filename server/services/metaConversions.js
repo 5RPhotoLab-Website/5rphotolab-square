@@ -1,17 +1,17 @@
 
 import { createHash, createHmac } from "node:crypto";
 
-// const hashExternalId = (sessionId) => {
-//     if (!sessionId || typeof sessionId !== "string") return null;
+const hashExternalId = (sessionId) => {
+    if (!sessionId || typeof sessionId !== "string") return null;
 
-//     const secret = process.env.META_EXTERNAL_ID_SECRET;
+    const secret = process.env.META_EXTERNAL_ID_SECRET;
 
-//     if (!secret) return null;
+    if (!secret) return null;
 
-//     return createHmac("sha256", secret)
-//         .update(sessionId)
-//         .digest("hex");
-// };
+    return createHmac("sha256", secret)
+        .update(sessionId)
+        .digest("hex");
+};
 
 const hashEmail = (email) => {
     if (!email || typeof email !== "string") return null;
@@ -47,11 +47,13 @@ const hashPhone = (phone) => {
 export const sendMetaEvent = async ({
     eventName,
     eventId,
+    sessionId,
     email,
     phone,
     value,
     currency = "USD",
     contentIds = [],
+    contentName,
     clientIp,
     userAgent,
     eventSourceUrl,
@@ -68,10 +70,12 @@ export const sendMetaEvent = async ({
 
     const emailHash = hashEmail(email);
     const phoneHash = hashPhone(phone);
+    const externalId = hashExternalId(sessionId);
 
     const userData = {
         ...(emailHash ? { em: [emailHash] } : {}),
         ...(phoneHash ? { ph: [phoneHash] } : {}),
+        ...(externalId ? { external_id: [externalId] } : {}),
         ...(clientIp ? { client_ip_address: clientIp } : {}),
         ...(userAgent ? { client_user_agent: userAgent } : {}),
         ...(fbp ? { fbp } : {}),
@@ -101,6 +105,7 @@ export const sendMetaEvent = async ({
                     content_type: "product",
                 }
                 : {}),
+            ...(contentName ? { content_name: contentName } : {}),
         },
     };
 
