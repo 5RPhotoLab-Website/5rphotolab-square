@@ -1,5 +1,17 @@
 
-import { createHash } from "node:crypto";
+import { createHash, createHmac } from "node:crypto";
+
+// const hashExternalId = (sessionId) => {
+//     if (!sessionId || typeof sessionId !== "string") return null;
+
+//     const secret = process.env.META_EXTERNAL_ID_SECRET;
+
+//     if (!secret) return null;
+
+//     return createHmac("sha256", secret)
+//         .update(sessionId)
+//         .digest("hex");
+// };
 
 const hashEmail = (email) => {
     if (!email || typeof email !== "string") return null;
@@ -43,6 +55,8 @@ export const sendMetaEvent = async ({
     clientIp,
     userAgent,
     eventSourceUrl,
+    fbp,
+    fbc,
 }) => {
     const pixelId = process.env.META_PIXEL_ID;
     const accessToken = process.env.META_CAPI_ACCESS_TOKEN;
@@ -60,6 +74,8 @@ export const sendMetaEvent = async ({
         ...(phoneHash ? { ph: [phoneHash] } : {}),
         ...(clientIp ? { client_ip_address: clientIp } : {}),
         ...(userAgent ? { client_user_agent: userAgent } : {}),
+        ...(fbp ? { fbp } : {}),
+        ...(fbc ? { fbc } : {}),
     };
 
     if (Object.keys(userData).length === 0) {
@@ -128,6 +144,7 @@ export const sendMetaEvent = async ({
         eventId,
         eventsReceived: result.events_received,
     });
+
 
     return result;
 };
