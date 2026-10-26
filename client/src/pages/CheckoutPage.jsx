@@ -522,6 +522,8 @@ export default function CheckoutPage() {
                     },
                     notes,
                     discountCode: appliedDiscount?.code || null,
+                    fbp: getCookie("_fbp"),
+                    fbc: getCookie("_fbc"),
                 })
             });
 
@@ -560,6 +562,16 @@ export default function CheckoutPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getCookie = (name) => {
+        const match = document.cookie
+            .split("; ")
+            .find((cookie) => cookie.startsWith(`${name}=`));
+
+        return match
+            ? decodeURIComponent(match.substring(name.length + 1))
+            : undefined;
     };
 
     const handleApplePay = async () => {
@@ -699,12 +711,6 @@ export default function CheckoutPage() {
                 }
             };
 
-            // const verificationResult =
-            //     await paymentsRef.current.verifyBuyer(
-            //         result.token,
-            //         verificationDetails
-            //     );
-
             let verificationResult;
 
             try {
@@ -770,6 +776,8 @@ export default function CheckoutPage() {
 
                         notes,
                         discountCode: appliedDiscount?.code || null,
+                        fbp: getCookie("_fbp"),
+                        fbc: getCookie("_fbc"),
                     })
                 }
             );

@@ -112,7 +112,7 @@ const payOrder = async (req, res) => {
 
     try {
         const session_id = req.headers["x-session-id"];
-        const { sourceId, verificationToken, full_name, email, billing, shipping, phone_number, notes, discountCode } = req.body;
+        const { sourceId, verificationToken, full_name, email, billing, shipping, phone_number, notes, discountCode, fbp, fbc } = req.body;
 
         if (!email?.trim()) {
             return res.status(400).json({
@@ -565,6 +565,9 @@ const payOrder = async (req, res) => {
                 // Matching information
                 clientIp: req.ip,
                 userAgent: req.headers["user-agent"],
+
+                fbp,
+                fbc,
 
                 eventSourceUrl: process.env.FRONTEND_URL
                     ? `${process.env.FRONTEND_URL}/order/confirmation?orderId=${localOrder.id}`
