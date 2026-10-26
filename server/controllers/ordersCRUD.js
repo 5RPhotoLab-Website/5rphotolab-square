@@ -550,6 +550,7 @@ const payOrder = async (req, res) => {
             void sendMetaEvent({
                 eventName: "Purchase",
                 eventId: purchaseEventId,
+                sessionId: session_id,
 
                 // Customer information
                 email,

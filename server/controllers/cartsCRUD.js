@@ -105,7 +105,9 @@ const addProductToCart = async (req, res) => {
     ) {
       void sendMetaEvent({
         eventName: "AddToCart",
+        contentName: name,
         eventId: metaEventId,
+        sessionId: session_id,
 
         // No email available at this stage.
         email: null,
