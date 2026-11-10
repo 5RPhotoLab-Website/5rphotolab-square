@@ -15,6 +15,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [selected, setSelected] = useState({});
+    const [showNegativesError, setShowNegativesError] = useState(false);
 
 
     // -----------------------------------------
@@ -100,9 +101,18 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
 
         const initial = {};
 
+        // product.modifiers?.forEach(group => {
+        //     initial[group.listName] =
+        //         group.choices?.[0]?.name ?? null;
+        // });
         product.modifiers?.forEach(group => {
-            initial[group.listName] =
-                group.choices?.[0]?.name ?? null;
+            const isSaveNegatives =
+                group.listName?.trim().toLowerCase() ===
+                "save my negatives";
+
+            initial[group.listName] = isSaveNegatives
+                ? null
+                : group.choices?.[0]?.name ?? null;
         });
 
         // TYPE is based on the product name
@@ -116,6 +126,21 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
         setSelected(initial);
 
     }, [product, productType]);
+
+    useEffect(() => {
+        const negativesGroup = product?.modifiers?.find(
+            group =>
+                group.listName?.trim().toLowerCase() ===
+                "save my negatives"
+        );
+
+        if (
+            negativesGroup &&
+            selected[negativesGroup.listName]
+        ) {
+            setShowNegativesError(false);
+        }
+    }, [selected, product]);
 
 
     // -----------------------------------------
@@ -150,6 +175,20 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
     // -----------------------------------------
     const handleAddToCart = async () => {
         if (!product) return;
+
+        const saveNegativesGroup = product.modifiers?.find(
+            group => group.listName?.trim().toLowerCase() === "save my negatives"
+        );
+
+        if (
+            saveNegativesGroup &&
+            !selected[saveNegativesGroup.listName]
+        ) {
+            setShowNegativesError(true);
+            return;
+        }
+
+        setShowNegativesError(false);
 
         // Build modifiers from the currently selected options.
         const modifiers = {};
@@ -293,6 +332,14 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                                 Continue Shopping
                             </button>
                         </div>
+                        {showNegativesError && (
+                            <p
+                                role="alert"
+                                className="text-red-500 font-atkinson-bold text-[0.8vw] mt-3"
+                            >
+                                * Please select Yes or No for Save My Negatives.
+                            </p>
+                        )}
 
                         <div className="w-full mt-8">
                             <HelpfulInformation page="product-details" product={product} />
@@ -319,6 +366,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                                 modifierGroup={modifierGroup}
                                 selected={selected}
                                 setSelected={setSelected}
+                                showError={showNegativesError}
                             />
                         ))}
                     </div>
@@ -345,20 +393,6 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                     </div>
                 </div>
 
-                {/* <div className="mt-8 flex justify-between mb-8">
-                    <button
-                        className={`w-[55vw] h-[35px] border-4 rounded-[10px] tracking-wider text-[12px] font-atkinson-regular space-x-3 ${isAdded ? 'bg-white' : 'bg-[var(--color-blue)]'}`}
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={handleAddToCart}
-                    >
-                        <span className={`font-atkinson-bold ${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>{isAdded ? "ADDED TO CART" : "ADD TO CART"}</span>
-                        <span className={`${isAdded ? 'text-[var(--color-blue)]' : 'text-black'}`}>${calculateLineTotal().toFixed(2)}</span>
-                    </button>
-                    <button className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[#CECECE] tracking-wider text-[12px] font-atkinson-regular'
-                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                        onClick={() => navigate('/mail-in')}>Continue Shopping</button>
-                </div> */}
-
 
                 {productType && (
                     <OptionGroup
@@ -378,6 +412,7 @@ const ProductDetailsPage = ({ products, merchandiseProducts }) => {
                         modifierGroup={modifierGroup}
                         selected={selected}
                         setSelected={setSelected}
+                        showError={showNegativesError}
                     />
                 ))}
 

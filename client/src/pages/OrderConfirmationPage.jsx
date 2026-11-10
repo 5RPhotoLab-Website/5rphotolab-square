@@ -64,6 +64,9 @@ const OrderConfirmationPage = () => {
                                             String(item.variation_id)
                                         ),
                                         content_type: "product",
+                                        content_name: (itemsData.items || []).map(item =>
+                                            String(item.product_name)
+                                        ).join(", "),
                                         value: purchaseValue,
                                         currency: "USD",
                                     },
