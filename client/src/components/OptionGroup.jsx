@@ -4,8 +4,10 @@ const OptionGroup = ({
     selected,
     setSelected,
     switchProductType,
-    isProductType = false
+    isProductType = false,
+    showError = false
 }) => {
+    const isRequired = modifierGroup?.listName?.trim().toLowerCase() === "save my negatives";
 
     const options = modifierGroup?.choices || [];
 
@@ -23,10 +25,15 @@ const OptionGroup = ({
         const isSelected =
             selected[modifierGroup.listName] === option.name;
 
+        // setSelected(prev => ({
+        //     ...prev,
+        //     [modifierGroup.listName]:
+        //         isSelected ? null : option.name
+        // }));
         setSelected(prev => ({
             ...prev,
             [modifierGroup.listName]:
-                isSelected ? null : option.name
+                isRequired ? option.name : (isSelected ? null : option.name)
         }));
     };
 
@@ -55,10 +62,16 @@ const OptionGroup = ({
                     <div
                         key={option.name}
                         onClick={() => handleClick(option)}
-                        className={`border-4 rounded-[10px] text-center py-1 px-3 cursor-pointer transition ${isSelected
-                            ? "bg-[var(--color-green)]"
-                            : "bg-white"
-                            }`}
+                        className={`border-4 rounded-[10px] text-center py-1 px-3 cursor-pointer transition
+                            ${isRequired && showError
+                                ? "border-red-500"
+                                : "border-black"
+                            }
+                            ${isSelected
+                                ? "bg-[var(--color-green)]"
+                                : "bg-white"
+                            }
+                        `}
                         style={{
                             boxShadow:
                                 "0px 4px 0px rgba(33, 31, 34, 1)"
@@ -102,6 +115,11 @@ const OptionGroup = ({
                 <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.8vw] tracking-wider mt-5 uppercase">
                     {title}
                     {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
+                    {isRequired && (
+                        <span className="text-red-500 ml-2">
+                            <br />* REQUIRED
+                        </span>
+                    )}
                 </h1>
 
                 {renderOptions(false)}
@@ -115,9 +133,22 @@ const OptionGroup = ({
                 <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[12px] tracking-wider mt-5 uppercase">
                     {title}
                     {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
+                    {isRequired && (
+                        <span className="text-red-500 ml-2">
+                            <br />* REQUIRED
+                        </span>
+                    )}
                 </h1>
 
                 {renderOptions(true)}
+                {isRequired && showError && (
+                    <p
+                        role="alert"
+                        className="text-red-500 font-atkinson-bold text-[12px] mt-3"
+                    >
+                        * Please select Yes or No before adding to cart.
+                    </p>
+                )}
 
             </div>
         </>
