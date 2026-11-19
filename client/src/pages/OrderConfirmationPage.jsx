@@ -190,9 +190,53 @@ const OrderConfirmationPage = () => {
 
 
 
-                    <div className="flex justify-between mt-6">
-                        <span>Total</span>
-                        <span className="text-[var(--color-pink)] font-atkinson-bold">${parseFloat(order.total_amount).toFixed(2)}</span>
+                    <div className="mt-6">
+                        {/* Subtotal */}
+                        <div className="flex justify-between mb-2">
+                            <span>Subtotal</span>
+                            <span>
+                                ${Number(order.subtotal_amount || 0).toFixed(2)}
+                            </span>
+                        </div>
+                        {/* Return Shipping */}
+                        {Number(order.shipping_amount) > 0 && (
+                            <div className="flex justify-between mb-2">
+                                <span>Shipping to You</span>
+                                <span>
+                                    ${Number(order.shipping_amount).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Discount */}
+                        {Number(order.discount_amount) > 0 && (
+                            <div className="flex justify-between mb-2">
+                                <span>Discount</span>
+                                <span>
+                                    -${Number(order.discount_amount).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* NY Sales Tax */}
+                        {Number(order.tax_amount) > 0 && (
+                            <div className="flex justify-between mb-2">
+                                <span>NY Sales Tax (8.875%)</span>
+                                <span>
+                                    ${Number(order.tax_amount).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Total */}
+                        <div className="border-t border-[#CECECE] pt-2 flex justify-between font-atkinson-bold">
+                            <span>Total</span>
+                            <span className="text-[var(--color-pink)]">
+                                ${Number(order.total_amount).toFixed(2)}
+                            </span>
+                        </div>
+                        {/* <span>Total</span>
+                        <span className="text-[var(--color-pink)] font-atkinson-bold">${parseFloat(order.total_amount).toFixed(2)}</span> */}
                     </div>
 
 
@@ -253,7 +297,7 @@ const OrderConfirmationPage = () => {
                     <OrderedConfirmationItems items={items} />
 
 
-                    <div className="flex justify-between mt-6">
+                    <div className="mt-6">
                         {/* Subtotal */}
                         <div className="flex justify-between mb-2">
                             <span>Subtotal</span>
@@ -264,7 +308,7 @@ const OrderConfirmationPage = () => {
                         {/* Return Shipping */}
                         {Number(order.shipping_amount) > 0 && (
                             <div className="flex justify-between mb-2">
-                                <span>Return Shipping</span>
+                                <span>Shipping to You</span>
                                 <span>
                                     ${Number(order.shipping_amount).toFixed(2)}
                                 </span>
