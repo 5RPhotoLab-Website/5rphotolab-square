@@ -19,7 +19,7 @@ const emailHtml = (receiptUrl) => `
                 <p>
                     <a href="${receiptUrl}" style="font-size: 14px;">View your receipt</a>
                 </p>
-            ` : "" }
+            ` : ""}
             <p style="font-size: 14px; color: #000000;">
                 Greetings!
             </p>
@@ -34,9 +34,15 @@ const emailHtml = (receiptUrl) => `
             </p>
             <p style="font-size: 14px; color: #000000;">
                 5R Photo Lab<br>
-                31 Washington Square West<br>
-                Suite 3R-C<br>
-                New York, NY 10011
+                <a
+                    href="https://www.google.com/maps/search/?api=1&amp;query=31+Washington+Square+West+Suite+3R-C+New+York+NY+10011"
+                    target="_blank"
+                    style="color: #000000 !important; text-decoration: underline !important; font-size: 14px;"
+                >
+                    31 Washington Square West<br>
+                    Suite 3R-C<br>
+                    New York, NY 10011
+                </a>
             </p>
             <p style="font-size: 14px; color: #000000;">
                 You can use any carrier you like, but please choose a service that provides a tracking number—it’s worth the peace of mind. Most of your fellow mail-in customers choose USPS Ground Advantage, but that’s not always the best fit for everyone. For our own shipping, we use Pirate Ship, which makes it easy to compare different options and offers discounts. 
@@ -48,7 +54,7 @@ const emailHtml = (receiptUrl) => `
             <p style="font-size: 14px; color: #000000;">
                 3. Look out for an email from WeTransfer! You’ll see a link to download your scans—the link lasts a year from the date we send it to you. WeTransfer offers a mobile app, but we recommend using a desktop browser. It’s also nice to have your photos in a more permanent place than your phone! </p>
             <p style="font-size: 14px; color: #000000;">
-                4. If you ordered prints or requested negatives, we’ll box them up and send you an invoice for the cost of shipping only. Please confirm your address once you receive the scans. Once you pay the invoice, we take your shipment to the post office. We normally ship your prints and negatives within a week of sending your scans. </p>
+                4. If you ordered prints or requested negatives, please confirm your address once you receive the scans. We normally ship your prints and negatives within a week of sending your scans. </p>
             <p style="font-size: 14px; color: #000000;">
                 5. If your roll is blank, you’ll receive a $10 credit towards your next order. 5R Photo Lab does not offer refunds. </p>
             <p style="font-size: 14px; color: #000000;">

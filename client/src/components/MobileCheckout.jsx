@@ -11,7 +11,9 @@ import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
 
 const MobileCheckout = ({
     cart,
-    checkoutTotal, estimatedTax,
+    checkoutTotal, 
+    total,
+    estimatedTax,
     shippingFee,
 
     orderSummaryOpen,
@@ -79,7 +81,7 @@ const MobileCheckout = ({
             {/* Order Summary */}
             <OrderSummaryAccordion
                 cart={cart}
-                total={discountedTotal}
+                total={total}
                 isOpen={orderSummaryOpen}
                 onToggle={() =>
                     setOrderSummaryOpen((prev) => !prev)
@@ -347,7 +349,7 @@ const MobileCheckout = ({
                     {/* Original subtotal */}
                     <div className="flex justify-between">
                         <span>Subtotal</span>
-                        <span>${discountedTotal.toFixed(2)}</span>
+                        <span>${total.toFixed(2)}</span>
                     </div>
 
                     {shippingFee > 0 && (

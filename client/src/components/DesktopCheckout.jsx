@@ -7,7 +7,7 @@ import notesIcon from "../assets/checkout/notesIcon.svg";
 import applePayIcon from "../assets/checkout/applePayIcon.svg";
 import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
 
-const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, shippingFee, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass }) => {
+const DesktopCheckout = ({ cart, checkoutTotal, total, estimatedTax, shippingFee, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass }) => {
     const { fullName, setFullName, phoneNumber, setPhoneNumber, email, setEmail } = contact;
 
     const { billing, setBilling } = billingData;
@@ -23,7 +23,7 @@ const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, shippingFee, order
             {/* Order Summary */}
             <OrderSummaryAccordion
                 cart={cart}
-                total={discountedTotal}
+                total={total}
                 isOpen={orderSummaryOpen}
                 onToggle={() =>
                     setOrderSummaryOpen((prev) => !prev)
@@ -254,7 +254,7 @@ const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, shippingFee, order
                 {/* Original subtotal */}
                 <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${discountedTotal.toFixed(2)}</span>
+                    <span>${total.toFixed(2)}</span>
                 </div>
 
                 {shippingFee > 0 && (

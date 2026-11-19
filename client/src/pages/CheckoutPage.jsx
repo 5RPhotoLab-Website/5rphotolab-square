@@ -834,7 +834,7 @@ export default function CheckoutPage({ merchandiseProducts }) {
     const shippingData = { shipping, setShipping, shippingRequired, mailingSameAsBilling, setMailingSameAsBilling };
     const payment = { cardRef, cardReady, applePayReady, loading, handlePay, handleApplePay };
     const discount = { discountCode, setDiscountCode, discountAmount, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal };
-    const checkoutProps = { cart, checkoutTotal, estimatedTax, shippingFee, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
+    const checkoutProps = { cart, checkoutTotal, total, estimatedTax, shippingFee, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
 
     return (
         <>
