@@ -480,7 +480,9 @@ const payOrder = async (req, res) => {
                     ...(hasDiscount
                         ? {
                             blockedDiscounts: [{
-                                discountUid: "checkout-discount"
+                                // discountUid: "checkout-discount"
+                                discountCatalogObjectId:
+                                    verifiedDiscount.catalogDiscountId
                             }]
                         }
                         : {})
