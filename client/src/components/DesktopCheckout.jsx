@@ -7,12 +7,12 @@ import notesIcon from "../assets/checkout/notesIcon.svg";
 import applePayIcon from "../assets/checkout/applePayIcon.svg";
 import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
 
-const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass }) => {
+const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, shippingFee, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass }) => {
     const { fullName, setFullName, phoneNumber, setPhoneNumber, email, setEmail } = contact;
 
     const { billing, setBilling } = billingData;
 
-    const { shipping, setShipping, shippingRequested, setShippingRequested, mailingSameAsBilling, setMailingSameAsBilling } = shippingData;
+    const { shipping, setShipping, shippingRequired, mailingSameAsBilling, setMailingSameAsBilling } = shippingData;
 
     const { cardRef, cardReady, applePayReady, loading, handlePay, handleApplePay } = payment;
 
@@ -23,9 +23,7 @@ const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpen, 
             {/* Order Summary */}
             <OrderSummaryAccordion
                 cart={cart}
-                total={checkoutTotal}
-                discountedTotal={discountedTotal}
-                estimatedTax={estimatedTax}
+                total={discountedTotal}
                 isOpen={orderSummaryOpen}
                 onToggle={() =>
                     setOrderSummaryOpen((prev) => !prev)
@@ -236,49 +234,20 @@ const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpen, 
                 fieldClass={fieldClass}
             />
 
-
-            {/* Shipping */}
-            <div className="mt-8">
-
-                <label className="flex items-center gap-3 text-[0.75vw] font-atkinson-regular tracking-widest">
-
-                    <input
-                        type="checkbox"
-                        checked={shippingRequested}
-                        onChange={(e) =>
-                            setShippingRequested(
-                                e.target.checked
-                            )
-                        }
-                        className="appearance-none w-[1.5vw] h-[3vh] border-2 border-black rounded-[6px] bg-[#F5F5F5] checked:bg-[var(--color-pink)] checked:border-black relative cursor-pointer after:content-['✓'] after:absolute after:text-black after:text-[16px] after:font-bold after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:opacity-0 checked:after:opacity-100"
-                        style={{
-                            boxShadow:
-                                "0px 4px 0px rgba(0, 0, 0, 1)",
-                        }}
-                    />
-
-                    Ship my prints/negatives
-
-                </label>
-
-
-                {shippingRequested && (
+            {/* Shipping Address */}
+            {shippingRequired && (
+                <div className="mt-8">
                     <ShippingAddress
                         shipping={shipping}
                         setShipping={setShipping}
-                        shippingRequested={shippingRequested}
-                        setShippingRequested={setShippingRequested}
                         mailingSameAsBilling={mailingSameAsBilling}
-                        setMailingSameAsBilling={
-                            setMailingSameAsBilling
-                        }
+                        setMailingSameAsBilling={setMailingSameAsBilling}
                         billing={billing}
                         fieldClass={fieldClass}
                         submitted={submitted}
                     />
-                )}
-
-            </div>
+                </div>
+            )}
 
 
             <div className="mt-15 space-y-2 text-[0.75vw] tracking-widest font-atkinson-regular">
@@ -287,6 +256,13 @@ const DesktopCheckout = ({ cart, checkoutTotal, estimatedTax, orderSummaryOpen, 
                     <span>Subtotal</span>
                     <span>${discountedTotal.toFixed(2)}</span>
                 </div>
+
+                {shippingFee > 0 && (
+                    <div className="flex justify-between">
+                        <span>Return Shipping</span>
+                        <span>${shippingFee.toFixed(2)}</span>
+                    </div>
+                )}
 
                 {/* Discount */}
                 {discountAmount > 0 && (

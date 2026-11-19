@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import useSquare from "../hooks/useSquare";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { getReturnShippingFee, requiresReturnShipping } from "../hooks/shipping";
 
 import DesktopCheckout from "../components/DesktopCheckout";
 import MobileCheckout from "../components/MobileCheckout";
@@ -14,7 +15,7 @@ const locationId = import.meta.env.VITE_SQUARE_PROD_LOCATION_ID;
 
 // const appId = import.meta.env.VITE_SQUARE_SANDBOX_APP_ID;
 // const locationId = import.meta.env.VITE_SQUARE_SANDBOX_LOCATION_ID;
-export default function CheckoutPage() {
+export default function CheckoutPage({ merchandiseProducts }) {
     const { cart, sessionId } = useCart();
     const navigate = useNavigate();
     const loaded = useSquare();
@@ -29,11 +30,14 @@ export default function CheckoutPage() {
     const paymentRequestRef = useRef(null);
     const discountedTotalRef = useRef(0);
     const checkoutTotalRef = useRef(0);
+    const shippingFeeRef = useRef(0);
     const [applePayReady, setApplePayReady] = useState(false);
     const [cardReady, setCardReady] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const total = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    const shippingFee = getReturnShippingFee(cart, merchandiseProducts);
+    const shippingRequired = requiresReturnShipping(cart, merchandiseProducts);
     const [notes, setNotes] = useState("");
     const [discountCode, setDiscountCode] = useState("");
     const [appliedDiscount, setAppliedDiscount] = useState(null);
@@ -42,7 +46,6 @@ export default function CheckoutPage() {
     const [fullName, setFullName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
-    const [shippingRequested, setShippingRequested] = useState(false);
     const [mailingSameAsBilling, setMailingSameAsBilling] = useState(false);
     const [shipping, setShipping] = useState({
         address_line1: "",
@@ -86,7 +89,7 @@ export default function CheckoutPage() {
 
     const discountedTotal = Math.max(0, total - discountAmount);
 
-    const taxAddress = shippingRequested
+    const taxAddress = shippingRequired
         ? shipping
         : billing;
 
@@ -98,12 +101,14 @@ export default function CheckoutPage() {
         ? discountedTotal * 0.08875
         : 0;
 
-    const checkoutTotal = discountedTotal + estimatedTax;
+    const checkoutTotal = discountedTotal + estimatedTax + shippingFee;
+
 
     useEffect(() => {
         discountedTotalRef.current = discountedTotal;
         checkoutTotalRef.current = checkoutTotal;
-    }, [discountedTotal, checkoutTotal]);
+        shippingFeeRef.current = shippingFee;
+    }, [discountedTotal, checkoutTotal, shippingFee]);
 
     useEffect(() => {
         if (!loaded || cardInstance.current || initializingRef.current) {
@@ -151,7 +156,7 @@ export default function CheckoutPage() {
                                 : 0;
 
                             const newTotal =
-                                currentDiscountedTotal + tax;
+                                currentDiscountedTotal + tax + shippingFeeRef.current;
 
                             return {
                                 taxLineItems: tax > 0
@@ -393,12 +398,13 @@ export default function CheckoutPage() {
             return;
         }
         if (
-            shippingRequested &&
+            shippingRequired &&
             (
-                !shipping.address_line1 ||
-                !shipping.city ||
-                !shipping.state ||
-                !shipping.zip
+                !shipping.address_line1?.trim() ||
+                !shipping.city?.trim() ||
+                !shipping.state?.trim() ||
+                !shipping.zip?.trim() ||
+                !shipping.country?.trim()
             )
         ) {
             setError("Please complete your shipping address.");
@@ -450,17 +456,6 @@ export default function CheckoutPage() {
                 }
             };
 
-            // const result = await cardInstance.current.tokenize(
-            //     verificationDetails
-            // );
-
-            // if (result.status !== "OK") {
-            //     setError(
-            //         result.errors?.[0]?.message ??
-            //         "Please check your payment information."
-            //     );
-            //     return;
-            // }
             let result;
 
             try {
@@ -517,8 +512,8 @@ export default function CheckoutPage() {
                     email,
                     billing,
                     shipping: {
-                        requested: shippingRequested,
-                        ...(shippingRequested ? shipping : {})
+                        requested: shippingRequired,
+                        ...(shippingRequired ? shipping : {})
                     },
                     notes,
                     discountCode: appliedDiscount?.code || null,
@@ -660,31 +655,37 @@ export default function CheckoutPage() {
             //
             let appleShipping = null;
 
-            if (!shippingContact) {
-                throw new Error(
-                    "Apple Pay did not return a shipping address."
-                );
+            if (shippingRequired) {
+                if (!shippingContact) {
+                    throw new Error(
+                        "Apple Pay did not return a shipping address."
+                    );
+                }
+
+                appleShipping = {
+                    full_name: [
+                        shippingContact.givenName,
+                        shippingContact.familyName
+                    ].filter(Boolean).join(" "),
+                    address_line1: shippingContact.addressLines?.[0] || "",
+                    address_line2: shippingContact.addressLines?.[1] || "",
+                    city: shippingContact.city || "",
+                    state: shippingContact.state || "",
+                    zip: shippingContact.postalCode || "",
+                    country: shippingContact.countryCode || "US"
+                };
+
+                if (
+                    !appleShipping.address_line1.trim() ||
+                    !appleShipping.city.trim() ||
+                    !appleShipping.state.trim() ||
+                    !appleShipping.zip.trim()
+                ) {
+                    throw new Error(
+                        "Please provide a complete shipping address in Apple Pay."
+                    );
+                }
             }
-            appleShipping = {
-                full_name: [
-                    shippingContact.givenName,
-                    shippingContact.familyName
-                ]
-                    .filter(Boolean)
-                    .join(" "),
-                address_line1:
-                    shippingContact.addressLines?.[0] || "",
-                address_line2:
-                    shippingContact.addressLines?.[1] || "",
-                city:
-                    shippingContact.city || "",
-                state:
-                    shippingContact.state || "",
-                zip:
-                    shippingContact.postalCode || "",
-                country:
-                    shippingContact.countryCode || "US"
-            };
 
             const { givenName, familyName } = getNameParts(fullName);
 
@@ -770,8 +771,8 @@ export default function CheckoutPage() {
                         billing,
 
                         shipping: {
-                            requested: true,
-                            ...appleShipping
+                            requested: shippingRequired,
+                            ...(shippingRequired ? appleShipping : {})
                         },
 
                         notes,
@@ -830,10 +831,10 @@ export default function CheckoutPage() {
 
     const contact = { fullName, setFullName, phoneNumber, setPhoneNumber, email, setEmail };
     const billingData = { billing, setBilling };
-    const shippingData = { shipping, setShipping, shippingRequested, setShippingRequested, mailingSameAsBilling, setMailingSameAsBilling };
+    const shippingData = { shipping, setShipping, shippingRequired, mailingSameAsBilling, setMailingSameAsBilling };
     const payment = { cardRef, cardReady, applePayReady, loading, handlePay, handleApplePay };
     const discount = { discountCode, setDiscountCode, discountAmount, appliedDiscount, setAppliedDiscount, discountLoading, discountError, setDiscountError, handleApplyDiscount, discountedTotal };
-    const checkoutProps = { cart, checkoutTotal, estimatedTax, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
+    const checkoutProps = { cart, checkoutTotal, estimatedTax, shippingFee, orderSummaryOpen, setOrderSummaryOpen, notes, setNotes, contact, billingData, shippingData, payment, discount, submitted, fieldClass };
 
     return (
         <>

@@ -65,6 +65,7 @@ const createOrdersTable = async () => {
     //         shipping_zip TEXT,
     //         shipping_country TEXT DEFAULT 'US',
     //         shipping_requested BOOLEAN DEFAULT FALSE,   
+    //         shipping_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
     //         notes TEXT,                                 
     //         created_at TIMESTAMP DEFAULT NOW(),
     //         updated_at TIMESTAMP DEFAULT NOW(),
@@ -87,7 +88,8 @@ const createOrdersTable = async () => {
     // `;
     const createOrdersTableQuery = `
        ALTER TABLE orders
-ADD COLUMN tax_amount NUMERIC(10,2) NOT NULL DEFAULT 0
+ADD COLUMN IF NOT EXISTS shipping_amount
+NUMERIC(10,2) NOT NULL DEFAULT 0;
     `;
     try {
         const res = await pool.query(createOrdersTableQuery)

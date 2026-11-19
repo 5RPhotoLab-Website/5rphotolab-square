@@ -114,7 +114,7 @@ function App() {
         },
         {
           path: "/cart",
-          element: <YourCartPage />
+          element: <YourCartPage merchandiseProducts={merchandiseProducts} />
         },
         {
           path: "/order/confirmation",
@@ -126,7 +126,7 @@ function App() {
         },
         {
           path: "/checkout",
-          element: <CheckoutPage />
+          element: <CheckoutPage merchandiseProducts={merchandiseProducts} />
         },
         {
           path: "/accessible-site",
