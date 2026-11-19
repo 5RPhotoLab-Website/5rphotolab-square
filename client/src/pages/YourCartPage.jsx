@@ -3,10 +3,11 @@ import ItemCart from "../components/ItemCart.jsx";
 import HelpfulInformation from "../components/HelpfulInformation.jsx";
 import { useNavigate } from "react-router-dom";
 import { useCart } from '../context/CartContext';
+import { getReturnShippingFee } from "../hooks/shipping.js";
 
 const TAX_RATE = 0.08875;
 
-const YourCartPage = () => {
+const YourCartPage = ({ merchandiseProducts }) => {
     const navigate = useNavigate();
     const { cart, removeProduct, addProduct, sessionId } = useCart();
     const [notes, setNotes] = useState("");
@@ -15,6 +16,8 @@ const YourCartPage = () => {
 
     const totalItems = cart.reduce((total, product) => total + product.quantity, 0);
     const orderTotal = cart.reduce((sum, product) => sum + product.unitPrice * product.quantity, 0);
+    const shippingFee = getReturnShippingFee(cart, merchandiseProducts);
+    const estimatedTotal = orderTotal + shippingFee;
 
     const handleCheckout = async () => {
         setLoading(true);
@@ -65,9 +68,36 @@ const YourCartPage = () => {
                     </div>
 
                     <div className="ml-auto max-w-[26.042vw]">
-                        <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.8vw]">
+                        {/* <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[0.8vw]">
                             <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
                             <p>${orderTotal.toFixed(2)}</p>
+                        </div> */}
+                        <div className="mt-10 tracking-wider font-atkinson-bold text-[0.8vw]">
+                            <div className="flex justify-between">
+                                <p>Subtotal</p>
+                                <p>${orderTotal.toFixed(2)}</p>
+                            </div>
+
+                            {shippingFee > 0 && (
+                                <div>
+                                    <div className="flex justify-between mt-3">
+                                        <p>Shipping to You</p>
+                                        <p>${shippingFee.toFixed(2)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="font-atkinson-regular text-[0.6vw] tracking-wider">
+                                            Flat-rate shipping for mailing your negatives, <br/> prints, or merchandise to your address.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex justify-between mt-4">
+                                <h1 className="text-[var(--color-pink)]">
+                                    Estimated order total
+                                </h1>
+                                <p>${estimatedTotal.toFixed(2)}</p>
+                            </div>
                         </div>
                         <p className="text-[var(--color-pink)] text-[0.6vw] tracking-wider">
                             Additional taxes and fees will be calculated at checkout
@@ -131,29 +161,56 @@ const YourCartPage = () => {
                 )}
 
                 {/* Quick Actions */}
-                    <div className="mt-10 flex justify-between mb-8">
-                        <button
-                            className='w-[55vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[12px] font-atkinson-regular disabled:opacity-50'
-                            style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                            onClick={handleCheckout}
-                            disabled={loading || cart.length === 0}
-                        >
-                            <span className='font-atkinson-bold text-white'>
-                                {loading ? "Redirecting..." : "Continue to payment"}
-                            </span>
-                        </button>
-                        <button
-                            className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[12px] font-atkinson-regular'
-                            style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
-                            onClick={() => navigate('/mail-in')}
-                        >
-                            Add more items
-                        </button>
-                    </div>
+                <div className="mt-10 flex justify-between mb-8">
+                    <button
+                        className='w-[55vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-blue)] tracking-wider text-[12px] font-atkinson-regular disabled:opacity-50'
+                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
+                        onClick={handleCheckout}
+                        disabled={loading || cart.length === 0}
+                    >
+                        <span className='font-atkinson-bold text-white'>
+                            {loading ? "Redirecting..." : "Continue to payment"}
+                        </span>
+                    </button>
+                    <button
+                        className='w-[33vw] h-[35px] border-4 rounded-[10px] bg-[var(--color-green)] border-[var(--color-green)] tracking-wider text-[12px] font-atkinson-regular'
+                        style={{ boxShadow: "0px 4px 0px rgba(33, 31, 34, 1)" }}
+                        onClick={() => navigate('/mail-in')}
+                    >
+                        Add more items
+                    </button>
+                </div>
 
-                <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[14px]">
+                {/* <div className="flex justify-between mt-10 tracking-wider font-atkinson-bold text-[14px]">
                     <h1 className="text-[var(--color-pink)]">Estimated order total</h1>
                     <p>${orderTotal.toFixed(2)}</p>
+                </div> */}
+                <div className="mt-10 tracking-wider font-atkinson-bold text-[14px]">
+                    <div className="flex justify-between">
+                        <p>Subtotal</p>
+                        <p>${orderTotal.toFixed(2)}</p>
+                    </div>
+
+                    {shippingFee > 0 && (
+                        <div>
+                            <div className="flex justify-between mt-3">
+                                <p>Shipping to You</p>
+                                <p>${shippingFee.toFixed(2)}</p>
+                            </div>
+                            <div>
+                                <p className="font-atkinson-regular text-[10px] tracking-wider">
+                                    Flat-rate shipping for mailing your negatives, <br /> prints, or merchandise to your address.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between mt-4">
+                        <h1 className="text-[var(--color-pink)]">
+                            Estimated order total
+                        </h1>
+                        <p>${estimatedTotal.toFixed(2)}</p>
+                    </div>
                 </div>
                 <p className="text-[var(--color-pink)] text-[10px] tracking-wider">
                     Additional taxes and fees will be calculated at checkout

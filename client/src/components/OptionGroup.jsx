@@ -102,10 +102,10 @@ const OptionGroup = ({
         </div>
     );
 
-    const isShippingLater =
-        ["physical copies", "save my negatives"].includes(
-            title?.trim().toLowerCase()
-        );
+    // const isShippingLater =
+    //     ["physical copies", "save my negatives"].includes(
+    //         title?.trim().toLowerCase()
+    //     );
 
     return (
         <>
@@ -114,10 +114,10 @@ const OptionGroup = ({
 
                 <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[0.8vw] tracking-wider mt-5 uppercase">
                     {title}
-                    {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
+                    {/* {isShippingLater && " - INVOICE FOR SHIPPING LATER"} */}
                     {isRequired && (
-                        <span className="text-red-500 ml-2">
-                            <br />* REQUIRED
+                        <span className="text-red-500 ml-2 lowercase">
+                            * required
                         </span>
                     )}
                 </h1>
@@ -132,10 +132,10 @@ const OptionGroup = ({
 
                 <h1 className="font-atkinson-bold text-[var(--color-pink)] text-[12px] tracking-wider mt-5 uppercase">
                     {title}
-                    {isShippingLater && " - INVOICE FOR SHIPPING LATER"}
+                    {/* {isShippingLater && " - INVOICE FOR SHIPPING LATER"} */}
                     {isRequired && (
-                        <span className="text-red-500 ml-2">
-                            <br />* REQUIRED
+                        <span className="text-red-500 ml-2 lowercase">
+                            * required
                         </span>
                     )}
                 </h1>

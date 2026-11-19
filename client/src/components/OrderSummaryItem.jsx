@@ -79,16 +79,16 @@ const OrderSummaryItem = ({ cart }) => {
                                         modifier?.priceAdd || 0
                                     );
 
-                                    let title = key;
+                                    // let title = key;
 
-                                    if (
-                                        key.trim().toLowerCase() ===
-                                            "physical copies" ||
-                                        key.trim().toLowerCase() ===
-                                            "save my negatives"
-                                    ) {
-                                        title = `${key} - INVOICE LATER`;
-                                    }
+                                    // if (
+                                    //     key.trim().toLowerCase() ===
+                                    //         "physical copies" ||
+                                    //     key.trim().toLowerCase() ===
+                                    //         "save my negatives"
+                                    // ) {
+                                    //     title = `${key} - INVOICE LATER`;
+                                    // }
 
                                     return (
                                         <div key={key}>
@@ -100,7 +100,7 @@ const OrderSummaryItem = ({ cart }) => {
                                                 text-[var(--color-pink)]
                                                 uppercase
                                             ">
-                                                {title}
+                                                {key}
                                             </h1>
 
                                             <p className="

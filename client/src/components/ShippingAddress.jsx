@@ -1,13 +1,10 @@
 export default function ShippingAddress({
     shipping,
     setShipping,
-    shippingRequested,
-    setShippingRequested,
     mailingSameAsBilling,
     setMailingSameAsBilling,
     billing,
     fieldClass,
-    submitted
 }) {
     const updateField = (field, value) => {
         setShipping((prev) => ({
@@ -26,49 +23,6 @@ export default function ShippingAddress({
             });
         }
     };
-
-    if (!shippingRequested) {
-        return (
-            <label className="flex items-center gap-3 mt-6 text-[12px] md:text-[0.75vw] font-atkinson-regular tracking-widest">
-                <input
-                    type="checkbox"
-                    checked={shippingRequested}
-                    onChange={(e) =>
-                        setShippingRequested(e.target.checked)
-                    }
-                    className="
-                        appearance-none
-                        w-[24px] h-[23px]
-                        border-2 border-black
-                        rounded-[6px]
-                        bg-[#F5F5F5]
-                        checked:bg-[var(--color-pink)]
-                        checked:border-black
-                        relative
-                        cursor-pointer
-                        after:content-['✓']
-                        after:absolute
-                        after:text-black
-                        after:text-[12px]
-                        after:font-bold
-                        after:left-1/2
-                        after:top-1/2
-                        after:-translate-x-1/2
-                        after:-translate-y-1/2
-                        after:opacity-0
-                        checked:after:opacity-100
-                        font-atkinson-regular 
-                        tracking-widest
-                    "
-                    style={{
-                        boxShadow: "0px 4px 0px rgba(0, 0, 0, 1)"
-                    }}
-                />
-
-                Ship my prints/negatives
-            </label>
-        );
-    }
 
     return (
         <div className="space-y-6 mt-6 font-atkinson-regular tracking-widest">

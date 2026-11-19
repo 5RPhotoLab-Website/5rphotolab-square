@@ -12,6 +12,7 @@ import cashierTagIcon from '../assets/checkout/cashierTagIcon.svg';
 const MobileCheckout = ({
     cart,
     checkoutTotal, estimatedTax,
+    shippingFee,
 
     orderSummaryOpen,
     setOrderSummaryOpen,
@@ -45,8 +46,7 @@ const MobileCheckout = ({
     const {
         shipping,
         setShipping,
-        shippingRequested,
-        setShippingRequested,
+        shippingRequired,
         mailingSameAsBilling,
         setMailingSameAsBilling,
     } = shippingData;
@@ -327,67 +327,19 @@ const MobileCheckout = ({
                     fieldClass={fieldClass}
                 />
 
-
-                {/* Shipping */}
-                <label className="flex items-center gap-3 mt-6 text-[16px]">
-
-                    <input
-                        type="checkbox"
-                        checked={shippingRequested}
-                        onChange={(e) =>
-                            setShippingRequested(
-                                e.target.checked
-                            )
-                        }
-                        className="
-                            appearance-none
-                            w-[24px]
-                            h-[23px]
-                            border-2
-                            border-black
-                            rounded-[6px]
-                            bg-[#F5F5F5]
-                            checked:bg-[var(--color-pink)]
-                            checked:border-black
-                            relative
-                            cursor-pointer
-                            after:content-['✓']
-                            after:absolute
-                            after:text-black
-                            after:text-[16px]
-                            after:font-bold
-                            after:left-1/2
-                            after:top-1/2
-                            after:-translate-x-1/2
-                            after:-translate-y-1/2
-                            after:opacity-0
-                            checked:after:opacity-100
-                        "
-                        style={{
-                            boxShadow:
-                                "0px 4px 0px rgba(0, 0, 0, 1)",
-                        }}
-                    />
-
-                    Ship my prints/negatives
-
-                </label>
-
-
-                {shippingRequested && (
-                    <ShippingAddress
-                        shipping={shipping}
-                        setShipping={setShipping}
-                        shippingRequested={shippingRequested}
-                        setShippingRequested={setShippingRequested}
-                        mailingSameAsBilling={mailingSameAsBilling}
-                        setMailingSameAsBilling={
-                            setMailingSameAsBilling
-                        }
-                        billing={billing}
-                        fieldClass={fieldClass}
-                        submitted={submitted}
-                    />
+                {/* Shipping Address */}
+                {shippingRequired && (
+                    <div className="mt-6">
+                        <ShippingAddress
+                            shipping={shipping}
+                            setShipping={setShipping}
+                            mailingSameAsBilling={mailingSameAsBilling}
+                            setMailingSameAsBilling={setMailingSameAsBilling}
+                            billing={billing}
+                            fieldClass={fieldClass}
+                            submitted={submitted}
+                        />
+                    </div>
                 )}
 
 
@@ -397,6 +349,13 @@ const MobileCheckout = ({
                         <span>Subtotal</span>
                         <span>${discountedTotal.toFixed(2)}</span>
                     </div>
+
+                    {shippingFee > 0 && (
+                        <div className="flex justify-between">
+                            <span>Return Shipping</span>
+                            <span>${shippingFee.toFixed(2)}</span>
+                        </div>
+                    )}
 
                     {/* Discount */}
                     {discountAmount > 0 && (

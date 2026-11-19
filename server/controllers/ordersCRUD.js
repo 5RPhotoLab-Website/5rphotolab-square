@@ -4,6 +4,8 @@ import { randomUUID } from "crypto";
 import { sendOrderConfirmation, sendAdminNotification } from "./emailService.js";
 import { getValidatedDiscount } from "./discountsSquare.js";
 import { sendMetaEvent } from "../services/metaConversions.js";
+import { SHIPPING_FEE_CENTS, requiresShipping } from "../services/shipping.js";
+import { getMerchandiseProductIds } from "../services/merchandiseService.js";
 
 
 // GET /orders/:orderId PAYMENTS API
@@ -106,7 +108,6 @@ const payOrder = async (req, res) => {
     const client = await pool.connect();
 
     let localOrder = null;
-    let squareOrder = null;
     let payment = null;
     let paymentCreateAttempted = false;
 
@@ -162,6 +163,23 @@ const payOrder = async (req, res) => {
         }
 
         const products = cartResult.rows[0].cart_data.products;
+        const merchandiseProductIds = await getMerchandiseProductIds();
+        const shippingRequired = requiresShipping(products, merchandiseProductIds);
+        const shippingFeeCents = shippingRequired ? SHIPPING_FEE_CENTS : 0;
+        if (
+            shippingRequired &&
+            (
+                !shipping?.address_line1?.trim() ||
+                !shipping?.city?.trim() ||
+                !shipping?.state?.trim() ||
+                !shipping?.zip?.trim() ||
+                !shipping?.country?.trim()
+            )
+        ) {
+            return res.status(400).json({
+                error: "Please provide a complete shipping address."
+            });
+        }
 
         // Verify discount 
         let verifiedDiscount = null;
@@ -181,8 +199,27 @@ const payOrder = async (req, res) => {
         //
         // Build Square line items
         //
+        // const lineItems = products.map(product => {
+        //     const squareModifiers = Object.values(product.modifiers || {})
+        //         .filter(modifier => modifier?.modifierId)
+        //         .map(modifier => ({
+        //             catalogObjectId: modifier.modifierId
+        //         }));
+
+        //     return {
+        //         catalogObjectId: product.variation_id,
+        //         quantity: String(product.quantity),
+        //         ...(squareModifiers.length > 0
+        //             ? { modifiers: squareModifiers }
+        //             : {})
+        //     };
+        // });
+
+
         const lineItems = products.map(product => {
-            const squareModifiers = Object.values(product.modifiers || {})
+            const squareModifiers = Object.values(
+                product.modifiers || {}
+            )
                 .filter(modifier => modifier?.modifierId)
                 .map(modifier => ({
                     catalogObjectId: modifier.modifierId
@@ -198,6 +235,7 @@ const payOrder = async (req, res) => {
         });
 
 
+
         //
         // IMPORTANT:
         // Create a local order BEFORE charging Square.
@@ -211,7 +249,7 @@ const payOrder = async (req, res) => {
         // Determine which address Square should use
         // as the fulfillment/shipping address. And which should be taxed
         //
-        const recipientAddress = shipping?.requested
+        const recipientAddress = shippingRequired
             ? {
                 addressLine1: shipping.address_line1,
                 addressLine2: shipping.address_line2 || undefined,
@@ -229,7 +267,7 @@ const payOrder = async (req, res) => {
                 country: billing.country
             };
 
-        const taxAddress = shipping?.requested
+        const taxAddress = shippingRequired
             ? shipping
             : billing;
 
@@ -260,6 +298,7 @@ const payOrder = async (req, res) => {
                         shipping_state,
                         shipping_zip,
                         shipping_country,
+                        shipping_amount,
                         subtotal_amount,
                         discount_amount,
                         tax_amount,
@@ -280,19 +319,20 @@ const payOrder = async (req, res) => {
                         billing_country
                     )
                     VALUES
-                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27 )
+                    ( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28 )
                     RETURNING *
                 `,
                 [
                     session_id,
                     email,
-                    shipping?.requested ?? false,
-                    shipping?.address_line1 ?? null,
-                    shipping?.address_line2 ?? null,
-                    shipping?.city ?? null,
-                    shipping?.state ?? null,
-                    shipping?.zip ?? null,
-                    shipping?.country ?? null,
+                    shippingRequired,
+                    shippingRequired ? shipping.address_line1 : null,
+                    shippingRequired ? shipping.address_line2 || null : null,
+                    shippingRequired ? shipping.city : null,
+                    shippingRequired ? shipping.state : null,
+                    shippingRequired ? shipping.zip : null,
+                    shippingRequired ? shipping.country : null,
+                    shippingFeeCents / 100,
                     subtotal, // subtotal_amount
                     0,           // discount_amount
                     0,          // tax_amount temporary
@@ -365,37 +405,124 @@ const payOrder = async (req, res) => {
         // STEP 2: Create Square Order
         // ---------------------------------------------------------
         //
-        const orderResponse = await squareClient.orders.create({
+        // const orderResponse = await squareClient.orders.create({
 
+        //     idempotencyKey: squareOrderIdempotencyKey,
+
+        //     order: {
+        //         locationId: squareEnv.locationId,
+        //         lineItems,
+        //         ...(isNY
+        //             ? {
+        //                 taxes: [
+        //                     {
+        //                         uid: "NY-SALES-TAX",
+        //                         name: "Sales Tax",
+        //                         percentage: "8.875",
+        //                         scope: "ORDER"
+        //                     }
+        //                 ]
+        //             }
+        //             : {}),
+        //         ...(verifiedDiscount?.catalogDiscountId
+        //             ? {
+        //                 discounts: [
+        //                     {
+        //                         uid: "checkout-discount",
+        //                         catalogObjectId: verifiedDiscount.catalogDiscountId,
+        //                         scope: "ORDER"
+        //                     }
+        //                 ]
+        //             }
+        //             : {}),
+        //         metadata: notes ? { customer_notes: notes } : undefined,
+        //         fulfillments: [{
+        //             type: "SHIPMENT",
+        //             note: notes || undefined,
+        //             shipmentDetails: {
+        //                 recipient: {
+        //                     emailAddress: email,
+        //                     phoneNumber:
+        //                         phone_number || undefined,
+        //                     displayName:
+        //                         full_name || email,
+        //                     address: recipientAddress
+        //                 }
+        //             },
+        //         }]
+        //     }
+
+        // });
+
+        const hasDiscount = Boolean(
+            verifiedDiscount?.catalogDiscountId
+        );
+
+        // Add flat-rate shipping as a separate Square line item.
+        // Block the existing order-level tax and discount from shipping.
+        if (shippingRequired) {
+            lineItems.push({
+                name: "Shipping",
+                quantity: "1",
+                itemType: "ITEM",
+                basePriceMoney: {
+                    amount: BigInt(shippingFeeCents),
+                    currency: "USD"
+                },
+                pricingBlocklists: {
+                    ...(isNY
+                        ? {
+                            blockedTaxes: [{
+                                taxUid: "NY-SALES-TAX"
+                            }]
+                        }
+                        : {}),
+                    ...(hasDiscount
+                        ? {
+                            blockedDiscounts: [{
+                                discountUid: "checkout-discount"
+                            }]
+                        }
+                        : {})
+                }
+            });
+        }
+
+        const orderResponse = await squareClient.orders.create({
             idempotencyKey: squareOrderIdempotencyKey,
 
             order: {
                 locationId: squareEnv.locationId,
+
                 lineItems,
+
                 ...(isNY
                     ? {
-                        taxes: [
-                            {
-                                uid: "NY-SALES-TAX",
-                                name: "Sales Tax",
-                                percentage: "8.875",
-                                scope: "ORDER"
-                            }
-                        ]
+                        taxes: [{
+                            uid: "NY-SALES-TAX",
+                            name: "Sales Tax",
+                            percentage: "8.875",
+                            scope: "ORDER"
+                        }]
                     }
                     : {}),
-                ...(verifiedDiscount?.catalogDiscountId
+
+                ...(hasDiscount
                     ? {
-                        discounts: [
-                            {
-                                uid: "checkout-discount",
-                                catalogObjectId: verifiedDiscount.catalogDiscountId,
-                                scope: "ORDER"
-                            }
-                        ]
+                        discounts: [{
+                            uid: "checkout-discount",
+                            catalogObjectId:
+                                verifiedDiscount.catalogDiscountId,
+                            scope: "ORDER"
+                        }]
                     }
                     : {}),
-                metadata: notes ? { customer_notes: notes } : undefined,
+
+                metadata: notes
+                    ? { customer_notes: notes }
+                    : undefined,
+
+                // Keep all orders labeled SHIPMENT.
                 fulfillments: [{
                     type: "SHIPMENT",
                     note: notes || undefined,
@@ -408,11 +535,11 @@ const payOrder = async (req, res) => {
                                 full_name || email,
                             address: recipientAddress
                         }
-                    },
+                    }
                 }]
             }
-
         });
+
 
         const squareOrder = orderResponse.order;
         const finalTotalAmount = Number(squareOrder.totalMoney.amount) / 100;
@@ -420,6 +547,62 @@ const payOrder = async (req, res) => {
         const taxAmount = Number(squareOrder.totalTaxMoney?.amount || 0) / 100;
 
         const discountAmount = Number(squareOrder.totalDiscountMoney?.amount || 0) / 100;
+
+
+        const expectedTotalCents = Math.round((subtotal - discountAmount + taxAmount) * 100) + shippingFeeCents;
+
+        const actualTotalCents = Number(squareOrder.totalMoney.amount);
+
+        if (actualTotalCents !== expectedTotalCents) {
+            throw new Error(
+                `Square total mismatch: expected ${expectedTotalCents} cents, received ${actualTotalCents} cents`
+            );
+        }
+        if (shippingRequired) {
+            const shippingLine = squareOrder.lineItems?.find(
+                item => item.name === "Shipping"
+            );
+
+            if (!shippingLine) {
+                throw new Error("Shipping line missing from Square order.");
+            }
+            console.log("SQUARE SHIPPING CHECK:", {
+                name: shippingLine.name,
+                basePriceMoney: shippingLine.basePriceMoney,
+                totalMoney: shippingLine.totalMoney,
+                totalTaxMoney: shippingLine.totalTaxMoney,
+                totalDiscountMoney: shippingLine.totalDiscountMoney
+            });
+
+            if (!shippingLine) {
+                throw new Error("Shipping line missing from Square order.");
+            }
+
+            const shippingTaxCents = Number(
+                shippingLine.totalTaxMoney?.amount ?? 0
+            );
+
+            const shippingDiscountCents = Number(
+                shippingLine.totalDiscountMoney?.amount ?? 0
+            );
+
+            if (shippingTaxCents !== 0 || shippingDiscountCents !== 0) {
+                throw new Error(
+                    "Shipping must not receive tax or discounts."
+                );
+            }
+
+            const shippingTotalCents = Number(
+                shippingLine.totalMoney?.amount ?? 0
+            );
+
+            if (shippingTotalCents !== SHIPPING_FEE_CENTS) {
+                throw new Error(
+                    `Incorrect shipping amount: ${shippingTotalCents} cents`
+                );
+            }
+        }
+
 
         //
         // Save Square Order ID and final total after discount applied immediately.
@@ -490,6 +673,11 @@ const payOrder = async (req, res) => {
         });
 
         payment = paymentResponse.payment;
+        if (payment?.status !== "COMPLETED") {
+            throw new Error(
+                `Payment was not completed. Status: ${payment?.status ?? "UNKNOWN"}`
+            );
+        }
 
         //
         // ---------------------------------------------------------
@@ -562,6 +750,9 @@ const payOrder = async (req, res) => {
                 contentIds: products.map((product) =>
                     String(product.variation_id)
                 ),
+                contentName: products
+                    .map(product => String(product.name))
+                    .join(", "),
 
                 // Matching information
                 clientIp: req.ip,
@@ -652,25 +843,67 @@ const payOrder = async (req, res) => {
         // If Square already charged the customer, DO NOT tell
         // the frontend that the payment definitely failed.
         //
+        // if (payment?.id) {
+        //     //
+        //     // We know Square returned a payment.
+        //     // The payment exists, so keep the local order
+        //     // recoverable.
+        //     //
+        //     try {
+        //         await client.query(
+        //             `
+        //             UPDATE orders
+        //             SET
+        //                 payment_status = $1,
+        //                 square_payment_id = $2,
+        //                 square_receipt_url = $3,
+        //                 updated_at = NOW()
+        //             WHERE id = $4
+        //             `,
+        //             [
+        //                 payment.status || "COMPLETED",
+        //                 payment.id,
+        //                 payment.receiptUrl || null,
+        //                 localOrder?.id
+        //             ]
+        //         );
+        //     } catch (dbError) {
+        //         console.error(
+        //             "CRITICAL: Square payment succeeded but DB update failed:",
+        //             dbError
+        //         );
+        //     }
+
+        //     return res.status(200).json({
+        //         success: true,
+        //         paymentReceived: true,
+        //         orderId: localOrder?.id,
+        //         paymentId: payment.id,
+        //         message: "Payment received. Your order is being processed."
+        //     });
+        // }
+
         if (payment?.id) {
-            //
-            // We know Square returned a payment.
-            // The payment exists, so keep the local order
-            // recoverable.
-            //
+            const paymentCompleted =
+                payment.status === "COMPLETED";
+
+            const paymentFailed =
+                payment.status === "FAILED" ||
+                payment.status === "CANCELED";
+
             try {
                 await client.query(
                     `
-                    UPDATE orders
-                    SET
-                        payment_status = $1,
-                        square_payment_id = $2,
-                        square_receipt_url = $3,
-                        updated_at = NOW()
-                    WHERE id = $4
-                    `,
+            UPDATE orders
+            SET
+                payment_status = $1,
+                square_payment_id = $2,
+                square_receipt_url = $3,
+                updated_at = NOW()
+            WHERE id = $4
+            `,
                     [
-                        payment.status || "COMPLETED",
+                        payment.status || "PAYMENT_UNKNOWN",
                         payment.id,
                         payment.receiptUrl || null,
                         localOrder?.id
@@ -678,19 +911,40 @@ const payOrder = async (req, res) => {
                 );
             } catch (dbError) {
                 console.error(
-                    "CRITICAL: Square payment succeeded but DB update failed:",
+                    "CRITICAL: Failed to save Square payment:",
                     dbError
                 );
             }
 
-            return res.status(200).json({
-                success: true,
-                paymentReceived: true,
+            if (paymentCompleted) {
+                return res.status(200).json({
+                    success: true,
+                    paymentReceived: true,
+                    orderId: localOrder?.id,
+                    paymentId: payment.id,
+                    message:
+                        "Payment received. Your order is being processed."
+                });
+            }
+
+            if (paymentFailed) {
+                return res.status(402).json({
+                    success: false,
+                    code: "PAYMENT_FAILED",
+                    error:
+                        "Your payment was not completed."
+                });
+            }
+
+            return res.status(503).json({
+                success: false,
+                code: "PAYMENT_STATUS_UNKNOWN",
                 orderId: localOrder?.id,
-                paymentId: payment.id,
-                message: "Payment received. Your order is being processed."
+                error:
+                    "Your payment is still being processed or its status is uncertain. Please contact us before trying again."
             });
         }
+
 
         //
         // If we created a local order but Square payment
